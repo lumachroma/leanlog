@@ -110,6 +110,7 @@ function App() {
           <DashboardSection
             metrics={metrics}
             chartSeries={chartSeries}
+            settings={settings}
             calorieDelta={calorieDelta}
             stepDelta={stepDelta}
             goalDistance={goalDistance}

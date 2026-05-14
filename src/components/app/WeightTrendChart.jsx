@@ -70,7 +70,13 @@ function CustomTooltip({ active, payload, label }) {
   )
 }
 
-function WeightTrendChart({ points }) {
+function WeightTrendChart({
+  points,
+  eyebrow = 'Weight trend chart',
+  title = 'Real-life weight, with calm built in.',
+  description =
+    'Daily weight shows the honest day-to-day signal. The 7DMA carries the trend forward so missed weigh-ins do not break the story.',
+}) {
   if (!points.length) {
     return (
       <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
@@ -101,14 +107,13 @@ function WeightTrendChart({ points }) {
       <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-            Weight trend chart
+            {eyebrow}
           </p>
           <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-            Real-life weight, with calm built in.
+            {title}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-            Daily weight shows the honest day-to-day signal. The 7DMA carries the
-            trend forward so missed weigh-ins do not break the story.
+            {description}
           </p>
         </div>
         <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
