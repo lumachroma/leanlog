@@ -100,8 +100,8 @@ describe('App', () => {
     expect(screen.getByText(/calm daily tracking, stored locally first/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(screen.getByText(/one month at a glance/i)).toBeInTheDocument()
-    expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
-    expect(screen.getByText(/one focused entry per day/i)).toBeInTheDocument()
+    expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })
 
   it('switches to the history page from the header navigation', async () => {
@@ -112,6 +112,19 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /history/i }))
 
     expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
+    expect(screen.getByText(/^edit saved day$/i)).toBeInTheDocument()
     expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
+  })
+
+  it('switches to the settings page from the header navigation', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /settings/i }))
+
+    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
+    expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
+    expect(screen.queryByText(/one month at a glance/i)).not.toBeInTheDocument()
   })
 })

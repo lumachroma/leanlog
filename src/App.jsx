@@ -4,9 +4,8 @@ import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { AppHeader } from '@/components/app/AppHeader'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { AppShell } from '@/components/app/AppShell'
-import { DailyLogPanel } from '@/components/app/DailyLogPanel'
 import { DashboardSection } from '@/components/app/DashboardSection'
-import { SettingsPanel } from '@/components/app/SettingsPanel'
+import { SettingsPage } from '@/components/app/SettingsPage'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
 
 function App() {
@@ -59,37 +58,22 @@ function App() {
           saveEntry={saveEntry}
           deleteEntry={deleteEntry}
         />
+      ) : activePage === 'settings' ? (
+        <SettingsPage
+          settings={settings}
+          isSavingSettings={isSavingSettings}
+          updateSettingsField={updateSettingsField}
+          saveSettings={saveSettings}
+        />
       ) : (
-        <main className="grid flex-1 gap-6 py-8 xl:grid-cols-[1.25fr_0.75fr] xl:py-10">
-          <section className="space-y-6">
-            <DashboardSection
-              metrics={metrics}
-              monthlyCards={monthlyCards}
-              calorieDelta={calorieDelta}
-              stepDelta={stepDelta}
-              goalDistance={goalDistance}
-            />
-          </section>
-
-          <aside className="space-y-6">
-            <SettingsPanel
-              settings={settings}
-              isSavingSettings={isSavingSettings}
-              updateSettingsField={updateSettingsField}
-              saveSettings={saveSettings}
-            />
-
-            <DailyLogPanel
-              selectedDate={selectedDate}
-              entryDraft={entryDraft}
-              isSavingEntry={isSavingEntry}
-              activeDays={metrics.activeDays}
-              exerciseDays={metrics.exerciseDays}
-              setSelectedDate={setSelectedDate}
-              updateEntryDraftField={updateEntryDraftField}
-              saveEntry={saveEntry}
-            />
-          </aside>
+        <main className="py-8 xl:py-10">
+          <DashboardSection
+            metrics={metrics}
+            monthlyCards={monthlyCards}
+            calorieDelta={calorieDelta}
+            stepDelta={stepDelta}
+            goalDistance={goalDistance}
+          />
         </main>
       )}
     </AppShell>

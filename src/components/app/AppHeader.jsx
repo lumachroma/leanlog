@@ -35,15 +35,24 @@ function AppHeader({ activePage, onPageChange }) {
           >
             History
           </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={activePage === 'settings' ? 'default' : 'ghost'}
+            onClick={() => onPageChange('settings')}
+            aria-pressed={activePage === 'settings'}
+          >
+            Settings
+          </Button>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center rounded-full border border-border/70 bg-background/90 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground shadow-sm">
-          Iteration 1
-        </span>
-        <Button variant="outline" size="sm">
-          IndexedDB ready
-        </Button>
+          <span className="inline-flex items-center rounded-full border border-border/70 bg-background/90 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground shadow-sm">
+            Iteration 1
+          </span>
+          <Button variant="outline" size="sm">
+            IndexedDB ready
+          </Button>
         </div>
       </div>
     </header>
