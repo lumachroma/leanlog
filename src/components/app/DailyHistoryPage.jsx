@@ -1,6 +1,7 @@
 import { Clock3, PencilLine, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { todayDate } from '@/lib/db'
 
 import { DailyLogPanel } from './DailyLogPanel'
 
@@ -20,6 +21,17 @@ const formatDateLabel = (date) =>
     year: 'numeric',
   }).format(new Date(`${date}T00:00:00`))
 
+const getNextAvailableDate = (entries) => {
+  const occupiedDates = new Set(entries.map((entry) => entry.date))
+  const nextDate = new Date(`${todayDate()}T00:00:00`)
+
+  while (occupiedDates.has(nextDate.toISOString().slice(0, 10))) {
+    nextDate.setDate(nextDate.getDate() + 1)
+  }
+
+  return nextDate.toISOString().slice(0, 10)
+}
+
 function DailyHistoryPage({
   entries,
   selectedDate,
@@ -30,6 +42,10 @@ function DailyHistoryPage({
   saveEntry,
   deleteEntry,
 }) {
+  const handleCreateEntry = () => {
+    setSelectedDate(getNextAvailableDate(entries))
+  }
+
   return (
     <main className="grid flex-1 gap-6 py-8 xl:grid-cols-[0.9fr_1.1fr] xl:py-10">
       <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
@@ -42,11 +58,16 @@ function DailyHistoryPage({
               Review and edit saved days
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-              Select a saved day to edit it. To create a new record, change the date
-              in the editor to a day that does not exist yet and save it.
+              Select a saved day to edit it, or create a fresh entry without manually
+              hunting for an unused date.
             </p>
           </div>
-          <Clock3 className="mt-1 size-4 text-muted-foreground" />
+          <div className="flex items-center gap-3">
+            <Button type="button" variant="outline" size="sm" onClick={handleCreateEntry}>
+              New entry
+            </Button>
+            <Clock3 className="size-4 text-muted-foreground" />
+          </div>
         </div>
 
         {entries.length ? (

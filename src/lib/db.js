@@ -9,7 +9,12 @@ export const DEFAULT_SETTINGS = {
   dailyStepTarget: '',
 }
 
-export const todayDate = () => new Date().toISOString().slice(0, 10)
+export const toDateInputValue = (date = new Date()) => {
+  const timezoneOffsetInMs = date.getTimezoneOffset() * 60_000
+  return new Date(date.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
+}
+
+export const todayDate = () => toDateInputValue()
 
 export const createEmptyEntryDraft = (date = todayDate()) => ({
   date,
