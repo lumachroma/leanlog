@@ -1,4 +1,4 @@
-import { Activity, Scale, Target } from 'lucide-react'
+import { Activity, Flame, Footprints, Scale, Target } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
@@ -29,6 +29,16 @@ const weightFormatter = new Intl.NumberFormat('en-US', {
 const formatWeight = (value) =>
   value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
 
+const formatAverage = (value, suffix) => {
+  if (value === null) {
+    return suffix ? `-- ${suffix}` : '--'
+  }
+
+  return suffix
+    ? `${numberFormatter.format(Math.round(value))} ${suffix}`
+    : numberFormatter.format(Math.round(value))
+}
+
 const formatPercent = (value) =>
   value === null ? '-- %' : `${numberFormatter.format(value)}%`
 
@@ -44,6 +54,8 @@ const formatSignedWeight = (value) => {
 
 function DashboardSection({
   metrics,
+  calorieDelta,
+  stepDelta,
   goalDistance,
   targetsConfigured,
   onOpenSettings,
@@ -72,7 +84,7 @@ function DashboardSection({
         </section>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <MetricCard
           icon={Scale}
           label="Weight trend"
@@ -90,6 +102,26 @@ function DashboardSection({
             metrics.latestWeight7dma === null
               ? '7-day moving average appears after saved weight entries. Missed days are ignored, not punished.'
               : 'Smoothed weight trend across the trailing 7 days, ignoring blanks.'
+          }
+        />
+        <MetricCard
+          icon={Flame}
+          label="Avg Calories"
+          value={formatAverage(metrics.calorieAverage, 'kcal')}
+          detail={
+            calorieDelta === null
+              ? 'Your average updates automatically from saved daily entries.'
+              : `${Math.abs(calorieDelta)} kcal ${calorieDelta <= 0 ? 'under' : 'over'} target`
+          }
+        />
+        <MetricCard
+          icon={Footprints}
+          label="Avg Steps"
+          value={formatAverage(metrics.stepAverage, 'steps')}
+          detail={
+            stepDelta === null
+              ? 'Once you save steps, this card becomes your movement baseline.'
+              : `${numberFormatter.format(Math.abs(stepDelta))} steps ${stepDelta >= 0 ? 'above' : 'below'} target`
           }
         />
         <MetricCard

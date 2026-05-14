@@ -80,6 +80,8 @@ describe('App', () => {
       calorieTrend: [{ date: '2026-05-14', calories: 1900 }],
       stepTrend: [{ date: '2026-05-14', steps: 9000 }],
     },
+    calorieDelta: 0,
+    stepDelta: 0,
     goalDistance: 8,
     updateSettingsField: vi.fn(),
     saveSettings: vi.fn(),
@@ -115,6 +117,8 @@ describe('App', () => {
 
     expect(screen.getByText(/calm daily tracking, stored locally first/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
+    expect(screen.getByText(/avg calories/i)).toBeInTheDocument()
+    expect(screen.getByText(/avg steps/i)).toBeInTheDocument()
     expect(screen.getByText(/^7dma$/i)).toBeInTheDocument()
     expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
     expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()

@@ -35,6 +35,8 @@ export function useAppViewModel() {
   const monthlyAverageCards = getMonthlyAverageCards(entries)
   const chartSeries = getChartSeries(entries)
   const goalWeight = toNumber(settings.goalWeight)
+  const dailyCalorieTarget = toNumber(settings.dailyCalorieTarget)
+  const dailyStepTarget = toNumber(settings.dailyStepTarget)
 
   return {
     settings,
@@ -49,6 +51,14 @@ export function useAppViewModel() {
     weeklyAverageCards,
     monthlyAverageCards,
     chartSeries,
+    calorieDelta:
+      metrics.calorieAverage !== null && dailyCalorieTarget !== null
+        ? Math.round(metrics.calorieAverage - dailyCalorieTarget)
+        : null,
+    stepDelta:
+      metrics.stepAverage !== null && dailyStepTarget !== null
+        ? Math.round(metrics.stepAverage - dailyStepTarget)
+        : null,
     goalDistance:
       metrics.latestWeight !== null && goalWeight !== null
         ? Math.abs(metrics.latestWeight - goalWeight)

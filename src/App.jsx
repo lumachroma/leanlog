@@ -46,6 +46,8 @@ function App() {
     metrics,
     weeklyAverageCards,
     monthlyAverageCards,
+    calorieDelta,
+    stepDelta,
     goalDistance,
     updateSettingsField,
     saveSettings,
@@ -106,6 +108,8 @@ function App() {
         <main className="py-8 xl:py-10">
           <DashboardSection
             metrics={metrics}
+            calorieDelta={calorieDelta}
+            stepDelta={stepDelta}
             goalDistance={goalDistance}
             targetsConfigured={targetsConfigured}
             onOpenSettings={() => setActivePage('settings')}
