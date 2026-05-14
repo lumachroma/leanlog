@@ -2,17 +2,28 @@ import { Button } from '@/components/ui/button'
 
 function AppHeader({ activePage, onPageChange }) {
   return (
-    <header className="flex flex-col gap-5 border-b border-border/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-          Leanlog
-        </p>
-        <h1 className="mt-3 text-3xl font-medium tracking-[-0.05em] text-balance sm:text-4xl">
-          Calm daily tracking, stored locally first.
+    <header className="flex flex-col gap-6 border-b border-border/80 pb-6 sm:gap-8 sm:flex-row sm:items-end sm:justify-between">
+      <div className="max-w-3xl">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+            Leanlog
+          </p>
+          <span className="inline-flex items-center rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Sustainable by design
+          </span>
+        </div>
+        <h1 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.06em] text-balance sm:text-4xl xl:text-5xl">
+          A calm fat-loss system built for real life.
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-          Track weight, a forgiving 7DMA trend, calories, steps, and exercise
-          details. Missed entries do not break the trend.
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+          Leanlog is a calm, local-first weight loss tracker built for fast daily
+          logging and lightweight progress review. It is intended to be sustainable,
+          scalable, psychologically lightweight, and strong enough for serious
+          long-term fat-loss work.
+        </p>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground/90">
+          Forgiving trends, simple inputs, and stable summaries keep the system useful
+          even when life gets messy and some days go unlogged.
         </p>
       </div>
       <div className="flex flex-col items-start gap-3 sm:items-end">

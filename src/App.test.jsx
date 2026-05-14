@@ -115,7 +115,10 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(screen.getByText(/calm daily tracking, stored locally first/i)).toBeInTheDocument()
+    expect(screen.getByText(/a calm fat-loss system built for real life/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(screen.getByText(/avg calories/i)).toBeInTheDocument()
     expect(screen.getByText(/avg steps/i)).toBeInTheDocument()
