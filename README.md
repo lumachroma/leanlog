@@ -330,3 +330,7 @@ The current app shape is intentionally narrow, but the architecture leaves room 
 - richer charting
 - mobile packaging
 - broader automated test coverage
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](/Users/nazrulhisham/Projects/learn/leanlog/LICENSE).
