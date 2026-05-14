@@ -1,3 +1,5 @@
+import { AppLoadingState } from '@/components/app/AppLoadingState'
+import { AppShell } from '@/components/app/AppShell'
 import { Button } from '@/components/ui/button'
 import { DailyLogPanel } from '@/components/app/DailyLogPanel'
 import { DashboardSection } from '@/components/app/DashboardSection'
@@ -26,18 +28,11 @@ function App() {
   } = useAppViewModel()
 
   if (!isHydrated) {
-    return (
-      <div className="min-h-svh bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),transparent_32%),linear-gradient(180deg,_#ffffff_0%,_#f7f7f5_100%)] px-6 py-8 text-foreground sm:px-10 lg:px-12">
-        <div className="mx-auto flex min-h-[80svh] max-w-6xl items-center justify-center rounded-[2rem] border border-border/80 bg-background/80 px-6 py-10 text-sm text-muted-foreground shadow-sm backdrop-blur">
-          Loading your local dashboard...
-        </div>
-      </div>
-    )
+    return <AppLoadingState />
   }
 
   return (
-    <div className="min-h-svh bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),transparent_32%),linear-gradient(180deg,_#ffffff_0%,_#f7f7f5_100%)] text-foreground">
-      <div className="mx-auto flex min-h-svh max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-12">
+    <AppShell>
         <header className="flex flex-col gap-5 border-b border-border/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
@@ -98,8 +93,7 @@ function App() {
             />
           </aside>
         </main>
-      </div>
-    </div>
+    </AppShell>
   )
 }
 

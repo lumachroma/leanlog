@@ -1,0 +1,72 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+
+import { DailyLogPanel } from './DailyLogPanel'
+
+describe('DailyLogPanel', () => {
+  it('updates entry fields and submits the daily log', async () => {
+    const user = userEvent.setup()
+    const setSelectedDate = vi.fn()
+    const updateEntryDraftField = vi.fn()
+    const saveEntry = vi.fn()
+
+    render(
+      <DailyLogPanel
+        selectedDate="2026-05-14"
+        entryDraft={{
+          date: '2026-05-14',
+          weight: '',
+          calories: '',
+          steps: '',
+          exercise: '',
+        }}
+        isSavingEntry={false}
+        activeDays={3}
+        exerciseDays={2}
+        setSelectedDate={setSelectedDate}
+        updateEntryDraftField={updateEntryDraftField}
+        saveEntry={saveEntry}
+      />
+    )
+
+    fireEvent.change(screen.getByLabelText(/^Date$/i), {
+      target: { value: '2026-05-12' },
+    })
+    fireEvent.change(screen.getByLabelText(/^Weight$/i), {
+      target: { value: '72.4' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('40 min incline walk'), {
+      target: { value: 'Incline walk' },
+    })
+    await user.click(screen.getByRole('button', { name: /save day/i }))
+
+    expect(setSelectedDate).toHaveBeenCalledWith('2026-05-12')
+    expect(updateEntryDraftField).toHaveBeenCalledWith('weight', '72.4')
+    expect(updateEntryDraftField).toHaveBeenCalledWith('exercise', 'Incline walk')
+    expect(saveEntry).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows the saving state on submit button', () => {
+    render(
+      <DailyLogPanel
+        selectedDate="2026-05-14"
+        entryDraft={{
+          date: '2026-05-14',
+          weight: '',
+          calories: '',
+          steps: '',
+          exercise: '',
+        }}
+        isSavingEntry={true}
+        activeDays={0}
+        exerciseDays={0}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /saving/i })).toBeDisabled()
+  })
+})
