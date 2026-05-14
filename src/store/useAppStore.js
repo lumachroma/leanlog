@@ -12,18 +12,6 @@ import {
 
 const createDefaultSettings = () => ({ ...DEFAULT_SETTINGS })
 
-const sortEntriesDescending = (entries) =>
-  [...entries].sort((left, right) => right.date.localeCompare(left.date))
-
-const replaceEntry = (entries, nextEntry) =>
-  sortEntriesDescending([
-    nextEntry,
-    ...entries.filter((entry) => entry.date !== nextEntry.date),
-  ])
-
-const removeEntry = (entries, date) =>
-  entries.filter((entry) => entry.date !== date)
-
 const draftForDate = (entries, date) => {
   const matchingEntry = entries.find((entry) => entry.date === date)
 
@@ -121,15 +109,11 @@ export const useAppStore = create((set, get) => ({
     set({ isSavingEntry: true, errorMessage: null })
 
     try {
-      const savedEntry = await upsertEntryRecord(draft)
+      const entries = await upsertEntryRecord(draft)
 
-      set((state) => ({
-        entries: savedEntry
-          ? replaceEntry(state.entries, savedEntry)
-          : removeEntry(state.entries, selectedDate),
-        entryDraft: savedEntry
-          ? { ...savedEntry }
-          : createEmptyEntryDraft(selectedDate),
+      set(() => ({
+        entries,
+        entryDraft: draftForDate(entries, selectedDate),
         isSavingEntry: false,
       }))
     } catch {
@@ -144,10 +128,10 @@ export const useAppStore = create((set, get) => ({
     set({ isSavingEntry: true, errorMessage: null })
 
     try {
-      await deleteEntryRecord(date)
+      const entries = await deleteEntryRecord(date)
 
       set((state) => ({
-        entries: removeEntry(state.entries, date),
+        entries,
         entryDraft:
           state.selectedDate === date
             ? createEmptyEntryDraft(state.selectedDate)

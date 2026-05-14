@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
 
 import { AppLoadingState } from '@/components/app/AppLoadingState'
+import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
 import { AppHeader } from '@/components/app/AppHeader'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { AppShell } from '@/components/app/AppShell'
 import { DashboardSection } from '@/components/app/DashboardSection'
 import { SettingsPage } from '@/components/app/SettingsPage'
+import { WeeklyAveragesPage } from '@/components/app/WeeklyAveragesPage'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
 
 const PAGE_STORAGE_KEY = 'leanlog.active-page'
-const VALID_PAGES = new Set(['dashboard', 'history', 'settings'])
+const VALID_PAGES = new Set([
+  'dashboard',
+  'weekly-averages',
+  'monthly-averages',
+  'history',
+  'settings',
+])
 
 const readPersistedPage = () => {
   if (typeof window === 'undefined') {
@@ -36,9 +44,8 @@ function App() {
     isSavingEntry,
     errorMessage,
     metrics,
-    monthlyCards,
-    calorieDelta,
-    stepDelta,
+    weeklyAverageCards,
+    monthlyAverageCards,
     goalDistance,
     updateSettingsField,
     saveSettings,
@@ -84,6 +91,10 @@ function App() {
           saveEntry={saveEntry}
           deleteEntry={deleteEntry}
         />
+      ) : activePage === 'weekly-averages' ? (
+        <WeeklyAveragesPage weeklyAverageCards={weeklyAverageCards} />
+      ) : activePage === 'monthly-averages' ? (
+        <MonthlyAveragesPage monthlyAverageCards={monthlyAverageCards} />
       ) : activePage === 'settings' ? (
         <SettingsPage
           settings={settings}
@@ -95,9 +106,6 @@ function App() {
         <main className="py-8 xl:py-10">
           <DashboardSection
             metrics={metrics}
-            monthlyCards={monthlyCards}
-            calorieDelta={calorieDelta}
-            stepDelta={stepDelta}
             goalDistance={goalDistance}
             targetsConfigured={targetsConfigured}
             onOpenSettings={() => setActivePage('settings')}

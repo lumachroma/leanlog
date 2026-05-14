@@ -22,6 +22,7 @@ describe('useAppViewModel', () => {
         {
           date: '2026-05-14',
           weight: '80',
+          weight7dma: 79.5,
           calories: '1900',
           steps: '9000',
           exerciseType: 'Walking',
@@ -30,6 +31,7 @@ describe('useAppViewModel', () => {
         {
           date: '2026-05-13',
           weight: '81',
+          weight7dma: 81,
           calories: '2100',
           steps: '7000',
           exerciseType: '',
@@ -40,6 +42,7 @@ describe('useAppViewModel', () => {
       entryDraft: {
         date: '2026-05-14',
         weight: '80',
+        weight7dma: 79.5,
         calories: '1900',
         steps: '9000',
         exerciseType: 'Walking',
@@ -70,17 +73,19 @@ describe('useAppViewModel', () => {
     })
 
     expect(result.current.metrics.latestWeight).toBe(80)
+    expect(result.current.metrics.latestWeight7dma).toBe(79.5)
     expect(result.current.metrics.weightDelta).toBe(-5)
     expect(result.current.metrics.goalProgressPercent).toBe(38)
-    expect(result.current.calorieDelta).toBe(0)
-    expect(result.current.stepDelta).toBe(0)
     expect(result.current.goalDistance).toBe(8)
-    expect(result.current.monthlyCards).toHaveLength(1)
-    expect(result.current.monthlyCards[0].daysLogged).toBe(2)
+    expect(result.current.weeklyAverageCards).toHaveLength(1)
+    expect(result.current.weeklyAverageCards[0].daysLogged).toBe(2)
+    expect(result.current.monthlyAverageCards).toHaveLength(1)
+    expect(result.current.monthlyAverageCards[0].daysLogged).toBe(2)
     expect(result.current.chartSeries.weightTrend).toEqual([
       {
         date: '2026-05-13',
         weight: 81,
+        weight7dma: 81,
         calories: 2100,
         steps: 7000,
         exerciseType: null,
@@ -89,6 +94,7 @@ describe('useAppViewModel', () => {
       {
         date: '2026-05-14',
         weight: 80,
+        weight7dma: 79.5,
         calories: 1900,
         steps: 9000,
         exerciseType: 'Walking',

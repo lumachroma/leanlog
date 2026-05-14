@@ -32,7 +32,34 @@ export const createEmptyEntryDraft = (date = todayDate()) => ({
   steps: '',
   exerciseType: '',
   exerciseMinutes: '',
+  weight7dma: null,
 })
+
+const parseNumber = (value) => {
+  if (value === '' || value === null || value === undefined) {
+    return null
+  }
+
+  const parsedValue = Number(value)
+  return Number.isFinite(parsedValue) ? parsedValue : null
+}
+
+const toDateAtMidnight = (date) => new Date(`${date}T00:00:00`)
+
+const addDays = (date, days) => {
+  const nextDate = new Date(toDateAtMidnight(date))
+  nextDate.setDate(nextDate.getDate() + days)
+  return toDateInputValue(nextDate)
+}
+
+const average = (values) => {
+  if (!values.length) {
+    return null
+  }
+
+  const total = values.reduce((sum, value) => sum + value, 0)
+  return Number((total / values.length).toFixed(2))
+}
 
 const sanitizeSettings = (settings = DEFAULT_SETTINGS) => ({
   startWeight: settings.startWeight ?? '',
@@ -48,6 +75,7 @@ const sanitizeEntry = (entry) => ({
   steps: entry.steps ?? '',
   exerciseType: entry.exerciseType ?? '',
   exerciseMinutes: entry.exerciseMinutes ?? '',
+  weight7dma: entry.weight7dma ?? null,
 })
 
 const normalizeEntryRecord = (entry) => ({
@@ -62,6 +90,25 @@ export const isEntryEmpty = (entry) =>
   !entry.steps?.trim() &&
   !entry.exerciseType?.trim() &&
   !entry.exerciseMinutes?.trim()
+
+export const recalculateMovingAverageEntries = (entries) => {
+  const sortedEntries = [...entries]
+    .map(sanitizeEntry)
+    .sort((left, right) => left.date.localeCompare(right.date))
+
+  return sortedEntries.map((entry) => {
+    const windowStart = addDays(entry.date, -6)
+    const trailingWeights = sortedEntries
+      .filter((candidate) => candidate.date >= windowStart && candidate.date <= entry.date)
+      .map((candidate) => parseNumber(candidate.weight))
+      .filter((value) => value !== null)
+
+    return normalizeEntryRecord({
+      ...entry,
+      weight7dma: average(trailingWeights),
+    })
+  })
+}
 
 class LeanlogDatabase extends Dexie {
   constructor() {
@@ -103,18 +150,38 @@ export async function saveSettingsSnapshot(settings) {
   return values
 }
 
+async function persistEntries(entries) {
+  const recalculatedEntries = recalculateMovingAverageEntries(entries)
+
+  await db.transaction('rw', entriesTable, async () => {
+    await entriesTable.clear()
+
+    if (recalculatedEntries.length) {
+      await entriesTable.bulkPut(recalculatedEntries)
+    }
+  })
+
+  return recalculatedEntries
+    .map(sanitizeEntry)
+    .sort((left, right) => right.date.localeCompare(left.date))
+}
+
 export async function upsertEntryRecord(entry) {
   const normalizedEntry = sanitizeEntry(entry)
+  const currentEntries = await entriesTable.toArray()
+  const nextEntries = isEntryEmpty(normalizedEntry)
+    ? currentEntries.filter((currentEntry) => currentEntry.date !== normalizedEntry.date)
+    : [
+        ...currentEntries.filter((currentEntry) => currentEntry.date !== normalizedEntry.date),
+        normalizedEntry,
+      ]
 
-  if (isEntryEmpty(normalizedEntry)) {
-    await entriesTable.delete(normalizedEntry.date)
-    return null
-  }
-
-  await entriesTable.put(normalizeEntryRecord(normalizedEntry))
-  return normalizedEntry
+  return persistEntries(nextEntries)
 }
 
 export async function deleteEntryRecord(date) {
-  await entriesTable.delete(date)
+  const currentEntries = await entriesTable.toArray()
+  const nextEntries = currentEntries.filter((entry) => entry.date !== date)
+
+  return persistEntries(nextEntries)
 }

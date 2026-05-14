@@ -22,6 +22,7 @@ describe('App', () => {
       {
         date: '2026-05-14',
         weight: '80',
+        weight7dma: 79.5,
         calories: '1900',
         steps: '9000',
         exerciseType: 'Walking',
@@ -32,6 +33,7 @@ describe('App', () => {
     entryDraft: {
       date: '2026-05-14',
       weight: '80',
+      weight7dma: 79.5,
       calories: '1900',
       steps: '9000',
       exerciseType: 'Walking',
@@ -43,6 +45,7 @@ describe('App', () => {
     errorMessage: null,
     metrics: {
       latestWeight: 80,
+      latestWeight7dma: 79.5,
       weightDelta: -5,
       goalProgressPercent: 38,
       calorieAverage: 2000,
@@ -50,24 +53,33 @@ describe('App', () => {
       activeDays: 2,
       exerciseDays: 1,
     },
-    monthlyCards: [
+    weeklyAverageCards: [
       {
-        monthKey: '2026-05',
+        periodKey: '2026-05-11',
+        label: 'Week of May 11, 2026',
+        daysLogged: 2,
+        exerciseDays: 1,
+        weightAverage: 80,
+        calorieAverage: 2000,
+        stepAverage: 8000,
+      },
+    ],
+    monthlyAverageCards: [
+      {
+        periodKey: '2026-05',
         label: 'May 2026',
         daysLogged: 2,
         exerciseDays: 1,
-        latestWeight: 80,
+        weightAverage: 80,
         calorieAverage: 2000,
         stepAverage: 8000,
       },
     ],
     chartSeries: {
-      weightTrend: [{ date: '2026-05-14', weight: 80 }],
+      weightTrend: [{ date: '2026-05-14', weight: 80, weight7dma: 79.5 }],
       calorieTrend: [{ date: '2026-05-14', calories: 1900 }],
       stepTrend: [{ date: '2026-05-14', steps: 9000 }],
     },
-    calorieDelta: 0,
-    stepDelta: 0,
     goalDistance: 8,
     updateSettingsField: vi.fn(),
     saveSettings: vi.fn(),
@@ -103,10 +115,32 @@ describe('App', () => {
 
     expect(screen.getByText(/calm daily tracking, stored locally first/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
-    expect(screen.getByText(/one month at a glance/i)).toBeInTheDocument()
+    expect(screen.getByText(/^7dma$/i)).toBeInTheDocument()
     expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
     expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
+  })
+
+  it('switches to the weekly averages page from the header navigation', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /weekly avg/i }))
+
+    expect(screen.getByText(/weekly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/week of may 11, 2026/i)).toBeInTheDocument()
+  })
+
+  it('switches to the monthly averages page from the header navigation', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /monthly avg/i }))
+
+    expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/^may 2026$/i)).toBeInTheDocument()
   })
 
   it('switches to the history page from the header navigation', async () => {
@@ -130,16 +164,16 @@ describe('App', () => {
 
     expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
     expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
-    expect(screen.queryByText(/one month at a glance/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/weekly calories, steps, and weight averages/i)).not.toBeInTheDocument()
   })
 
   it('restores the last active page from local storage', () => {
-    window.localStorage.setItem('leanlog.active-page', 'settings')
+    window.localStorage.setItem('leanlog.active-page', 'monthly-averages')
 
     render(<App />)
 
-    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
-    expect(screen.queryByText(/one month at a glance/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.queryByText(/^7dma$/i)).not.toBeInTheDocument()
   })
 
   it('shows a dashboard CTA when targets are missing and opens settings from it', async () => {

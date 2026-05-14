@@ -11,13 +11,12 @@ function AppHeader({ activePage, onPageChange }) {
           Calm daily tracking, stored locally first.
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-          Track weight, calories, steps, and exercise details. Configure your targets
-          once, log one day at a time, and keep iteration 2 open for charts, sync,
-          and mobile.
+          Track weight, a forgiving 7DMA trend, calories, steps, and exercise
+          details. Missed entries do not break the trend.
         </p>
       </div>
       <div className="flex flex-col items-start gap-3 sm:items-end">
-        <div className="inline-flex rounded-full border border-border/80 bg-background/90 p-1 shadow-sm">
+        <div className="flex flex-wrap rounded-full border border-border/80 bg-background/90 p-1 shadow-sm">
           <Button
             type="button"
             size="sm"
@@ -26,6 +25,24 @@ function AppHeader({ activePage, onPageChange }) {
             aria-pressed={activePage === 'dashboard'}
           >
             Dashboard
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={activePage === 'weekly-averages' ? 'default' : 'ghost'}
+            onClick={() => onPageChange('weekly-averages')}
+            aria-pressed={activePage === 'weekly-averages'}
+          >
+            Weekly Avg
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={activePage === 'monthly-averages' ? 'default' : 'ghost'}
+            onClick={() => onPageChange('monthly-averages')}
+            aria-pressed={activePage === 'monthly-averages'}
+          >
+            Monthly Avg
           </Button>
           <Button
             type="button"

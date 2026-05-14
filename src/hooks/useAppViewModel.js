@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 import {
   getChartSeries,
   getDashboardMetrics,
-  getMonthlyCards,
+  getMonthlyAverageCards,
+  getWeeklyAverageCards,
   toNumber,
 } from '@/lib/metrics'
 import { useAppStore } from '@/store/useAppStore'
@@ -30,11 +31,10 @@ export function useAppViewModel() {
   }, [hydrateApp])
 
   const metrics = getDashboardMetrics(entries, settings)
-  const monthlyCards = getMonthlyCards(entries)
+  const weeklyAverageCards = getWeeklyAverageCards(entries)
+  const monthlyAverageCards = getMonthlyAverageCards(entries)
   const chartSeries = getChartSeries(entries)
   const goalWeight = toNumber(settings.goalWeight)
-  const dailyCalorieTarget = toNumber(settings.dailyCalorieTarget)
-  const dailyStepTarget = toNumber(settings.dailyStepTarget)
 
   return {
     settings,
@@ -46,16 +46,9 @@ export function useAppViewModel() {
     isSavingEntry,
     errorMessage,
     metrics,
-    monthlyCards,
+    weeklyAverageCards,
+    monthlyAverageCards,
     chartSeries,
-    calorieDelta:
-      metrics.calorieAverage !== null && dailyCalorieTarget !== null
-        ? Math.round(metrics.calorieAverage - dailyCalorieTarget)
-        : null,
-    stepDelta:
-      metrics.stepAverage !== null && dailyStepTarget !== null
-        ? Math.round(metrics.stepAverage - dailyStepTarget)
-        : null,
     goalDistance:
       metrics.latestWeight !== null && goalWeight !== null
         ? Math.abs(metrics.latestWeight - goalWeight)

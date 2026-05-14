@@ -22,6 +22,24 @@ const formatMonthLabel = (monthKey) =>
     year: 'numeric',
   }).format(new Date(`${monthKey}-01T00:00:00`))
 
+const formatWeekLabel = (weekStart) =>
+  `Week of ${new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(`${weekStart}T00:00:00`))}`
+
+const getWeekStart = (date) => {
+  const nextDate = new Date(`${date}T00:00:00`)
+  const dayOfWeek = nextDate.getDay()
+  const offset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+
+  nextDate.setDate(nextDate.getDate() + offset)
+
+  const timezoneOffsetInMs = nextDate.getTimezoneOffset() * 60_000
+  return new Date(nextDate.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
+}
+
 const hasExercise = (entry) =>
   Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
 
@@ -45,10 +63,30 @@ const getGoalProgressPercent = (startWeight, goalWeight, latestWeight) => {
 const asChartPoint = (entry) => ({
   date: entry.date,
   weight: parseNumber(entry.weight),
+  weight7dma: entry.weight7dma,
   calories: parseNumber(entry.calories),
   steps: parseNumber(entry.steps),
   exerciseType: entry.exerciseType?.trim() || null,
   exerciseMinutes: parseNumber(entry.exerciseMinutes),
+})
+
+const createPeriodSummary = (periodKey) => ({
+  periodKey,
+  daysLogged: 0,
+  exerciseDays: 0,
+  weightValues: [],
+  calorieValues: [],
+  stepValues: [],
+})
+
+const toAverageCard = (summary, label) => ({
+  periodKey: summary.periodKey,
+  label,
+  daysLogged: summary.daysLogged,
+  exerciseDays: summary.exerciseDays,
+  weightAverage: average(summary.weightValues),
+  calorieAverage: average(summary.calorieValues),
+  stepAverage: average(summary.stepValues),
 })
 
 export const toNumber = parseNumber
@@ -56,6 +94,7 @@ export const toNumber = parseNumber
 export function getDashboardMetrics(entries, settings) {
   const latestWeightEntry = entries.find((entry) => parseNumber(entry.weight) !== null)
   const latestWeight = parseNumber(latestWeightEntry?.weight)
+  const latestMovingAverageEntry = entries.find((entry) => entry.weight7dma !== null)
   const baselineWeight =
     parseNumber(settings.startWeight) ??
     parseNumber(entries.findLast((entry) => parseNumber(entry.weight) !== null)?.weight)
@@ -63,6 +102,7 @@ export function getDashboardMetrics(entries, settings) {
 
   return {
     latestWeight,
+    latestWeight7dma: latestMovingAverageEntry?.weight7dma ?? null,
     weightDelta:
       latestWeight !== null && baselineWeight !== null
         ? latestWeight - baselineWeight
@@ -85,19 +125,48 @@ export function getDashboardMetrics(entries, settings) {
   }
 }
 
-export function getMonthlyCards(entries) {
+export function getWeeklyAverageCards(entries) {
+  const weeklyMap = new Map()
+
+  entries.forEach((entry) => {
+    const periodKey = getWeekStart(entry.date)
+    const summary = weeklyMap.get(periodKey) ?? createPeriodSummary(periodKey)
+    const weight = parseNumber(entry.weight)
+    const calories = parseNumber(entry.calories)
+    const steps = parseNumber(entry.steps)
+
+    summary.daysLogged += 1
+
+    if (hasExercise(entry)) {
+      summary.exerciseDays += 1
+    }
+
+    if (weight !== null) {
+      summary.weightValues.push(weight)
+    }
+
+    if (calories !== null) {
+      summary.calorieValues.push(calories)
+    }
+
+    if (steps !== null) {
+      summary.stepValues.push(steps)
+    }
+
+    weeklyMap.set(periodKey, summary)
+  })
+
+  return [...weeklyMap.values()]
+    .sort((left, right) => right.periodKey.localeCompare(left.periodKey))
+    .map((summary) => toAverageCard(summary, formatWeekLabel(summary.periodKey)))
+}
+
+export function getMonthlyAverageCards(entries) {
   const monthlyMap = new Map()
 
   entries.forEach((entry) => {
-    const monthKey = entry.date.slice(0, 7)
-    const summary = monthlyMap.get(monthKey) ?? {
-      monthKey,
-      daysLogged: 0,
-      exerciseDays: 0,
-      latestWeight: null,
-      calorieValues: [],
-      stepValues: [],
-    }
+    const periodKey = entry.date.slice(0, 7)
+    const summary = monthlyMap.get(periodKey) ?? createPeriodSummary(periodKey)
 
     const weight = parseNumber(entry.weight)
     const calories = parseNumber(entry.calories)
@@ -109,8 +178,8 @@ export function getMonthlyCards(entries) {
       summary.exerciseDays += 1
     }
 
-    if (summary.latestWeight === null && weight !== null) {
-      summary.latestWeight = weight
+    if (weight !== null) {
+      summary.weightValues.push(weight)
     }
 
     if (calories !== null) {
@@ -121,20 +190,12 @@ export function getMonthlyCards(entries) {
       summary.stepValues.push(steps)
     }
 
-    monthlyMap.set(monthKey, summary)
+    monthlyMap.set(periodKey, summary)
   })
 
   return [...monthlyMap.values()]
-    .sort((left, right) => right.monthKey.localeCompare(left.monthKey))
-    .map((summary) => ({
-      monthKey: summary.monthKey,
-      label: formatMonthLabel(summary.monthKey),
-      daysLogged: summary.daysLogged,
-      exerciseDays: summary.exerciseDays,
-      latestWeight: summary.latestWeight,
-      calorieAverage: average(summary.calorieValues),
-      stepAverage: average(summary.stepValues),
-    }))
+    .sort((left, right) => right.periodKey.localeCompare(left.periodKey))
+    .map((summary) => toAverageCard(summary, formatMonthLabel(summary.periodKey)))
 }
 
 export function getChartSeries(entries) {
