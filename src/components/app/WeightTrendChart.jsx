@@ -1,11 +1,12 @@
-const CHART_WIDTH = 720
-const CHART_HEIGHT = 320
-const CHART_PADDING = {
-  top: 20,
-  right: 20,
-  bottom: 36,
-  left: 20,
-}
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -47,53 +48,26 @@ const getChartDomain = (points) => {
   }
 }
 
-const toChartPoints = (points, domain) => {
-  const innerWidth = CHART_WIDTH - CHART_PADDING.left - CHART_PADDING.right
-  const innerHeight = CHART_HEIGHT - CHART_PADDING.top - CHART_PADDING.bottom
+function CustomTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) {
+    return null
+  }
 
-  return points.map((point, index) => {
-    const x =
-      points.length === 1
-        ? CHART_PADDING.left + innerWidth / 2
-        : CHART_PADDING.left + (index / (points.length - 1)) * innerWidth
+  const dailyWeight = payload.find((item) => item.dataKey === 'weight')?.value ?? null
+  const movingAverageWeight =
+    payload.find((item) => item.dataKey === 'weight7dma')?.value ?? null
 
-    const mapY = (value) => {
-      if (value === null) {
-        return null
-      }
-
-      return (
-        CHART_PADDING.top +
-        ((domain.max - value) / (domain.max - domain.min)) * innerHeight
-      )
-    }
-
-    return {
-      ...point,
-      x,
-      dailyY: mapY(point.weight),
-      movingAverageY: mapY(point.weight7dma),
-    }
-  })
-}
-
-const buildLinePath = (points, yKey) => {
-  let path = ''
-  let hasOpenSegment = false
-
-  points.forEach((point) => {
-    const y = point[yKey]
-
-    if (y === null) {
-      hasOpenSegment = false
-      return
-    }
-
-    path += `${hasOpenSegment ? 'L' : 'M'} ${point.x} ${y} `
-    hasOpenSegment = true
-  })
-
-  return path.trim()
+  return (
+    <div className="rounded-2xl border border-border/80 bg-background/95 px-4 py-3 shadow-sm backdrop-blur">
+      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        {formatDate(label)}
+      </p>
+      <div className="mt-2 space-y-1.5 text-sm">
+        <p className="text-foreground/70">Daily: <span className="font-medium text-foreground">{formatWeight(dailyWeight)}</span></p>
+        <p className="text-foreground/70">7DMA: <span className="font-medium text-foreground">{formatWeight(movingAverageWeight)}</span></p>
+      </div>
+    </div>
+  )
 }
 
 function WeightTrendChart({ points }) {
@@ -117,16 +91,10 @@ function WeightTrendChart({ points }) {
     )
   }
 
-  const chartPoints = toChartPoints(points, domain)
-  const dailyPath = buildLinePath(chartPoints, 'dailyY')
-  const movingAveragePath = buildLinePath(chartPoints, 'movingAverageY')
   const latestDailyPoint = [...points].reverse().find((point) => point.weight !== null)
   const latestMovingAveragePoint = [...points]
     .reverse()
     .find((point) => point.weight7dma !== null)
-  const firstPoint = points[0]
-  const middlePoint = points[Math.floor((points.length - 1) / 2)]
-  const lastPoint = points[points.length - 1]
 
   return (
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
@@ -172,82 +140,51 @@ function WeightTrendChart({ points }) {
         </div>
 
         <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:p-4">
-          <svg
-            viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
-            className="h-[18rem] w-full"
+          <div
+            className="w-full"
             role="img"
             aria-label="Weight trend chart with daily weight and seven day moving average"
           >
-            {[0.2, 0.5, 0.8].map((ratio) => {
-              const y =
-                CHART_PADDING.top +
-                ratio * (CHART_HEIGHT - CHART_PADDING.top - CHART_PADDING.bottom)
-
-              return (
-                <line
-                  key={ratio}
-                  x1={CHART_PADDING.left}
-                  y1={y}
-                  x2={CHART_WIDTH - CHART_PADDING.right}
-                  y2={y}
-                  className="stroke-border/70"
-                  strokeDasharray="6 8"
+            <ResponsiveContainer width="100%" height={288} minWidth={0}>
+              <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: -18 }}>
+                <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  minTickGap={24}
+                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: 12 }}
+                  tickFormatter={formatDate}
                 />
-              )
-            })}
-
-            {movingAveragePath ? (
-              <path
-                d={movingAveragePath}
-                fill="none"
-                className="stroke-foreground"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ) : null}
-
-            {dailyPath ? (
-              <path
-                d={dailyPath}
-                fill="none"
-                className="stroke-foreground/35"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            ) : null}
-
-            {chartPoints
-              .filter((point) => point.weight !== null && point.dailyY !== null)
-              .map((point) => (
-                <circle
-                  key={`daily-${point.date}`}
-                  cx={point.x}
-                  cy={point.dailyY}
-                  r="3.5"
-                  className="fill-background stroke-foreground/45"
-                  strokeWidth="2"
+                <YAxis
+                  domain={[domain.min, domain.max]}
+                  axisLine={false}
+                  tickLine={false}
+                  width={48}
+                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: 12 }}
+                  tickFormatter={(value) => weightFormatter.format(value)}
                 />
-              ))}
-
-            {chartPoints
-              .filter((point) => point.weight7dma !== null && point.movingAverageY !== null)
-              .map((point) => (
-                <circle
-                  key={`dma-${point.date}`}
-                  cx={point.x}
-                  cy={point.movingAverageY}
-                  r="2.5"
-                  className="fill-foreground"
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(15, 23, 42, 0.12)', strokeWidth: 1 }} />
+                <Line
+                  type="monotone"
+                  dataKey="weight"
+                  connectNulls={false}
+                  stroke="rgba(15, 23, 42, 0.35)"
+                  strokeWidth={2}
+                  dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: 'rgba(15, 23, 42, 0.45)' }}
+                  activeDot={{ r: 4 }}
                 />
-              ))}
-          </svg>
-
-          <div className="mt-3 grid grid-cols-3 gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            <span>{formatDate(firstPoint.date)}</span>
-            <span className="text-center">{formatDate(middlePoint.date)}</span>
-            <span className="text-right">{formatDate(lastPoint.date)}</span>
+                <Line
+                  type="monotone"
+                  dataKey="weight7dma"
+                  connectNulls={true}
+                  stroke="rgb(15, 23, 42)"
+                  strokeWidth={4}
+                  dot={{ r: 2.5, strokeWidth: 0, fill: 'rgb(15, 23, 42)' }}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

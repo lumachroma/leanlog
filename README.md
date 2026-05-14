@@ -1,12 +1,12 @@
 # Leanlog
 
-Leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review. It is intended to be sustainable, scalable, psychologically lightweight, and strong enough for serious long-term fat-loss work. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, forgiving dashboard trends, weekly and monthly averages, and goal settings.
+Leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review. It is intended to be sustainable, scalable, psychologically lightweight, and strong enough for serious long-term fat-loss work. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, forgiving dashboard trends, a Recharts-based weight trend chart, weekly and monthly averages, and goal settings.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
 
 ## Features
 
-- Dashboard with weight trend context, 7DMA, calorie average, step average, and goal progress
+- Dashboard with weight trend context, 7DMA, calorie average, step average, goal progress, and a Recharts weight trend chart
 - Daily history page for creating, editing, and deleting log entries
 - Weekly and monthly average pages for longer-view summaries
 - Settings page for start weight, goal weight, daily calorie target, and daily step target
@@ -23,6 +23,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 - shadcn/ui
 - Zustand for app state
 - Dexie for IndexedDB persistence
+- Recharts for line charts
 - Vitest and Testing Library
 - ESLint
 
@@ -91,6 +92,7 @@ Current Iteration 1 scope:
 
 - Track daily weight, calories, steps, and exercise
 - Show a focused dashboard instead of a dense analytics surface
+- Use 7DMA and a dual-line weight chart to keep the trend emotionally calm and readable
 - Keep the experience local-first and fast
 - Keep formulas and summaries forgiving so missed days do not break trends or punish the user
 - Preserve a data model that can evolve later for sync and richer visualizations
@@ -121,6 +123,7 @@ Key files:
 - `src/store/useAppStore.js`: Zustand store and app actions
 - `src/hooks/useAppViewModel.js`: App-facing view-model logic
 - `src/lib/metrics.js`: Dashboard calculations and chart-ready selectors
+- `src/components/app/WeightTrendChart.jsx`: Recharts-backed dual-line weight chart
 - `src/App.jsx`: Top-level page composition and local page persistence
 
 ## Data Persistence

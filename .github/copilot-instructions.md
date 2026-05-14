@@ -10,13 +10,14 @@
 ## Iteration 1 Scope
 
 - Track only daily weight, calories, steps, and exercise.
-- Show only weight trend, calorie average, step average, and monthly cards.
+- Show a focused dashboard with weight trend, 7DMA, calorie average, step average, goal progress, and a weight trend chart.
+- Include dedicated weekly and monthly average pages for longer-view summaries.
 - Include a settings flow for start weight, goal weight, daily calorie target, and daily step target.
 - Prioritize local-first behavior with IndexedDB.
 
 ## Iteration 2 Boundary
 
-- Keep the current data model compatible with future Dexie Cloud sync, Recharts visualizations, Capacitor, and broader test coverage.
+- Keep the current data model compatible with future Dexie Cloud sync, Capacitor, and broader test coverage.
 - Do not add iteration 2 dependencies or UI complexity unless explicitly requested.
 
 ## Stack And Conventions
@@ -25,6 +26,7 @@
 - Use Tailwind CSS v4 for styling.
 - Use shadcn/ui components and preserve the existing styling direction.
 - Use Zustand for app state and Dexie for local persistence.
+- Use Recharts for chart rendering.
 - Use the `@` import alias for `src` paths.
 
 ## Current Architecture
@@ -33,6 +35,7 @@
 - Zustand store lives in `src/store/useAppStore.js`.
 - App view-model logic lives in `src/hooks/useAppViewModel.js`.
 - Dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
+- Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`.
 - App composition is split into focused components under `src/components/app`.
 
 ## Implementation Guidance
