@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { AppHeader } from '@/components/app/AppHeader'
@@ -8,8 +8,23 @@ import { DashboardSection } from '@/components/app/DashboardSection'
 import { SettingsPage } from '@/components/app/SettingsPage'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
 
+const PAGE_STORAGE_KEY = 'leanlog.active-page'
+const VALID_PAGES = new Set(['dashboard', 'history', 'settings'])
+
+const readPersistedPage = () => {
+  if (typeof window === 'undefined') {
+    return 'dashboard'
+  }
+
+  const persistedPage = window.localStorage.getItem(PAGE_STORAGE_KEY)
+
+  return VALID_PAGES.has(persistedPage) ? persistedPage : 'dashboard'
+}
+
+const hasValue = (value) => String(value ?? '').trim().length > 0
+
 function App() {
-  const [activePage, setActivePage] = useState('dashboard')
+  const [activePage, setActivePage] = useState(readPersistedPage)
 
   const {
     settings,
@@ -32,6 +47,17 @@ function App() {
     saveEntry,
     deleteEntry,
   } = useAppViewModel()
+
+  useEffect(() => {
+    window.localStorage.setItem(PAGE_STORAGE_KEY, activePage)
+  }, [activePage])
+
+  const targetsConfigured = [
+    settings.startWeight,
+    settings.goalWeight,
+    settings.dailyCalorieTarget,
+    settings.dailyStepTarget,
+  ].every(hasValue)
 
   if (!isHydrated) {
     return <AppLoadingState />
@@ -73,6 +99,8 @@ function App() {
             calorieDelta={calorieDelta}
             stepDelta={stepDelta}
             goalDistance={goalDistance}
+            targetsConfigured={targetsConfigured}
+            onOpenSettings={() => setActivePage('settings')}
           />
         </main>
       )}

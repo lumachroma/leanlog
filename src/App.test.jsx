@@ -75,6 +75,7 @@ describe('App', () => {
   }
 
   beforeEach(() => {
+    window.localStorage.clear()
     mockUseAppViewModel.mockReturnValue(baseViewModel)
   })
 
@@ -126,5 +127,36 @@ describe('App', () => {
     expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
     expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
     expect(screen.queryByText(/one month at a glance/i)).not.toBeInTheDocument()
+  })
+
+  it('restores the last active page from local storage', () => {
+    window.localStorage.setItem('leanlog.active-page', 'settings')
+
+    render(<App />)
+
+    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
+    expect(screen.queryByText(/one month at a glance/i)).not.toBeInTheDocument()
+  })
+
+  it('shows a dashboard CTA when targets are missing and opens settings from it', async () => {
+    const user = userEvent.setup()
+
+    mockUseAppViewModel.mockReturnValue({
+      ...baseViewModel,
+      settings: {
+        startWeight: '',
+        goalWeight: '',
+        dailyCalorieTarget: '',
+        dailyStepTarget: '',
+      },
+    })
+
+    render(<App />)
+
+    expect(screen.getByText(/add your targets to make the dashboard more useful/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /open settings/i }))
+
+    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
   })
 })

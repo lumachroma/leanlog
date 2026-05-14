@@ -1,5 +1,7 @@
 import { CalendarDays, Flame, Footprints, Scale } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
+
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
     <article className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur">
@@ -53,9 +55,33 @@ function DashboardSection({
   calorieDelta,
   stepDelta,
   goalDistance,
+  targetsConfigured,
+  onOpenSettings,
 }) {
   return (
     <section className="space-y-6">
+      {!targetsConfigured ? (
+        <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                Setup
+              </p>
+              <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+                Add your targets to make the dashboard more useful.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
+                Start weight, goal weight, calorie target, and step target help the
+                summaries explain your daily trend instead of only showing raw numbers.
+              </p>
+            </div>
+            <Button type="button" onClick={onOpenSettings}>
+              Open settings
+            </Button>
+          </div>
+        </section>
+      ) : null}
+
       <div className="grid gap-4 md:grid-cols-3">
         <MetricCard
           icon={Scale}
