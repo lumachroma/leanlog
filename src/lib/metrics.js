@@ -22,6 +22,14 @@ const formatMonthLabel = (monthKey) =>
     year: 'numeric',
   }).format(new Date(`${monthKey}-01T00:00:00`))
 
+const asChartPoint = (entry) => ({
+  date: entry.date,
+  weight: parseNumber(entry.weight),
+  calories: parseNumber(entry.calories),
+  steps: parseNumber(entry.steps),
+  exercise: entry.exercise.trim() || null,
+})
+
 export const toNumber = parseNumber
 
 export function getDashboardMetrics(entries, settings) {
@@ -100,4 +108,22 @@ export function getMonthlyCards(entries) {
       calorieAverage: average(summary.calorieValues),
       stepAverage: average(summary.stepValues),
     }))
+}
+
+export function getChartSeries(entries) {
+  const orderedEntries = [...entries].sort((left, right) =>
+    left.date.localeCompare(right.date)
+  )
+
+  return {
+    weightTrend: orderedEntries
+      .filter((entry) => parseNumber(entry.weight) !== null)
+      .map(asChartPoint),
+    calorieTrend: orderedEntries
+      .filter((entry) => parseNumber(entry.calories) !== null)
+      .map(asChartPoint),
+    stepTrend: orderedEntries
+      .filter((entry) => parseNumber(entry.steps) !== null)
+      .map(asChartPoint),
+  }
 }

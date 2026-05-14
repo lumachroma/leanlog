@@ -72,6 +72,24 @@ describe('useAppViewModel', () => {
     expect(result.current.goalDistance).toBe(8)
     expect(result.current.monthlyCards).toHaveLength(1)
     expect(result.current.monthlyCards[0].daysLogged).toBe(2)
+    expect(result.current.chartSeries.weightTrend).toEqual([
+      {
+        date: '2026-05-13',
+        weight: 81,
+        calories: 2100,
+        steps: 7000,
+        exercise: null,
+      },
+      {
+        date: '2026-05-14',
+        weight: 80,
+        calories: 1900,
+        steps: 9000,
+        exercise: 'Incline walk',
+      },
+    ])
+    expect(result.current.chartSeries.calorieTrend).toHaveLength(2)
+    expect(result.current.chartSeries.stepTrend).toHaveLength(2)
   })
 
   it('passes through the store actions and current drafts', async () => {

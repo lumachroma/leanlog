@@ -1,6 +1,11 @@
 import { useEffect } from 'react'
 
-import { getDashboardMetrics, getMonthlyCards, toNumber } from '@/lib/metrics'
+import {
+  getChartSeries,
+  getDashboardMetrics,
+  getMonthlyCards,
+  toNumber,
+} from '@/lib/metrics'
 import { useAppStore } from '@/store/useAppStore'
 
 export function useAppViewModel() {
@@ -25,6 +30,7 @@ export function useAppViewModel() {
 
   const metrics = getDashboardMetrics(entries, settings)
   const monthlyCards = getMonthlyCards(entries)
+  const chartSeries = getChartSeries(entries)
   const goalWeight = toNumber(settings.goalWeight)
   const dailyCalorieTarget = toNumber(settings.dailyCalorieTarget)
   const dailyStepTarget = toNumber(settings.dailyStepTarget)
@@ -39,6 +45,7 @@ export function useAppViewModel() {
     errorMessage,
     metrics,
     monthlyCards,
+    chartSeries,
     calorieDelta:
       metrics.calorieAverage !== null && dailyCalorieTarget !== null
         ? Math.round(metrics.calorieAverage - dailyCalorieTarget)
