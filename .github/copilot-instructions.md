@@ -10,7 +10,9 @@
 ## Iteration 1 Scope
 
 - Track only daily weight, calories, steps, and exercise.
-- Show a focused dashboard with weight trend, 7-day moving average, calorie average, step average, goal progress, and a dual-line weight trend chart.
+- Show a focused dashboard with four sections: KPI cards, a main weight trend graph, consistency tracking, and a goal progress bar.
+- Use a dual-line weight trend chart for daily weight and 7-day moving average.
+- Visualize calorie and step consistency against targets without turning the product into accounting software.
 - Include dedicated weekly and monthly average pages for longer-view summaries.
 - Include a settings flow for start weight, goal weight, daily calorie target, and daily step target.
 - Prioritize local-first behavior with IndexedDB.
@@ -36,6 +38,8 @@
 - App view-model logic lives in `src/hooks/useAppViewModel.js`.
 - Dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
 - Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`.
+- Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`.
+- Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`.
 - App composition is split into focused components under `src/components/app`.
 
 ## Implementation Guidance
