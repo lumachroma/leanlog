@@ -36,7 +36,7 @@ function SettingsPanel({
       </div>
 
       <div className="mt-6 grid gap-4">
-        <Field label="Start weight">
+        <Field label="Start weight (kg)">
           <input
             type="number"
             step="0.1"
@@ -48,7 +48,7 @@ function SettingsPanel({
           />
         </Field>
 
-        <Field label="Goal weight">
+        <Field label="Goal weight (kg)">
           <input
             type="number"
             step="0.1"
@@ -60,7 +60,7 @@ function SettingsPanel({
           />
         </Field>
 
-        <Field label="Daily calorie target">
+        <Field label="Daily calorie target (kcal)">
           <input
             type="number"
             inputMode="numeric"
@@ -74,7 +74,7 @@ function SettingsPanel({
         </Field>
 
         <Field
-          label="Daily step target"
+          label="Daily step target (steps)"
           hint="These settings are stored locally in IndexedDB."
         >
           <input

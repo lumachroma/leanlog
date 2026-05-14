@@ -29,7 +29,7 @@ function SettingsPage({
             <SlidersHorizontal className="mt-1 size-4 text-muted-foreground" />
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <article className="rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
               <p className="text-sm text-muted-foreground">Start weight</p>
               <p className="mt-2 text-xl font-medium text-foreground">
@@ -43,11 +43,14 @@ function SettingsPage({
               </p>
             </article>
             <article className="rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
-              <p className="text-sm text-muted-foreground">Daily targets</p>
+              <p className="text-sm text-muted-foreground">Daily calorie targets</p>
               <p className="mt-2 text-xl font-medium text-foreground">
                 {settings.dailyCalorieTarget || '--'} kcal
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+            </article>
+            <article className="rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
+              <p className="text-sm text-muted-foreground">Daily step targets</p>
+              <p className="mt-2 text-xl font-medium text-foreground">
                 {settings.dailyStepTarget || '--'} steps
               </p>
             </article>
