@@ -122,14 +122,16 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(screen.getByText(/a calm fat-loss system built for real life/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/a personal weight-loss operating system built for real life/i)
+    ).toBeInTheDocument()
     expect(
       screen.getByText(/leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review/i)
     ).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(screen.getByText(/avg calories/i)).toBeInTheDocument()
     expect(screen.getByText(/avg steps/i)).toBeInTheDocument()
-    expect(screen.getByText(/^7dma$/i)).toBeInTheDocument()
+    expect(screen.getByText(/7-day moving average/i)).toBeInTheDocument()
     expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
     expect(screen.getByText(/weight trend chart/i)).toBeInTheDocument()
     expect(screen.getByText(/real-life weight, with calm built in/i)).toBeInTheDocument()
@@ -189,7 +191,7 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
-    expect(screen.queryByText(/^7dma$/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/7-day moving average/i)).not.toBeInTheDocument()
   })
 
   it('shows a dashboard CTA when targets are missing and opens settings from it', async () => {

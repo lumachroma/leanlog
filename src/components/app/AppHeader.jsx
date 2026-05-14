@@ -13,7 +13,7 @@ function AppHeader({ activePage, onPageChange }) {
           </span>
         </div>
         <h1 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.06em] text-balance sm:text-4xl xl:text-5xl">
-          A calm fat-loss system built for real life.
+          A personal weight-loss operating system built for real life.
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
           Leanlog is a calm, local-first weight loss tracker built for fast daily

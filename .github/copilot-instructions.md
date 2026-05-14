@@ -2,7 +2,7 @@
 
 ## Product Intent
 
-- Build a calm, minimal, fast, visual, rewarding weight-loss tracker.
+- Build a calm, minimal, fast, visual, rewarding personal weight-loss operating system.
 - Sustainable, scalable, psychologically lightweight, and powerful enough for serious transformation. Exactly what a long-term fat-loss system needs.
 - Avoid accounting-software complexity.
 - Keep the aesthetic close to minimal Apple Health + Notion.
@@ -10,7 +10,7 @@
 ## Iteration 1 Scope
 
 - Track only daily weight, calories, steps, and exercise.
-- Show a focused dashboard with weight trend, 7DMA, calorie average, step average, goal progress, and a weight trend chart.
+- Show a focused dashboard with weight trend, 7-day moving average, calorie average, step average, goal progress, and a dual-line weight trend chart.
 - Include dedicated weekly and monthly average pages for longer-view summaries.
 - Include a settings flow for start weight, goal weight, daily calorie target, and daily step target.
 - Prioritize local-first behavior with IndexedDB.

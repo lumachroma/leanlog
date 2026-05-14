@@ -99,12 +99,12 @@ function DashboardSection({
         />
         <MetricCard
           icon={Activity}
-          label="7DMA"
+          label="7-Day Moving Average"
           value={formatWeight(metrics.latestWeight7dma)}
           detail={
             metrics.latestWeight7dma === null
               ? '7-day moving average appears after saved weight entries. Missed days are ignored, not punished.'
-              : 'Smoothed weight trend across the trailing 7 days, ignoring blanks.'
+              : 'Smoothed weight trend across the trailing 7 days.'
           }
         />
         <MetricCard
