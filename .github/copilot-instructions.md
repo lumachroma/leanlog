@@ -3,6 +3,7 @@
 ## Product Intent
 
 - Build a calm, minimal, fast, visual, rewarding weight-loss tracker.
+- Sustainable, scalable, psychologically lightweight, and powerful enough for serious transformation. Exactly what a long-term fat-loss system needs.
 - Avoid accounting-software complexity.
 - Keep the aesthetic close to minimal Apple Health + Notion.
 
@@ -39,6 +40,8 @@
 - Prefer small, local refactors over broad rewrites.
 - Preserve the narrow product scope. Do not add extra health metrics, social features, gamification systems, auth, or analytics unless asked.
 - Keep forms and dashboard behavior local-first and fast.
+- Treat missing logs as normal. Every formula, derived metric, summary, and chart input must tolerate blanks without breaking, throwing errors, or punishing the user for skipped days.
+- Favor psychologically lightweight flows: forgiving defaults, low-friction logging, and summaries that continue working even when the user misses entries.
 - Favor simple data shapes that can evolve without breaking Dexie persistence.
 - When adding UI, preserve the existing spacing, tone, and minimal visual language.
 
