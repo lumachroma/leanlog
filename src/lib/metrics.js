@@ -7,6 +7,8 @@ const parseNumber = (value) => {
   return Number.isFinite(parsedValue) ? parsedValue : null
 }
 
+const hasText = (value) => String(value ?? '').trim().length > 0
+
 const average = (values) => {
   if (!values.length) {
     return null
@@ -40,8 +42,7 @@ const getWeekStart = (date) => {
   return new Date(nextDate.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
 }
 
-const hasExercise = (entry) =>
-  Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
+const hasExercise = (entry) => hasText(entry.exerciseType) || hasText(entry.exerciseMinutes)
 
 const getGoalProgressPercent = (startWeight, goalWeight, latestWeight) => {
   if (startWeight === null || goalWeight === null || latestWeight === null) {
@@ -63,10 +64,10 @@ const getGoalProgressPercent = (startWeight, goalWeight, latestWeight) => {
 const asChartPoint = (entry) => ({
   date: entry.date,
   weight: parseNumber(entry.weight),
-  weight7dma: entry.weight7dma,
+  weight7dma: parseNumber(entry.weight7dma),
   calories: parseNumber(entry.calories),
   steps: parseNumber(entry.steps),
-  exerciseType: entry.exerciseType?.trim() || null,
+  exerciseType: hasText(entry.exerciseType) ? String(entry.exerciseType).trim() : null,
   exerciseMinutes: parseNumber(entry.exerciseMinutes),
 })
 
@@ -94,7 +95,9 @@ export const toNumber = parseNumber
 export function getDashboardMetrics(entries, settings) {
   const latestWeightEntry = entries.find((entry) => parseNumber(entry.weight) !== null)
   const latestWeight = parseNumber(latestWeightEntry?.weight)
-  const latestMovingAverageEntry = entries.find((entry) => entry.weight7dma !== null)
+  const latestMovingAverageEntry = entries.find(
+    (entry) => parseNumber(entry.weight7dma) !== null
+  )
   const baselineWeight =
     parseNumber(settings.startWeight) ??
     parseNumber(entries.findLast((entry) => parseNumber(entry.weight) !== null)?.weight)
@@ -102,7 +105,7 @@ export function getDashboardMetrics(entries, settings) {
 
   return {
     latestWeight,
-    latestWeight7dma: latestMovingAverageEntry?.weight7dma ?? null,
+    latestWeight7dma: parseNumber(latestMovingAverageEntry?.weight7dma),
     weightDelta:
       latestWeight !== null && baselineWeight !== null
         ? latestWeight - baselineWeight

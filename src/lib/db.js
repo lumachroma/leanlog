@@ -44,6 +44,8 @@ const parseNumber = (value) => {
   return Number.isFinite(parsedValue) ? parsedValue : null
 }
 
+const hasText = (value) => String(value ?? '').trim().length > 0
+
 const toDateAtMidnight = (date) => new Date(`${date}T00:00:00`)
 
 const addDays = (date, days) => {
@@ -75,7 +77,7 @@ const sanitizeEntry = (entry) => ({
   steps: entry.steps ?? '',
   exerciseType: entry.exerciseType ?? '',
   exerciseMinutes: entry.exerciseMinutes ?? '',
-  weight7dma: entry.weight7dma ?? null,
+  weight7dma: parseNumber(entry.weight7dma),
 })
 
 const normalizeEntryRecord = (entry) => ({
@@ -85,11 +87,11 @@ const normalizeEntryRecord = (entry) => ({
 })
 
 export const isEntryEmpty = (entry) =>
-  !entry.weight?.trim() &&
-  !entry.calories?.trim() &&
-  !entry.steps?.trim() &&
-  !entry.exerciseType?.trim() &&
-  !entry.exerciseMinutes?.trim()
+  !hasText(entry.weight) &&
+  !hasText(entry.calories) &&
+  !hasText(entry.steps) &&
+  !hasText(entry.exerciseType) &&
+  !hasText(entry.exerciseMinutes)
 
 export const recalculateMovingAverageEntries = (entries) => {
   const sortedEntries = [...entries]
