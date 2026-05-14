@@ -117,7 +117,7 @@ describe('metrics blank tolerance', () => {
       {
         date: '2026-05-13',
         weight: '',
-        weight7dma: '',
+        weight7dma: '79.8',
         calories: '',
         steps: '',
         exerciseType: '',
@@ -144,6 +144,15 @@ describe('metrics blank tolerance', () => {
     ])
 
     expect(series.weightTrend).toEqual([
+      {
+        date: '2026-05-13',
+        weight: null,
+        weight7dma: 79.8,
+        calories: null,
+        steps: null,
+        exerciseType: null,
+        exerciseMinutes: null,
+      },
       {
         date: '2026-05-14',
         weight: 80,

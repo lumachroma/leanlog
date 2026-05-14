@@ -2,6 +2,8 @@ import { Activity, Flame, Footprints, Scale, Target } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
+import { WeightTrendChart } from './WeightTrendChart'
+
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
     <article className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur">
@@ -54,6 +56,7 @@ const formatSignedWeight = (value) => {
 
 function DashboardSection({
   metrics,
+  chartSeries,
   calorieDelta,
   stepDelta,
   goalDistance,
@@ -137,6 +140,8 @@ function DashboardSection({
           }
         />
       </div>
+
+      <WeightTrendChart points={chartSeries.weightTrend} />
     </section>
   )
 }

@@ -46,6 +46,7 @@ function App() {
     metrics,
     weeklyAverageCards,
     monthlyAverageCards,
+    chartSeries,
     calorieDelta,
     stepDelta,
     goalDistance,
@@ -108,6 +109,7 @@ function App() {
         <main className="py-8 xl:py-10">
           <DashboardSection
             metrics={metrics}
+            chartSeries={chartSeries}
             calorieDelta={calorieDelta}
             stepDelta={stepDelta}
             goalDistance={goalDistance}

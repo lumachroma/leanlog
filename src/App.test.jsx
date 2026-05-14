@@ -111,6 +111,13 @@ describe('App', () => {
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
       errorMessage: 'Unable to load your local data.',
+      chartSeries: {
+        ...baseViewModel.chartSeries,
+        weightTrend: [
+          { date: '2026-05-13', weight: 81, weight7dma: 81 },
+          { date: '2026-05-14', weight: 80, weight7dma: 79.5 },
+        ],
+      },
     })
 
     render(<App />)
@@ -124,6 +131,8 @@ describe('App', () => {
     expect(screen.getByText(/avg steps/i)).toBeInTheDocument()
     expect(screen.getByText(/^7dma$/i)).toBeInTheDocument()
     expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
+    expect(screen.getByText(/weight trend chart/i)).toBeInTheDocument()
+    expect(screen.getByText(/real-life weight, with calm built in/i)).toBeInTheDocument()
     expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })

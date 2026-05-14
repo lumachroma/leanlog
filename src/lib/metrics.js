@@ -208,7 +208,10 @@ export function getChartSeries(entries) {
 
   return {
     weightTrend: orderedEntries
-      .filter((entry) => parseNumber(entry.weight) !== null)
+      .filter(
+        (entry) =>
+          parseNumber(entry.weight) !== null || parseNumber(entry.weight7dma) !== null
+      )
       .map(asChartPoint),
     calorieTrend: orderedEntries
       .filter((entry) => parseNumber(entry.calories) !== null)
