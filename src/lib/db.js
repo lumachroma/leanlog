@@ -97,3 +97,7 @@ export async function upsertEntryRecord(entry) {
   await entriesTable.put(normalizeEntryRecord(normalizedEntry))
   return normalizedEntry
 }
+
+export async function deleteEntryRecord(date) {
+  await entriesTable.delete(date)
+}

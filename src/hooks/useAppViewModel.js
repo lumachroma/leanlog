@@ -23,6 +23,7 @@ export function useAppViewModel() {
   const setSelectedDate = useAppStore((state) => state.setSelectedDate)
   const updateEntryDraftField = useAppStore((state) => state.updateEntryDraftField)
   const saveEntry = useAppStore((state) => state.saveEntry)
+  const deleteEntry = useAppStore((state) => state.deleteEntry)
 
   useEffect(() => {
     void hydrateApp()
@@ -37,6 +38,7 @@ export function useAppViewModel() {
 
   return {
     settings,
+    entries,
     selectedDate,
     entryDraft,
     isHydrated,
@@ -63,5 +65,6 @@ export function useAppViewModel() {
     setSelectedDate,
     updateEntryDraftField,
     saveEntry,
+    deleteEntry,
   }
 }

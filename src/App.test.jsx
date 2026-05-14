@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseAppViewModel = vi.fn()
@@ -17,6 +18,15 @@ describe('App', () => {
       dailyCalorieTarget: '2000',
       dailyStepTarget: '8000',
     },
+    entries: [
+      {
+        date: '2026-05-14',
+        weight: '80',
+        calories: '1900',
+        steps: '9000',
+        exercise: 'Incline walk',
+      },
+    ],
     selectedDate: '2026-05-14',
     entryDraft: {
       date: '2026-05-14',
@@ -61,6 +71,7 @@ describe('App', () => {
     setSelectedDate: vi.fn(),
     updateEntryDraftField: vi.fn(),
     saveEntry: vi.fn(),
+    deleteEntry: vi.fn(),
   }
 
   beforeEach(() => {
@@ -91,5 +102,16 @@ describe('App', () => {
     expect(screen.getByText(/one month at a glance/i)).toBeInTheDocument()
     expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
     expect(screen.getByText(/one focused entry per day/i)).toBeInTheDocument()
+  })
+
+  it('switches to the history page from the header navigation', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /history/i }))
+
+    expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
+    expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
   })
 })

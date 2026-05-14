@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 
-function AppHeader() {
+function AppHeader({ activePage, onPageChange }) {
   return (
     <header className="flex flex-col gap-5 border-b border-border/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -15,13 +15,36 @@ function AppHeader() {
           log one day at a time, and keep iteration 2 open for charts, sync, and mobile.
         </p>
       </div>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col items-start gap-3 sm:items-end">
+        <div className="inline-flex rounded-full border border-border/80 bg-background/90 p-1 shadow-sm">
+          <Button
+            type="button"
+            size="sm"
+            variant={activePage === 'dashboard' ? 'default' : 'ghost'}
+            onClick={() => onPageChange('dashboard')}
+            aria-pressed={activePage === 'dashboard'}
+          >
+            Dashboard
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={activePage === 'history' ? 'default' : 'ghost'}
+            onClick={() => onPageChange('history')}
+            aria-pressed={activePage === 'history'}
+          >
+            History
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
         <span className="inline-flex items-center rounded-full border border-border/70 bg-background/90 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground shadow-sm">
           Iteration 1
         </span>
         <Button variant="outline" size="sm">
           IndexedDB ready
         </Button>
+        </div>
       </div>
     </header>
   )

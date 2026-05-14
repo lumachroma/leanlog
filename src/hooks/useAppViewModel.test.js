@@ -52,6 +52,7 @@ describe('useAppViewModel', () => {
       setSelectedDate: vi.fn(),
       updateEntryDraftField: vi.fn(),
       saveEntry: vi.fn(),
+      deleteEntry: vi.fn(),
     }
 
     mockUseAppStore.mockImplementation((selector) => selector(storeState))
@@ -101,7 +102,9 @@ describe('useAppViewModel', () => {
     expect(result.current.entryDraft).toEqual(storeState.entryDraft)
     expect(result.current.saveSettings).toBe(storeState.saveSettings)
     expect(result.current.updateSettingsField).toBe(storeState.updateSettingsField)
+    expect(result.current.entries).toEqual(storeState.entries)
     expect(result.current.saveEntry).toBe(storeState.saveEntry)
+    expect(result.current.deleteEntry).toBe(storeState.deleteEntry)
     expect(result.current.updateEntryDraftField).toBe(storeState.updateEntryDraftField)
   })
 })

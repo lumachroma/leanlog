@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import {
   DEFAULT_SETTINGS,
   createEmptyEntryDraft,
+  deleteEntryRecord,
   loadAppSnapshot,
   saveSettingsSnapshot,
   todayDate,
@@ -135,6 +136,28 @@ export const useAppStore = create((set, get) => ({
       set({
         isSavingEntry: false,
         errorMessage: 'Unable to save this daily entry.',
+      })
+    }
+  },
+
+  deleteEntry: async (date) => {
+    set({ isSavingEntry: true, errorMessage: null })
+
+    try {
+      await deleteEntryRecord(date)
+
+      set((state) => ({
+        entries: removeEntry(state.entries, date),
+        entryDraft:
+          state.selectedDate === date
+            ? createEmptyEntryDraft(state.selectedDate)
+            : state.entryDraft,
+        isSavingEntry: false,
+      }))
+    } catch {
+      set({
+        isSavingEntry: false,
+        errorMessage: 'Unable to delete this daily entry.',
       })
     }
   },
