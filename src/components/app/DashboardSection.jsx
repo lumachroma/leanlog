@@ -1,4 +1,4 @@
-import { CalendarDays, Flame, Footprints, Scale } from 'lucide-react'
+import { CalendarDays, Flame, Footprints, Scale, Target } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
@@ -38,6 +38,9 @@ const formatAverage = (value, suffix) => {
 
 const formatWeight = (value) =>
   value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
+
+const formatPercent = (value) =>
+  value === null ? '-- %' : `${numberFormatter.format(value)}%`
 
 const formatSignedWeight = (value) => {
   if (value === null) {
@@ -82,7 +85,7 @@ function DashboardSection({
         </section>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           icon={Scale}
           label="Weight trend"
@@ -94,7 +97,7 @@ function DashboardSection({
         />
         <MetricCard
           icon={Flame}
-          label="Calorie average"
+          label="Avg Calories"
           value={formatAverage(metrics.calorieAverage, 'kcal')}
           detail={
             calorieDelta === null
@@ -104,12 +107,24 @@ function DashboardSection({
         />
         <MetricCard
           icon={Footprints}
-          label="Step average"
+          label="Avg Steps"
           value={formatAverage(metrics.stepAverage, 'steps')}
           detail={
             stepDelta === null
               ? 'Once you save steps, this card becomes your movement baseline.'
               : `${numberFormatter.format(Math.abs(stepDelta))} steps ${stepDelta >= 0 ? 'above' : 'below'} target`
+          }
+        />
+        <MetricCard
+          icon={Target}
+          label="Goal Progress %"
+          value={formatPercent(metrics.goalProgressPercent)}
+          detail={
+            metrics.goalProgressPercent === null
+              ? 'Add a start weight, goal weight, and current weight to track progress.'
+              : goalDistance === 0
+                ? 'Goal reached based on your latest logged weight.'
+                : `${formatWeight(goalDistance)} remaining to your goal`
           }
         />
       </div>

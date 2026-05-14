@@ -25,6 +25,23 @@ const formatMonthLabel = (monthKey) =>
 const hasExercise = (entry) =>
   Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
 
+const getGoalProgressPercent = (startWeight, goalWeight, latestWeight) => {
+  if (startWeight === null || goalWeight === null || latestWeight === null) {
+    return null
+  }
+
+  const totalDistance = Math.abs(startWeight - goalWeight)
+
+  if (totalDistance === 0) {
+    return latestWeight === goalWeight ? 100 : 0
+  }
+
+  const remainingDistance = Math.abs(latestWeight - goalWeight)
+  const progress = ((totalDistance - remainingDistance) / totalDistance) * 100
+
+  return Math.max(0, Math.min(100, Math.round(progress)))
+}
+
 const asChartPoint = (entry) => ({
   date: entry.date,
   weight: parseNumber(entry.weight),
@@ -42,6 +59,7 @@ export function getDashboardMetrics(entries, settings) {
   const baselineWeight =
     parseNumber(settings.startWeight) ??
     parseNumber(entries.findLast((entry) => parseNumber(entry.weight) !== null)?.weight)
+  const goalWeight = parseNumber(settings.goalWeight)
 
   return {
     latestWeight,
@@ -49,6 +67,11 @@ export function getDashboardMetrics(entries, settings) {
       latestWeight !== null && baselineWeight !== null
         ? latestWeight - baselineWeight
         : null,
+    goalProgressPercent: getGoalProgressPercent(
+      parseNumber(settings.startWeight),
+      goalWeight,
+      latestWeight
+    ),
     calorieAverage: average(
       entries
         .map((entry) => parseNumber(entry.calories))

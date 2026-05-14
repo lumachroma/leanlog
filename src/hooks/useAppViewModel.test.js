@@ -71,6 +71,7 @@ describe('useAppViewModel', () => {
 
     expect(result.current.metrics.latestWeight).toBe(80)
     expect(result.current.metrics.weightDelta).toBe(-5)
+    expect(result.current.metrics.goalProgressPercent).toBe(38)
     expect(result.current.calorieDelta).toBe(0)
     expect(result.current.stepDelta).toBe(0)
     expect(result.current.goalDistance).toBe(8)

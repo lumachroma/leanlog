@@ -44,6 +44,7 @@ describe('App', () => {
     metrics: {
       latestWeight: 80,
       weightDelta: -5,
+      goalProgressPercent: 38,
       calorieAverage: 2000,
       stepAverage: 8000,
       activeDays: 2,
@@ -103,6 +104,7 @@ describe('App', () => {
     expect(screen.getByText(/calm daily tracking, stored locally first/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(screen.getByText(/one month at a glance/i)).toBeInTheDocument()
+    expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
     expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })
