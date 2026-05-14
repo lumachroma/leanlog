@@ -13,6 +13,9 @@ function DailyLogPanel({
   isSavingEntry,
   activeDays,
   exerciseDays,
+  title = 'One focused entry per day',
+  description,
+  modeLabel,
   setSelectedDate,
   updateEntryDraftField,
   saveEntry,
@@ -32,9 +35,19 @@ function DailyLogPanel({
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
             Daily log
           </p>
-          <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-            One focused entry per day
-          </h2>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <h2 className="text-2xl font-medium tracking-[-0.04em]">{title}</h2>
+            {modeLabel ? (
+              <span className="inline-flex items-center rounded-full border border-border/80 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                {modeLabel}
+              </span>
+            ) : null}
+          </div>
+          {description ? (
+            <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
         </div>
         <Sparkles className="mt-1 size-4 text-muted-foreground" />
       </div>

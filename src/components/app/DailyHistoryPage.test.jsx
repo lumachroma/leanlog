@@ -56,10 +56,91 @@ describe('DailyHistoryPage', () => {
   expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /edit/i }))
-    await user.click(screen.getByRole('button', { name: /delete/i }))
+    await user.click(screen.getByRole('button', { name: /^delete$/i }))
+    expect(screen.getByText(/delete this saved day permanently/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /confirm delete/i }))
 
     expect(setSelectedDate).toHaveBeenCalledWith('2026-05-14')
     expect(deleteEntry).toHaveBeenCalledWith('2026-05-14')
+  })
+
+  it('groups entries by month and supports month filtering', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DailyHistoryPage
+        entries={[
+          {
+            date: '2026-05-14',
+            weight: '80',
+            calories: '1900',
+            steps: '9000',
+            exercise: 'Incline walk',
+          },
+          {
+            date: '2026-04-14',
+            weight: '81',
+            calories: '2100',
+            steps: '7000',
+            exercise: '',
+          },
+        ]}
+        selectedDate="2026-05-14"
+        entryDraft={{
+          date: '2026-05-14',
+          weight: '80',
+          calories: '1900',
+          steps: '9000',
+          exercise: 'Incline walk',
+        }}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /all months/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^May 2026$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^April 2026$/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^April 2026$/i }))
+
+    expect(screen.getByText(/no exercise note saved/i)).toBeInTheDocument()
+    expect(screen.queryByText(/thu, may 14, 2026/i)).not.toBeInTheDocument()
+  })
+
+  it('surfaces create mode in the editor when the selected date is new', () => {
+    render(
+      <DailyHistoryPage
+        entries={[
+          {
+            date: '2026-05-14',
+            weight: '80',
+            calories: '1900',
+            steps: '9000',
+            exercise: 'Incline walk',
+          },
+        ]}
+        selectedDate="2026-05-15"
+        entryDraft={{
+          date: '2026-05-15',
+          weight: '',
+          calories: '',
+          steps: '',
+          exercise: '',
+        }}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText(/create a new day/i)).toBeInTheDocument()
+    expect(screen.getByText(/create mode/i)).toBeInTheDocument()
   })
 
   it('creates a new entry using the next available date', async () => {
