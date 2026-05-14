@@ -1,6 +1,6 @@
 # Leanlog
 
-Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured dashboard with clear feedback sections, a Recharts-based dual-line weight trend chart, weekly and monthly averages, and goal settings.
+Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, and goal settings.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
 
@@ -127,10 +127,20 @@ Key files:
 - `src/store/useAppStore.js`: Zustand store and app actions
 - `src/hooks/useAppViewModel.js`: App-facing view-model logic
 - `src/lib/metrics.js`: Dashboard calculations and chart-ready selectors
+- `src/components/app/DashboardSection.jsx`: Dashboard KPI section and composition of the visual dashboard sections
 - `src/components/app/WeightTrendChart.jsx`: Recharts-backed dual-line weight chart
 - `src/components/app/ConsistencyTrackingChart.jsx`: Calorie and step target comparison visuals
 - `src/components/app/GoalProgressChart.jsx`: Start-to-goal progress bar with current weight marker
 - `src/App.jsx`: Top-level page composition and local page persistence
+
+## Dashboard Structure
+
+The dashboard is intentionally split into four sections so the app stays readable under real-life conditions:
+
+- Section 1: KPI Cards for weight trend, 7-day moving average, average calories, average steps, and goal progress
+- Section 2: Main Weight Trend Graph using daily weight plus 7-day moving average as the emotional centerpiece
+- Section 3: Consistency Tracking comparing calorie and step averages against targets
+- Section 4: Goal Progress Bar showing the relationship between start weight, current weight, and goal weight
 
 ## Data Persistence
 
@@ -143,6 +153,155 @@ Leanlog stores data locally in the browser using IndexedDB through Dexie.
 - Navigation state is also persisted locally so the app can reopen on the last active page
 
 If you clear site data in the browser, Leanlog data will be removed.
+
+## Daily Log Data Structure
+
+The daily log is the core record shape used by the app for both the in-memory entry draft and the persisted `entries` table. Leanlog intentionally keeps user-entered values lightweight and form-friendly: most editable fields are stored as strings, then parsed into numbers only when metrics and charts are calculated.
+
+Daily log lifecycle rules:
+
+- `date` is the record identity and uses local calendar format `YYYY-MM-DD`
+- `weight`, `calories`, `steps`, and `exerciseMinutes` are stored as strings so the UI can tolerate partial input and blanks
+- `exerciseType` is a short label chosen from the current supported options: Walking, Cycling, Strength, Running, Sports, Mobility, or Other
+- `weight7dma` is derived, not directly user-entered; it is recalculated whenever entries are saved or deleted
+- a daily log with all editable fields blank is treated as empty and is removed instead of being stored
+
+| Field | Stored Type | Example | Source | Notes |
+| --- | --- | --- | --- | --- |
+| `date` | `string` | `2026-05-15` | user-selected day | Primary key for the entry record |
+| `weight` | `string` | `78.4` | user input | Blank allowed; parsed later for metrics and charts |
+| `calories` | `string` | `2100` | user input | Blank allowed; used in consistency and average calculations |
+| `steps` | `string` | `8450` | user input | Blank allowed; used in consistency and average calculations |
+| `exerciseType` | `string` | `Walking` | user input | Blank allowed; currently selected from fixed exercise options |
+| `exerciseMinutes` | `string` | `45` | user input | Blank allowed; stored as text and parsed only when needed |
+| `weight7dma` | `number \| null` | `78.91` | derived by app | Persisted hidden field for the trailing 7-day moving average |
+
+Example daily log record:
+
+```json
+{
+	"date": "2026-05-15",
+	"weight": "78.4",
+	"calories": "2100",
+	"steps": "8450",
+	"exerciseType": "Walking",
+	"exerciseMinutes": "45",
+	"weight7dma": 78.91
+}
+```
+
+## IndexedDB Schema
+
+The Dexie database is named `leanlog` and currently has two tables:
+
+- `settings`, keyed by a single record id
+- `entries`, keyed by day
+
+Dexie store declaration:
+
+```js
+settings: '&id, updatedAt'
+entries: '&date, monthKey, updatedAt'
+```
+
+### `settings` Table
+
+Leanlog stores one settings document under the fixed id `profile`. The user-editable values live under a nested `values` object.
+
+| Field | Stored Type | Example | Notes |
+| --- | --- | --- | --- |
+| `id` | `string` | `profile` | Primary key; there is only one settings record |
+| `values.startWeight` | `string` | `92` | Blank allowed; used as the starting point for goal progress |
+| `values.goalWeight` | `string` | `75` | Blank allowed; used for goal progress and distance remaining |
+| `values.dailyCalorieTarget` | `string` | `2200` | Blank allowed; used by consistency tracking |
+| `values.dailyStepTarget` | `string` | `10000` | Blank allowed; used by consistency tracking |
+| `updatedAt` | `string` | `2026-05-15T10:42:13.511Z` | ISO timestamp for the most recent settings save |
+
+Example settings record:
+
+```json
+{
+	"id": "profile",
+	"values": {
+		"startWeight": "92",
+		"goalWeight": "75",
+		"dailyCalorieTarget": "2200",
+		"dailyStepTarget": "10000"
+	},
+	"updatedAt": "2026-05-15T10:42:13.511Z"
+}
+```
+
+### `entries` Table
+
+Each persisted daily log is normalized into an entry record. Two extra fields are added during persistence: `monthKey` for grouping and `updatedAt` for bookkeeping.
+
+| Field | Stored Type | Example | Notes |
+| --- | --- | --- | --- |
+| `date` | `string` | `2026-05-15` | Primary key; one record per day |
+| `weight` | `string` | `78.4` | User-entered weight value |
+| `calories` | `string` | `2100` | User-entered calorie value |
+| `steps` | `string` | `8450` | User-entered step count |
+| `exerciseType` | `string` | `Walking` | User-entered exercise label |
+| `exerciseMinutes` | `string` | `45` | User-entered duration |
+| `weight7dma` | `number \| null` | `78.91` | Derived trailing 7-day moving average |
+| `monthKey` | `string` | `2026-05` | Derived grouping key used for month-based views |
+| `updatedAt` | `string` | `2026-05-15T10:42:13.511Z` | ISO timestamp for the latest persistence pass |
+
+Example persisted entry record:
+
+```json
+{
+	"date": "2026-05-15",
+	"weight": "78.4",
+	"calories": "2100",
+	"steps": "8450",
+	"exerciseType": "Walking",
+	"exerciseMinutes": "45",
+	"weight7dma": 78.91,
+	"monthKey": "2026-05",
+	"updatedAt": "2026-05-15T10:42:13.511Z"
+}
+```
+
+## Schema Diagram
+
+```mermaid
+erDiagram
+		SETTINGS {
+				string id PK
+				string updatedAt
+		}
+
+		SETTINGS_VALUES {
+				string startWeight
+				string goalWeight
+				string dailyCalorieTarget
+				string dailyStepTarget
+		}
+
+		ENTRIES {
+				string date PK
+				string weight
+				string calories
+				string steps
+				string exerciseType
+				string exerciseMinutes
+				number weight7dma
+				string monthKey
+				string updatedAt
+		}
+
+		SETTINGS ||--|| SETTINGS_VALUES : contains
+```
+
+## Persistence Behavior Summary
+
+- On load, Leanlog reads the single settings record and all entry records from IndexedDB
+- On settings save, the `settings` record is replaced with a fresh `updatedAt` timestamp
+- On daily entry save or delete, all entries are recalculated so `weight7dma`, `monthKey`, and `updatedAt` stay consistent
+- The UI keeps a Zustand `entryDraft` in memory, but only normalized entry records are written into IndexedDB
+- The current page is remembered in localStorage, but it is not part of the IndexedDB schema
 
 ## Testing And Validation
 

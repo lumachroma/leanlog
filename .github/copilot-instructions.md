@@ -37,6 +37,7 @@
 - Zustand store lives in `src/store/useAppStore.js`.
 - App view-model logic lives in `src/hooks/useAppViewModel.js`.
 - Dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
+- Dashboard section composition lives in `src/components/app/DashboardSection.jsx`.
 - Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`.
 - Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`.
 - Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`.
@@ -49,6 +50,7 @@
 - Keep forms and dashboard behavior local-first and fast.
 - Treat missing logs as normal. Every formula, derived metric, summary, and chart input must tolerate blanks without breaking, throwing errors, or punishing the user for skipped days.
 - Favor psychologically lightweight flows: forgiving defaults, low-friction logging, and summaries that continue working even when the user misses entries.
+- Preserve the sectioned dashboard structure unless a broader product change is explicitly requested.
 - Favor simple data shapes that can evolve without breaking Dexie persistence.
 - When adding UI, preserve the existing spacing, tone, and minimal visual language.
 
