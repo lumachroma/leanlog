@@ -29,6 +29,28 @@ const formatMonthLabel = (monthKey) =>
     year: 'numeric',
   }).format(new Date(`${monthKey}-01T00:00:00`))
 
+const formatExerciseSummary = (entry) => {
+  const exerciseType = entry.exerciseType?.trim()
+  const exerciseMinutes = entry.exerciseMinutes?.trim()
+
+  if (!exerciseType && !exerciseMinutes) {
+    return 'No exercise saved.'
+  }
+
+  if (exerciseType && exerciseMinutes) {
+    return `${exerciseType} • ${exerciseMinutes} min`
+  }
+
+  if (exerciseType) {
+    return exerciseType
+  }
+
+  return `${exerciseMinutes} min`
+}
+
+const hasExercise = (entry) =>
+  Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
+
 const getNextAvailableDate = (entries) => {
   const occupiedDates = new Set(entries.map((entry) => entry.date))
   const nextDate = new Date(`${todayDate()}T00:00:00`)
@@ -177,9 +199,7 @@ function DailyHistoryPage({
                                 {formatDateLabel(entry.date)}
                               </p>
                               <p className="mt-1 text-xs text-muted-foreground">
-                                {entry.exercise?.trim()
-                                  ? entry.exercise
-                                  : 'No exercise note saved.'}
+                                {formatExerciseSummary(entry)}
                               </p>
                             </div>
 
@@ -284,7 +304,7 @@ function DailyHistoryPage({
           entryDraft={entryDraft}
           isSavingEntry={isSavingEntry}
           activeDays={entries.length}
-          exerciseDays={entries.filter((entry) => entry.exercise.trim()).length}
+          exerciseDays={entries.filter(hasExercise).length}
           title={isEditingExistingEntry ? 'Edit saved day' : 'Create a new day'}
           modeLabel={isEditingExistingEntry ? 'Editing mode' : 'Create mode'}
           description={

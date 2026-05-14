@@ -1,6 +1,7 @@
 import { Sparkles } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { EXERCISE_TYPE_OPTIONS } from '@/lib/db'
 
 import { Field } from './Field'
 
@@ -96,23 +97,65 @@ function DailyLogPanel({
           />
         </Field>
 
-        <Field
-          label="Exercise"
-          hint="Leave all fields blank for a date if you want the saved entry removed."
-        >
-          <textarea
-            rows="4"
-            className={`${inputClassName} resize-none`}
-            value={entryDraft.exercise}
-            onChange={(event) => updateEntryDraftField('exercise', event.target.value)}
-            placeholder="40 min incline walk"
-          />
-        </Field>
+        <div className="block">
+          <div className="text-sm font-medium text-foreground">Exercise</div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="exercise-type"
+                className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Exercise Type
+              </label>
+              <select
+                id="exercise-type"
+                aria-label="Exercise Type"
+                className={inputClassName}
+                value={entryDraft.exerciseType}
+                onChange={(event) =>
+                  updateEntryDraftField('exerciseType', event.target.value)
+                }
+              >
+                <option value="">Select a type</option>
+                {EXERCISE_TYPE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="exercise-minutes"
+                className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Exercise Minutes
+              </label>
+              <input
+                id="exercise-minutes"
+                aria-label="Exercise Minutes"
+                type="number"
+                inputMode="numeric"
+                min="0"
+                className={inputClassName}
+                value={entryDraft.exerciseMinutes}
+                onChange={(event) =>
+                  updateEntryDraftField('exerciseMinutes', event.target.value)
+                }
+                placeholder="40"
+              />
+            </div>
+          </div>
+          <div className="mt-2 block text-xs text-muted-foreground">
+            Leave all fields blank for a date if you want the saved entry removed.
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <p className="text-xs leading-6 text-muted-foreground">
-          {exerciseDays} exercise notes saved across {activeDays} logged days.
+          {exerciseDays} exercise days saved across {activeDays} logged days.
         </p>
         <Button type="submit" disabled={isSavingEntry}>
           {isSavingEntry ? 'Saving...' : 'Save day'}

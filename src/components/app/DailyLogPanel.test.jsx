@@ -19,7 +19,8 @@ describe('DailyLogPanel', () => {
           weight: '',
           calories: '',
           steps: '',
-          exercise: '',
+          exerciseType: '',
+          exerciseMinutes: '',
         }}
         isSavingEntry={false}
         activeDays={3}
@@ -36,14 +37,18 @@ describe('DailyLogPanel', () => {
     fireEvent.change(screen.getByLabelText(/^Weight$/i), {
       target: { value: '72.4' },
     })
-    fireEvent.change(screen.getByPlaceholderText('40 min incline walk'), {
-      target: { value: 'Incline walk' },
+    fireEvent.change(screen.getByLabelText(/Exercise Type/i), {
+      target: { value: 'Walking' },
+    })
+    fireEvent.change(screen.getByLabelText(/Exercise Minutes/i), {
+      target: { value: '40' },
     })
     await user.click(screen.getByRole('button', { name: /save day/i }))
 
     expect(setSelectedDate).toHaveBeenCalledWith('2026-05-12')
     expect(updateEntryDraftField).toHaveBeenCalledWith('weight', '72.4')
-    expect(updateEntryDraftField).toHaveBeenCalledWith('exercise', 'Incline walk')
+    expect(updateEntryDraftField).toHaveBeenCalledWith('exerciseType', 'Walking')
+    expect(updateEntryDraftField).toHaveBeenCalledWith('exerciseMinutes', '40')
     expect(saveEntry).toHaveBeenCalledTimes(1)
   })
 
@@ -56,7 +61,8 @@ describe('DailyLogPanel', () => {
           weight: '',
           calories: '',
           steps: '',
-          exercise: '',
+          exerciseType: '',
+          exerciseMinutes: '',
         }}
         isSavingEntry={true}
         activeDays={0}

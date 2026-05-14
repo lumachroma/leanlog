@@ -11,8 +11,9 @@ function AppHeader({ activePage, onPageChange }) {
           Calm daily tracking, stored locally first.
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-          Track weight, calories, steps, and exercise. Configure your targets once,
-          log one day at a time, and keep iteration 2 open for charts, sync, and mobile.
+          Track weight, calories, steps, and exercise details. Configure your targets
+          once, log one day at a time, and keep iteration 2 open for charts, sync,
+          and mobile.
         </p>
       </div>
       <div className="flex flex-col items-start gap-3 sm:items-end">

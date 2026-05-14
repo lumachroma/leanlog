@@ -143,7 +143,7 @@ function DashboardSection({
                   <div>
                     <h3 className="text-lg font-medium tracking-[-0.03em]">{card.label}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {card.daysLogged} days logged • {card.exerciseDays} exercise notes
+                      {card.daysLogged} days logged • {card.exerciseDays} exercise days
                     </p>
                   </div>
                   <CalendarDays className="size-4 text-muted-foreground" />

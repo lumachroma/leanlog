@@ -22,12 +22,16 @@ const formatMonthLabel = (monthKey) =>
     year: 'numeric',
   }).format(new Date(`${monthKey}-01T00:00:00`))
 
+const hasExercise = (entry) =>
+  Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
+
 const asChartPoint = (entry) => ({
   date: entry.date,
   weight: parseNumber(entry.weight),
   calories: parseNumber(entry.calories),
   steps: parseNumber(entry.steps),
-  exercise: entry.exercise.trim() || null,
+  exerciseType: entry.exerciseType?.trim() || null,
+  exerciseMinutes: parseNumber(entry.exerciseMinutes),
 })
 
 export const toNumber = parseNumber
@@ -54,7 +58,7 @@ export function getDashboardMetrics(entries, settings) {
       entries.map((entry) => parseNumber(entry.steps)).filter((value) => value !== null)
     ),
     activeDays: entries.length,
-    exerciseDays: entries.filter((entry) => entry.exercise.trim()).length,
+    exerciseDays: entries.filter(hasExercise).length,
   }
 }
 
@@ -78,7 +82,7 @@ export function getMonthlyCards(entries) {
 
     summary.daysLogged += 1
 
-    if (entry.exercise.trim()) {
+    if (hasExercise(entry)) {
       summary.exerciseDays += 1
     }
 

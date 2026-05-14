@@ -33,7 +33,8 @@ describe('DailyHistoryPage', () => {
             weight: '80',
             calories: '1900',
             steps: '9000',
-            exercise: 'Incline walk',
+            exerciseType: 'Walking',
+            exerciseMinutes: '40',
           },
         ]}
         selectedDate="2026-05-14"
@@ -42,7 +43,8 @@ describe('DailyHistoryPage', () => {
           weight: '80',
           calories: '1900',
           steps: '9000',
-          exercise: 'Incline walk',
+          exerciseType: 'Walking',
+          exerciseMinutes: '40',
         }}
         isSavingEntry={false}
         setSelectedDate={setSelectedDate}
@@ -75,14 +77,16 @@ describe('DailyHistoryPage', () => {
             weight: '80',
             calories: '1900',
             steps: '9000',
-            exercise: 'Incline walk',
+            exerciseType: 'Walking',
+            exerciseMinutes: '40',
           },
           {
             date: '2026-04-14',
             weight: '81',
             calories: '2100',
             steps: '7000',
-            exercise: '',
+            exerciseType: '',
+            exerciseMinutes: '',
           },
         ]}
         selectedDate="2026-05-14"
@@ -91,7 +95,8 @@ describe('DailyHistoryPage', () => {
           weight: '80',
           calories: '1900',
           steps: '9000',
-          exercise: 'Incline walk',
+          exerciseType: 'Walking',
+          exerciseMinutes: '40',
         }}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}
@@ -107,7 +112,7 @@ describe('DailyHistoryPage', () => {
 
     await user.click(screen.getByRole('button', { name: /^April 2026$/i }))
 
-    expect(screen.getByText(/no exercise note saved/i)).toBeInTheDocument()
+    expect(screen.getByText(/no exercise saved/i)).toBeInTheDocument()
     expect(screen.queryByText(/thu, may 14, 2026/i)).not.toBeInTheDocument()
   })
 
@@ -120,7 +125,8 @@ describe('DailyHistoryPage', () => {
             weight: '80',
             calories: '1900',
             steps: '9000',
-            exercise: 'Incline walk',
+            exerciseType: 'Walking',
+            exerciseMinutes: '40',
           },
         ]}
         selectedDate="2026-05-15"
@@ -129,7 +135,8 @@ describe('DailyHistoryPage', () => {
           weight: '',
           calories: '',
           steps: '',
-          exercise: '',
+          exerciseType: '',
+          exerciseMinutes: '',
         }}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}
@@ -152,7 +159,8 @@ describe('DailyHistoryPage', () => {
         weight: '80',
         calories: '1900',
         steps: '9000',
-        exercise: 'Incline walk',
+        exerciseType: 'Walking',
+        exerciseMinutes: '40',
       },
     ]
 
@@ -165,7 +173,8 @@ describe('DailyHistoryPage', () => {
           weight: '80',
           calories: '1900',
           steps: '9000',
-          exercise: 'Incline walk',
+          exerciseType: 'Walking',
+          exerciseMinutes: '40',
         }}
         isSavingEntry={false}
         setSelectedDate={setSelectedDate}
@@ -190,7 +199,8 @@ describe('DailyHistoryPage', () => {
           weight: '',
           calories: '',
           steps: '',
-          exercise: '',
+          exerciseType: '',
+          exerciseMinutes: '',
         }}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}

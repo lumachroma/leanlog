@@ -1,6 +1,15 @@
 import Dexie from 'dexie'
 
 export const SETTINGS_RECORD_ID = 'profile'
+export const EXERCISE_TYPE_OPTIONS = [
+  'Walking',
+  'Cycling',
+  'Strength',
+  'Running',
+  'Sports',
+  'Mobility',
+  'Other',
+]
 
 export const DEFAULT_SETTINGS = {
   startWeight: '',
@@ -21,7 +30,8 @@ export const createEmptyEntryDraft = (date = todayDate()) => ({
   weight: '',
   calories: '',
   steps: '',
-  exercise: '',
+  exerciseType: '',
+  exerciseMinutes: '',
 })
 
 const sanitizeSettings = (settings = DEFAULT_SETTINGS) => ({
@@ -36,7 +46,8 @@ const sanitizeEntry = (entry) => ({
   weight: entry.weight ?? '',
   calories: entry.calories ?? '',
   steps: entry.steps ?? '',
-  exercise: entry.exercise ?? '',
+  exerciseType: entry.exerciseType ?? '',
+  exerciseMinutes: entry.exerciseMinutes ?? '',
 })
 
 const normalizeEntryRecord = (entry) => ({
@@ -49,7 +60,8 @@ export const isEntryEmpty = (entry) =>
   !entry.weight?.trim() &&
   !entry.calories?.trim() &&
   !entry.steps?.trim() &&
-  !entry.exercise?.trim()
+  !entry.exerciseType?.trim() &&
+  !entry.exerciseMinutes?.trim()
 
 class LeanlogDatabase extends Dexie {
   constructor() {
