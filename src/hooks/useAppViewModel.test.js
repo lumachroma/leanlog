@@ -1,6 +1,8 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { createSampleStoreState } from '@/test/leanlog-test-fixtures'
+
 const mockUseAppStore = vi.fn()
 
 vi.mock('@/store/useAppStore', () => ({
@@ -12,55 +14,7 @@ describe('useAppViewModel', () => {
   let storeState
 
   beforeEach(() => {
-    storeState = {
-      settings: {
-        startWeight: '85',
-        goalWeight: '72',
-        dailyCalorieTarget: '2000',
-        dailyStepTarget: '8000',
-      },
-      entries: [
-        {
-          date: '2026-05-14',
-          weight: '80',
-          weight7dma: 79.5,
-          calories: '1900',
-          steps: '9000',
-          exerciseType: 'Walking',
-          exerciseMinutes: '40',
-        },
-        {
-          date: '2026-05-13',
-          weight: '81',
-          weight7dma: 81,
-          calories: '2100',
-          steps: '7000',
-          exerciseType: '',
-          exerciseMinutes: '',
-        },
-      ],
-      selectedDate: '2026-05-14',
-      entryDraft: {
-        date: '2026-05-14',
-        weight: '80',
-        weight7dma: 79.5,
-        calories: '1900',
-        steps: '9000',
-        exerciseType: 'Walking',
-        exerciseMinutes: '40',
-      },
-      isHydrated: true,
-      isSavingSettings: false,
-      isSavingEntry: false,
-      errorMessage: null,
-      hydrateApp: vi.fn(),
-      updateSettingsField: vi.fn(),
-      saveSettings: vi.fn(),
-      setSelectedDate: vi.fn(),
-      updateEntryDraftField: vi.fn(),
-      saveEntry: vi.fn(),
-      deleteEntry: vi.fn(),
-    }
+    storeState = createSampleStoreState()
 
     mockUseAppStore.mockImplementation((selector) => selector(storeState))
   })
