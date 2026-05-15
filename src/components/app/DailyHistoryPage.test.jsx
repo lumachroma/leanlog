@@ -3,6 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import { todayDate } from '@/lib/db'
+import {
+  createBlankEntryDraft,
+  createSampleEntry,
+  createSampleEntryDraft,
+  createSecondarySampleEntry,
+} from '@/test/leanlog-test-fixtures'
 
 import { DailyHistoryPage } from './DailyHistoryPage'
 
@@ -27,25 +33,9 @@ describe('DailyHistoryPage', () => {
 
     render(
       <DailyHistoryPage
-        entries={[
-          {
-            date: '2026-05-14',
-            weight: '80',
-            calories: '1900',
-            steps: '9000',
-            exerciseType: 'Walking',
-            exerciseMinutes: '40',
-          },
-        ]}
+        entries={[createSampleEntry()]}
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '80',
-          calories: '1900',
-          steps: '9000',
-          exerciseType: 'Walking',
-          exerciseMinutes: '40',
-        }}
+        entryDraft={createSampleEntryDraft()}
         isSavingEntry={false}
         setSelectedDate={setSelectedDate}
         updateEntryDraftField={updateEntryDraftField}
@@ -55,7 +45,7 @@ describe('DailyHistoryPage', () => {
     )
 
     expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
-  expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
+    expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /edit/i }))
     await user.click(screen.getByRole('button', { name: /^delete$/i }))
@@ -72,32 +62,11 @@ describe('DailyHistoryPage', () => {
     render(
       <DailyHistoryPage
         entries={[
-          {
-            date: '2026-05-14',
-            weight: '80',
-            calories: '1900',
-            steps: '9000',
-            exerciseType: 'Walking',
-            exerciseMinutes: '40',
-          },
-          {
-            date: '2026-04-14',
-            weight: '81',
-            calories: '2100',
-            steps: '7000',
-            exerciseType: '',
-            exerciseMinutes: '',
-          },
+          createSampleEntry(),
+          createSecondarySampleEntry({ date: '2026-04-14', weight: '81' }),
         ]}
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '80',
-          calories: '1900',
-          steps: '9000',
-          exerciseType: 'Walking',
-          exerciseMinutes: '40',
-        }}
+        entryDraft={createSampleEntryDraft()}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}
         updateEntryDraftField={vi.fn()}
@@ -119,25 +88,9 @@ describe('DailyHistoryPage', () => {
   it('surfaces create mode in the editor when the selected date is new', () => {
     render(
       <DailyHistoryPage
-        entries={[
-          {
-            date: '2026-05-14',
-            weight: '80',
-            calories: '1900',
-            steps: '9000',
-            exerciseType: 'Walking',
-            exerciseMinutes: '40',
-          },
-        ]}
+        entries={[createSampleEntry()]}
         selectedDate="2026-05-15"
-        entryDraft={{
-          date: '2026-05-15',
-          weight: '',
-          calories: '',
-          steps: '',
-          exerciseType: '',
-          exerciseMinutes: '',
-        }}
+        entryDraft={createBlankEntryDraft({ date: '2026-05-15' })}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}
         updateEntryDraftField={vi.fn()}
@@ -153,29 +106,13 @@ describe('DailyHistoryPage', () => {
   it('creates a new entry using the next available date', async () => {
     const user = userEvent.setup()
     const setSelectedDate = vi.fn()
-    const entries = [
-      {
-        date: '2026-05-14',
-        weight: '80',
-        calories: '1900',
-        steps: '9000',
-        exerciseType: 'Walking',
-        exerciseMinutes: '40',
-      },
-    ]
+    const entries = [createSampleEntry()]
 
     render(
       <DailyHistoryPage
         entries={entries}
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '80',
-          calories: '1900',
-          steps: '9000',
-          exerciseType: 'Walking',
-          exerciseMinutes: '40',
-        }}
+        entryDraft={createSampleEntryDraft()}
         isSavingEntry={false}
         setSelectedDate={setSelectedDate}
         updateEntryDraftField={vi.fn()}
@@ -194,14 +131,7 @@ describe('DailyHistoryPage', () => {
       <DailyHistoryPage
         entries={[]}
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '',
-          calories: '',
-          steps: '',
-          exerciseType: '',
-          exerciseMinutes: '',
-        }}
+        entryDraft={createBlankEntryDraft()}
         isSavingEntry={false}
         setSelectedDate={vi.fn()}
         updateEntryDraftField={vi.fn()}

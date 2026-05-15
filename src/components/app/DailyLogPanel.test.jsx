@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
+import { createBlankEntryDraft } from '@/test/leanlog-test-fixtures'
+
 import { DailyLogPanel } from './DailyLogPanel'
 
 describe('DailyLogPanel', () => {
@@ -14,14 +16,7 @@ describe('DailyLogPanel', () => {
     render(
       <DailyLogPanel
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '',
-          calories: '',
-          steps: '',
-          exerciseType: '',
-          exerciseMinutes: '',
-        }}
+        entryDraft={createBlankEntryDraft()}
         isSavingEntry={false}
         activeDays={3}
         exerciseDays={2}
@@ -56,14 +51,7 @@ describe('DailyLogPanel', () => {
     render(
       <DailyLogPanel
         selectedDate="2026-05-14"
-        entryDraft={{
-          date: '2026-05-14',
-          weight: '',
-          calories: '',
-          steps: '',
-          exerciseType: '',
-          exerciseMinutes: '',
-        }}
+        entryDraft={createBlankEntryDraft()}
         isSavingEntry={true}
         activeDays={0}
         exerciseDays={0}
