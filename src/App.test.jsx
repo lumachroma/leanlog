@@ -108,8 +108,8 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /history/i }))
 
-    expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
-    expect(screen.getByText(/^edit saved day$/i)).toBeInTheDocument()
+    expect(screen.getByText(/daily timeline/i)).toBeInTheDocument()
+    expect(screen.getByText(/^edit entry$/i)).toBeInTheDocument()
     expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
   })
 

@@ -45,7 +45,7 @@ describe('AppContent', () => {
   it('renders the history branch', () => {
     render(<AppContent {...createProps()} activePage="history" />)
 
-    expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
+    expect(screen.getByText(/daily timeline/i)).toBeInTheDocument()
   })
 
   it('renders the weekly averages branch', () => {

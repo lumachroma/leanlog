@@ -148,7 +148,8 @@ function DailyLogPanel({
             </div>
           </div>
           <div className="mt-2 block text-xs text-muted-foreground">
-            Leave all fields blank for a date if you want the saved entry removed.
+            If all fields are left blank, the saved entry for this day will be
+            removed automatically.
           </div>
         </div>
       </div>

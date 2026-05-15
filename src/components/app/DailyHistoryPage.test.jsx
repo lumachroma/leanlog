@@ -44,7 +44,7 @@ describe('DailyHistoryPage', () => {
       />
     )
 
-    expect(screen.getByText(/review and edit saved days/i)).toBeInTheDocument()
+    expect(screen.getByText(/daily timeline/i)).toBeInTheDocument()
     expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /edit/i }))
@@ -99,8 +99,13 @@ describe('DailyHistoryPage', () => {
       />
     )
 
-    expect(screen.getByText(/create a new day/i)).toBeInTheDocument()
+    expect(screen.getByText(/edit entry/i)).toBeInTheDocument()
     expect(screen.getByText(/create mode/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /update or remove a saved day while keeping your long-term trends and summaries intact/i
+      )
+    ).toBeInTheDocument()
   })
 
   it('creates a new entry using the next available date', async () => {

@@ -127,11 +127,11 @@ function DailyHistoryPage({
               Daily history
             </p>
             <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-              Review and edit saved days
+              Daily Timeline
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-              Select a saved day to edit it, or create a fresh entry without manually
-              hunting for an unused date.
+              Browse, review, and update your saved entries through a clear
+              day-by-day history of your progress.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -304,13 +304,9 @@ function DailyHistoryPage({
           isSavingEntry={isSavingEntry}
           activeDays={entries.length}
           exerciseDays={entries.filter(hasExercise).length}
-          title={isEditingExistingEntry ? 'Edit saved day' : 'Create a new day'}
+          title="Edit Entry"
           modeLabel={isEditingExistingEntry ? 'Editing mode' : 'Create mode'}
-          description={
-            isEditingExistingEntry
-              ? 'You are editing a saved daily record. Update the fields and save to overwrite it.'
-              : 'You are creating a fresh daily record for a date that is not saved yet.'
-          }
+          description="Update or remove a saved day while keeping your long-term trends and summaries intact."
           setSelectedDate={setSelectedDate}
           updateEntryDraftField={updateEntryDraftField}
           saveEntry={saveEntry}
