@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, lazy } from 'react'
 
 import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
@@ -7,6 +7,7 @@ import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { AppShell } from '@/components/app/AppShell'
 import { SettingsPage } from '@/components/app/SettingsPage'
 import { WeeklyAveragesPage } from '@/components/app/WeeklyAveragesPage'
+import { useAppShellState } from '@/hooks/useAppShellState'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
 
 const DashboardSection = lazy(() =>
@@ -23,27 +24,8 @@ function DashboardLoadingState() {
   )
 }
 
-const PAGE_STORAGE_KEY = 'leanlog.active-page'
-const VALID_PAGES = new Set([
-  'dashboard',
-  'weekly-averages',
-  'monthly-averages',
-  'history',
-  'settings',
-])
-
-const readPersistedPage = () => {
-  if (typeof window === 'undefined') {
-    return 'dashboard'
-  }
-
-  const persistedPage = window.localStorage.getItem(PAGE_STORAGE_KEY)
-
-  return VALID_PAGES.has(persistedPage) ? persistedPage : 'dashboard'
-}
-
 function App() {
-  const [activePage, setActivePage] = useState(readPersistedPage)
+  const { activePage, openSettings, setActivePage } = useAppShellState()
 
   const {
     lifecycle,
@@ -53,9 +35,58 @@ function App() {
     dashboardView,
   } = useAppViewModel()
 
-  useEffect(() => {
-    window.localStorage.setItem(PAGE_STORAGE_KEY, activePage)
-  }, [activePage])
+  const renderActivePage = () => {
+    if (activePage === 'history') {
+      return (
+        <DailyHistoryPage
+          entries={historyView.entries}
+          selectedDate={historyView.selectedDate}
+          entryDraft={historyView.entryDraft}
+          isSavingEntry={historyView.isSavingEntry}
+          setSelectedDate={historyView.setSelectedDate}
+          updateEntryDraftField={historyView.updateEntryDraftField}
+          saveEntry={historyView.saveEntry}
+          deleteEntry={historyView.deleteEntry}
+        />
+      )
+    }
+
+    if (activePage === 'weekly-averages') {
+      return <WeeklyAveragesPage weeklyAverageCards={averagesView.weeklyAverageCards} />
+    }
+
+    if (activePage === 'monthly-averages') {
+      return <MonthlyAveragesPage monthlyAverageCards={averagesView.monthlyAverageCards} />
+    }
+
+    if (activePage === 'settings') {
+      return (
+        <SettingsPage
+          settings={settingsView.settings}
+          isSavingSettings={settingsView.isSavingSettings}
+          updateSettingsField={settingsView.updateSettingsField}
+          saveSettings={settingsView.saveSettings}
+        />
+      )
+    }
+
+    return (
+      <main className="py-8 xl:py-10">
+        <Suspense fallback={<DashboardLoadingState />}>
+          <DashboardSection
+            metrics={dashboardView.metrics}
+            chartSeries={dashboardView.chartSeries}
+            settings={dashboardView.settings}
+            calorieDelta={dashboardView.calorieDelta}
+            stepDelta={dashboardView.stepDelta}
+            goalDistance={dashboardView.goalDistance}
+            targetsConfigured={dashboardView.targetsConfigured}
+            onOpenSettings={openSettings}
+          />
+        </Suspense>
+      </main>
+    )
+  }
 
   if (!lifecycle.isHydrated) {
     return <AppLoadingState />
@@ -71,44 +102,7 @@ function App() {
         </div>
       ) : null}
 
-      {activePage === 'history' ? (
-        <DailyHistoryPage
-          entries={historyView.entries}
-          selectedDate={historyView.selectedDate}
-          entryDraft={historyView.entryDraft}
-          isSavingEntry={historyView.isSavingEntry}
-          setSelectedDate={historyView.setSelectedDate}
-          updateEntryDraftField={historyView.updateEntryDraftField}
-          saveEntry={historyView.saveEntry}
-          deleteEntry={historyView.deleteEntry}
-        />
-      ) : activePage === 'weekly-averages' ? (
-        <WeeklyAveragesPage weeklyAverageCards={averagesView.weeklyAverageCards} />
-      ) : activePage === 'monthly-averages' ? (
-        <MonthlyAveragesPage monthlyAverageCards={averagesView.monthlyAverageCards} />
-      ) : activePage === 'settings' ? (
-        <SettingsPage
-          settings={settingsView.settings}
-          isSavingSettings={settingsView.isSavingSettings}
-          updateSettingsField={settingsView.updateSettingsField}
-          saveSettings={settingsView.saveSettings}
-        />
-      ) : (
-        <main className="py-8 xl:py-10">
-          <Suspense fallback={<DashboardLoadingState />}>
-            <DashboardSection
-              metrics={dashboardView.metrics}
-              chartSeries={dashboardView.chartSeries}
-              settings={dashboardView.settings}
-              calorieDelta={dashboardView.calorieDelta}
-              stepDelta={dashboardView.stepDelta}
-              goalDistance={dashboardView.goalDistance}
-              targetsConfigured={dashboardView.targetsConfigured}
-              onOpenSettings={() => setActivePage('settings')}
-            />
-          </Suspense>
-        </main>
-      )}
+      {renderActivePage()}
     </AppShell>
   )
 }
