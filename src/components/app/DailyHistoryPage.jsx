@@ -190,7 +190,7 @@ function DailyHistoryPage({
                         className={`rounded-[1.5rem] border p-4 transition ${
                           isSelected
                             ? 'border-foreground/15 bg-muted/50 shadow-sm'
-                            : 'border-border/80 bg-background/70'
+                            : 'border-border/80 bg-muted/30'
                         }`}
                       >
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
