@@ -80,8 +80,8 @@ function DashboardSection({
         <div className="border-b border-border/80 pb-5">
           <SectionHeading
             eyebrow="Section 1"
-            title="KPI Cards"
-            description="Five clear dashboard signals to keep the day-to-day system readable at a glance."
+            title="Today's Snapshot"
+            description="A quick view of your current trend, consistency, and progress toward your goal."
           />
         </div>
 
@@ -143,8 +143,8 @@ function DashboardSection({
       <WeightTrendChart
         points={chartSeries.weightTrend}
         eyebrow="Section 2"
-        title="Main Weight Trend Graph"
-        description="The emotional centerpiece: one honest daily line and one calmer trend line, so the signal stays readable without hiding reality."
+        title="Weight Trend"
+        description="Daily fluctuations stay visible while the long-term direction remains clear."
       />
 
       <ConsistencyTrackingChart

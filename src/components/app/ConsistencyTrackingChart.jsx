@@ -82,8 +82,8 @@ function ConsistencyTrackingChart({
       <div className="border-b border-border/80 pb-5">
         <SectionHeading
           eyebrow="Section 3"
-          title="Consistency Tracking"
-          description="Mini comparisons between your recent averages and the targets you set, so consistency is visible without turning the dashboard into accounting software."
+          title="Daily Consistency"
+          description="Small daily habits become meaningful when viewed consistently over time."
         />
       </div>
 

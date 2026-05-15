@@ -17,8 +17,8 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
       <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading
           eyebrow="Section 4"
-          title="Goal Progress Bar"
-          description="A clear line from your starting point to your goal, with your current weight anchored visibly in the middle."
+          title="Progress Toward Your Goal"
+          description="Your starting point, current trend, and target weight shown together in one clear view."
         />
         <div className="text-sm text-muted-foreground">
           {hasGoalData

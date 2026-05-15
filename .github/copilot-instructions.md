@@ -10,7 +10,7 @@
 ## Iteration 1 Scope
 
 - Track only daily weight, calories, steps, and exercise.
-- Show a focused dashboard with four sections: KPI cards, a main weight trend graph, consistency tracking, and a goal progress bar.
+- Show a focused dashboard with four sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal.
 - Use a dual-line weight trend chart for daily weight and 7-day moving average.
 - Visualize calorie and step consistency against targets without turning the product into accounting software.
 - Include dedicated weekly and monthly average pages for longer-view summaries.

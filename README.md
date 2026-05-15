@@ -6,7 +6,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 
 ## Features
 
-- Dashboard with four structured sections: KPI cards, main weight trend graph, consistency tracking, and goal progress bar
+- Dashboard with four structured sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal
 - Recharts-based dual-line weight trend chart showing daily weight and 7-day moving average
 - Consistency tracking visuals for calorie and step averages versus targets
 - Goal progress bar visualizing start weight, current weight, and goal weight
@@ -140,10 +140,10 @@ Key files:
 
 The dashboard is intentionally split into four sections so the app stays readable under real-life conditions:
 
-- Section 1: KPI Cards for weight trend, 7-day moving average, average calories, average steps, and goal progress
-- Section 2: Main Weight Trend Graph using daily weight plus 7-day moving average as the emotional centerpiece
-- Section 3: Consistency Tracking comparing calorie and step averages against targets
-- Section 4: Goal Progress Bar showing the relationship between start weight, current weight, and goal weight
+- Section 1: Today's Snapshot for weight trend, 7-day moving average, average calories, average steps, and goal progress
+- Section 2: Weight Trend using daily weight plus 7-day moving average to keep fluctuations visible while the long-term direction stays clear
+- Section 3: Daily Consistency comparing calorie and step averages against targets over time
+- Section 4: Progress Toward Your Goal showing the relationship between start weight, current trend, and goal weight
 
 ## Data Persistence
 
