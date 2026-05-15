@@ -183,25 +183,20 @@ function SettingsPanel({
       </div>
 
       <section className="mt-6 border-t border-border/80 pt-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-              Daily logs
-            </p>
-            <h3 className="mt-2 text-xl font-medium tracking-[-0.03em]">
-              Data Backup & Restore
-            </h3>
-            <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-              Keep a portable copy of your daily logs or restore saved entries
-              anytime using simple CSV files.
-            </p>
-            <p className="mt-2 max-w-lg text-sm italic leading-7 text-muted-foreground">
-              Imports are merged by date and overwrite matching saved days, while
-              missing days stay untouched.
-            </p>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {entries.length} saved {entries.length === 1 ? 'day' : 'days'}
+        <div>
+          <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+            Daily logs
+          </p>
+          <h3 className="mt-2 text-xl font-medium tracking-[-0.03em]">
+            Data Backup & Restore
+          </h3>
+          <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+            Keep a portable copy of your daily logs or restore saved entries
+            anytime using simple CSV files.
+          </p>
+          <p className="mt-2 max-w-lg text-sm italic leading-7 text-muted-foreground">
+            Imports are merged by date and overwrite matching saved days, while
+            missing days stay untouched.
           </p>
         </div>
 
@@ -255,6 +250,12 @@ function SettingsPanel({
               {importFeedback.message}
             </p>
           ) : null}
+
+          <div className="mt-4 flex justify-end border-t border-border/70 pt-4">
+            <p className="text-sm text-muted-foreground">
+              {entries.length} saved {entries.length === 1 ? 'day' : 'days'}
+            </p>
+          </div>
         </div>
       </section>
     </form>
