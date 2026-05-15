@@ -3,9 +3,11 @@ import { useEffect } from 'react'
 import {
   getChartSeries,
   getDashboardMetrics,
+  getGoalDistance,
   getMonthlyAverageCards,
+  getNumericSettings,
+  getTargetDelta,
   getWeeklyAverageCards,
-  toNumber,
 } from '@/lib/metrics'
 import { useAppStore } from '@/store/useAppStore'
 
@@ -34,9 +36,10 @@ export function useAppViewModel() {
   const weeklyAverageCards = getWeeklyAverageCards(entries)
   const monthlyAverageCards = getMonthlyAverageCards(entries)
   const chartSeries = getChartSeries(entries)
-  const goalWeight = toNumber(settings.goalWeight)
-  const dailyCalorieTarget = toNumber(settings.dailyCalorieTarget)
-  const dailyStepTarget = toNumber(settings.dailyStepTarget)
+  const { goalWeight, dailyCalorieTarget, dailyStepTarget } = getNumericSettings(settings)
+  const calorieDelta = getTargetDelta(metrics.calorieAverage, dailyCalorieTarget)
+  const stepDelta = getTargetDelta(metrics.stepAverage, dailyStepTarget)
+  const goalDistance = getGoalDistance(metrics.latestWeight, goalWeight)
 
   return {
     settings,
@@ -51,18 +54,9 @@ export function useAppViewModel() {
     weeklyAverageCards,
     monthlyAverageCards,
     chartSeries,
-    calorieDelta:
-      metrics.calorieAverage !== null && dailyCalorieTarget !== null
-        ? Math.round(metrics.calorieAverage - dailyCalorieTarget)
-        : null,
-    stepDelta:
-      metrics.stepAverage !== null && dailyStepTarget !== null
-        ? Math.round(metrics.stepAverage - dailyStepTarget)
-        : null,
-    goalDistance:
-      metrics.latestWeight !== null && goalWeight !== null
-        ? Math.abs(metrics.latestWeight - goalWeight)
-        : null,
+    calorieDelta,
+    stepDelta,
+    goalDistance,
     updateSettingsField,
     saveSettings,
     setSelectedDate,

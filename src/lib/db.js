@@ -1,5 +1,7 @@
 import Dexie from 'dexie'
 
+import { average, toNumber as parseNumber } from '@/lib/number-utils'
+
 export const SETTINGS_RECORD_ID = 'profile'
 export const EXERCISE_TYPE_OPTIONS = [
   'Walking',
@@ -35,15 +37,6 @@ export const createEmptyEntryDraft = (date = todayDate()) => ({
   weight7dma: null,
 })
 
-const parseNumber = (value) => {
-  if (value === '' || value === null || value === undefined) {
-    return null
-  }
-
-  const parsedValue = Number(value)
-  return Number.isFinite(parsedValue) ? parsedValue : null
-}
-
 const hasText = (value) => String(value ?? '').trim().length > 0
 
 const toDateAtMidnight = (date) => new Date(`${date}T00:00:00`)
@@ -52,15 +45,6 @@ const addDays = (date, days) => {
   const nextDate = new Date(toDateAtMidnight(date))
   nextDate.setDate(nextDate.getDate() + days)
   return toDateInputValue(nextDate)
-}
-
-const average = (values) => {
-  if (!values.length) {
-    return null
-  }
-
-  const total = values.reduce((sum, value) => sum + value, 0)
-  return Number((total / values.length).toFixed(2))
 }
 
 const sanitizeSettings = (settings = DEFAULT_SETTINGS) => ({
@@ -107,7 +91,7 @@ export const recalculateMovingAverageEntries = (entries) => {
 
     return normalizeEntryRecord({
       ...entry,
-      weight7dma: average(trailingWeights),
+      weight7dma: average(trailingWeights, { precision: 2 }),
     })
   })
 }

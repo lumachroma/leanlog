@@ -1,6 +1,7 @@
 import { Activity, Flame, Footprints, Scale, Target } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { getNumericSettings } from '@/lib/metrics'
 
 import { ConsistencyTrackingChart } from './ConsistencyTrackingChart'
 import { GoalProgressChart } from './GoalProgressChart'
@@ -49,15 +50,6 @@ const weightFormatter = new Intl.NumberFormat('en-US', {
 const formatWeight = (value) =>
   value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
 
-const toNumber = (value) => {
-  if (value === '' || value === null || value === undefined) {
-    return null
-  }
-
-  const parsedValue = Number(value)
-  return Number.isFinite(parsedValue) ? parsedValue : null
-}
-
 const formatAverage = (value, suffix) => {
   if (value === null) {
     return suffix ? `-- ${suffix}` : '--'
@@ -91,10 +83,8 @@ function DashboardSection({
   targetsConfigured,
   onOpenSettings,
 }) {
-  const calorieTarget = toNumber(settings.dailyCalorieTarget)
-  const stepTarget = toNumber(settings.dailyStepTarget)
-  const startWeight = toNumber(settings.startWeight)
-  const goalWeight = toNumber(settings.goalWeight)
+  const { startWeight, goalWeight, dailyCalorieTarget, dailyStepTarget } =
+    getNumericSettings(settings)
 
   return (
     <section className="space-y-6">
@@ -193,10 +183,10 @@ function DashboardSection({
 
       <ConsistencyTrackingChart
         calorieAverage={metrics.calorieAverage}
-        calorieTarget={calorieTarget}
+        calorieTarget={dailyCalorieTarget}
         calorieDelta={calorieDelta}
         stepAverage={metrics.stepAverage}
-        stepTarget={stepTarget}
+        stepTarget={dailyStepTarget}
         stepDelta={stepDelta}
       />
 

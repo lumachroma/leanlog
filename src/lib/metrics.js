@@ -1,22 +1,23 @@
-const parseNumber = (value) => {
-  if (value === '' || value === null || value === undefined) {
-    return null
-  }
-
-  const parsedValue = Number(value)
-  return Number.isFinite(parsedValue) ? parsedValue : null
-}
+import { average, toNumber as parseNumber } from '@/lib/number-utils'
 
 const hasText = (value) => String(value ?? '').trim().length > 0
 
-const average = (values) => {
-  if (!values.length) {
-    return null
-  }
+const isPresentNumber = (value) => value !== null
 
-  const total = values.reduce((sum, value) => sum + value, 0)
-  return total / values.length
-}
+const getEntryNumber = (entry, field) => parseNumber(entry?.[field])
+
+const hasEntryNumber = (entry, field) => getEntryNumber(entry, field) !== null
+
+const getNumericValues = (entries, field) =>
+  entries.map((entry) => getEntryNumber(entry, field)).filter(isPresentNumber)
+
+const getAverageForField = (entries, field) => average(getNumericValues(entries, field))
+
+const getFirstNumericFieldValue = (entries, field) =>
+  getEntryNumber(entries.find((entry) => hasEntryNumber(entry, field)), field)
+
+const getLastNumericFieldValue = (entries, field) =>
+  getEntryNumber(entries.findLast((entry) => hasEntryNumber(entry, field)), field)
 
 const formatMonthLabel = (monthKey) =>
   new Intl.DateTimeFormat('en-US', {
@@ -61,14 +62,20 @@ const getGoalProgressPercent = (startWeight, goalWeight, latestWeight) => {
   return Math.max(0, Math.min(100, Math.round(progress)))
 }
 
+const getDelta = (value, baseline) =>
+  value !== null && baseline !== null ? Math.round(value - baseline) : null
+
+const getAbsoluteDistance = (left, right) =>
+  left !== null && right !== null ? Math.abs(left - right) : null
+
 const asChartPoint = (entry) => ({
   date: entry.date,
-  weight: parseNumber(entry.weight),
-  weight7dma: parseNumber(entry.weight7dma),
-  calories: parseNumber(entry.calories),
-  steps: parseNumber(entry.steps),
+  weight: getEntryNumber(entry, 'weight'),
+  weight7dma: getEntryNumber(entry, 'weight7dma'),
+  calories: getEntryNumber(entry, 'calories'),
+  steps: getEntryNumber(entry, 'steps'),
   exerciseType: hasText(entry.exerciseType) ? String(entry.exerciseType).trim() : null,
-  exerciseMinutes: parseNumber(entry.exerciseMinutes),
+  exerciseMinutes: getEntryNumber(entry, 'exerciseMinutes'),
 })
 
 const createPeriodSummary = (periodKey) => ({
@@ -90,115 +97,92 @@ const toAverageCard = (summary, label) => ({
   stepAverage: average(summary.stepValues),
 })
 
+const addEntryToPeriodSummary = (summary, entry) => {
+  summary.daysLogged += 1
+
+  if (hasExercise(entry)) {
+    summary.exerciseDays += 1
+  }
+
+  const weight = getEntryNumber(entry, 'weight')
+  const calories = getEntryNumber(entry, 'calories')
+  const steps = getEntryNumber(entry, 'steps')
+
+  if (weight !== null) {
+    summary.weightValues.push(weight)
+  }
+
+  if (calories !== null) {
+    summary.calorieValues.push(calories)
+  }
+
+  if (steps !== null) {
+    summary.stepValues.push(steps)
+  }
+
+  return summary
+}
+
+const buildAverageCards = (entries, getPeriodKey, formatLabel) => {
+  const summaries = new Map()
+
+  entries.forEach((entry) => {
+    const periodKey = getPeriodKey(entry)
+    const summary = addEntryToPeriodSummary(
+      summaries.get(periodKey) ?? createPeriodSummary(periodKey),
+      entry
+    )
+
+    summaries.set(periodKey, summary)
+  })
+
+  return [...summaries.values()]
+    .sort((left, right) => right.periodKey.localeCompare(left.periodKey))
+    .map((summary) => toAverageCard(summary, formatLabel(summary.periodKey)))
+}
+
+const createTrendSeries = (entries, fields) =>
+  entries.filter((entry) => fields.some((field) => hasEntryNumber(entry, field))).map(asChartPoint)
+
 export const toNumber = parseNumber
 
+export const getTargetDelta = getDelta
+
+export const getGoalDistance = getAbsoluteDistance
+
+export function getNumericSettings(settings = {}) {
+  return {
+    startWeight: parseNumber(settings.startWeight),
+    goalWeight: parseNumber(settings.goalWeight),
+    dailyCalorieTarget: parseNumber(settings.dailyCalorieTarget),
+    dailyStepTarget: parseNumber(settings.dailyStepTarget),
+  }
+}
+
 export function getDashboardMetrics(entries, settings) {
-  const latestWeightEntry = entries.find((entry) => parseNumber(entry.weight) !== null)
-  const latestWeight = parseNumber(latestWeightEntry?.weight)
-  const latestMovingAverageEntry = entries.find(
-    (entry) => parseNumber(entry.weight7dma) !== null
-  )
-  const baselineWeight =
-    parseNumber(settings.startWeight) ??
-    parseNumber(entries.findLast((entry) => parseNumber(entry.weight) !== null)?.weight)
-  const goalWeight = parseNumber(settings.goalWeight)
+  const { startWeight, goalWeight } = getNumericSettings(settings)
+  const latestWeight = getFirstNumericFieldValue(entries, 'weight')
+  const latestWeight7dma = getFirstNumericFieldValue(entries, 'weight7dma')
+  const baselineWeight = startWeight ?? getLastNumericFieldValue(entries, 'weight')
 
   return {
     latestWeight,
-    latestWeight7dma: parseNumber(latestMovingAverageEntry?.weight7dma),
-    weightDelta:
-      latestWeight !== null && baselineWeight !== null
-        ? latestWeight - baselineWeight
-        : null,
-    goalProgressPercent: getGoalProgressPercent(
-      parseNumber(settings.startWeight),
-      goalWeight,
-      latestWeight
-    ),
-    calorieAverage: average(
-      entries
-        .map((entry) => parseNumber(entry.calories))
-        .filter((value) => value !== null)
-    ),
-    stepAverage: average(
-      entries.map((entry) => parseNumber(entry.steps)).filter((value) => value !== null)
-    ),
+    latestWeight7dma,
+    weightDelta: getDelta(latestWeight, baselineWeight),
+    goalProgressPercent: getGoalProgressPercent(startWeight, goalWeight, latestWeight),
+    calorieAverage: getAverageForField(entries, 'calories'),
+    stepAverage: getAverageForField(entries, 'steps'),
     activeDays: entries.length,
     exerciseDays: entries.filter(hasExercise).length,
   }
 }
 
 export function getWeeklyAverageCards(entries) {
-  const weeklyMap = new Map()
-
-  entries.forEach((entry) => {
-    const periodKey = getWeekStart(entry.date)
-    const summary = weeklyMap.get(periodKey) ?? createPeriodSummary(periodKey)
-    const weight = parseNumber(entry.weight)
-    const calories = parseNumber(entry.calories)
-    const steps = parseNumber(entry.steps)
-
-    summary.daysLogged += 1
-
-    if (hasExercise(entry)) {
-      summary.exerciseDays += 1
-    }
-
-    if (weight !== null) {
-      summary.weightValues.push(weight)
-    }
-
-    if (calories !== null) {
-      summary.calorieValues.push(calories)
-    }
-
-    if (steps !== null) {
-      summary.stepValues.push(steps)
-    }
-
-    weeklyMap.set(periodKey, summary)
-  })
-
-  return [...weeklyMap.values()]
-    .sort((left, right) => right.periodKey.localeCompare(left.periodKey))
-    .map((summary) => toAverageCard(summary, formatWeekLabel(summary.periodKey)))
+  return buildAverageCards(entries, (entry) => getWeekStart(entry.date), formatWeekLabel)
 }
 
 export function getMonthlyAverageCards(entries) {
-  const monthlyMap = new Map()
-
-  entries.forEach((entry) => {
-    const periodKey = entry.date.slice(0, 7)
-    const summary = monthlyMap.get(periodKey) ?? createPeriodSummary(periodKey)
-
-    const weight = parseNumber(entry.weight)
-    const calories = parseNumber(entry.calories)
-    const steps = parseNumber(entry.steps)
-
-    summary.daysLogged += 1
-
-    if (hasExercise(entry)) {
-      summary.exerciseDays += 1
-    }
-
-    if (weight !== null) {
-      summary.weightValues.push(weight)
-    }
-
-    if (calories !== null) {
-      summary.calorieValues.push(calories)
-    }
-
-    if (steps !== null) {
-      summary.stepValues.push(steps)
-    }
-
-    monthlyMap.set(periodKey, summary)
-  })
-
-  return [...monthlyMap.values()]
-    .sort((left, right) => right.periodKey.localeCompare(left.periodKey))
-    .map((summary) => toAverageCard(summary, formatMonthLabel(summary.periodKey)))
+  return buildAverageCards(entries, (entry) => entry.date.slice(0, 7), formatMonthLabel)
 }
 
 export function getChartSeries(entries) {
@@ -207,17 +191,8 @@ export function getChartSeries(entries) {
   )
 
   return {
-    weightTrend: orderedEntries
-      .filter(
-        (entry) =>
-          parseNumber(entry.weight) !== null || parseNumber(entry.weight7dma) !== null
-      )
-      .map(asChartPoint),
-    calorieTrend: orderedEntries
-      .filter((entry) => parseNumber(entry.calories) !== null)
-      .map(asChartPoint),
-    stepTrend: orderedEntries
-      .filter((entry) => parseNumber(entry.steps) !== null)
-      .map(asChartPoint),
+    weightTrend: createTrendSeries(orderedEntries, ['weight', 'weight7dma']),
+    calorieTrend: createTrendSeries(orderedEntries, ['calories']),
+    stepTrend: createTrendSeries(orderedEntries, ['steps']),
   }
 }
