@@ -1,5 +1,7 @@
 # Leanlog
 
+[![Deploy GitHub Pages](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml)
+
 Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, CSV backup/restore for daily logs, and installable PWA support.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
@@ -72,21 +74,6 @@ npm run preview
 
 Serves the production build locally.
 
-## GitHub Pages Deployment
-
-Leanlog is configured to deploy as a GitHub Pages project site from a normal repo named `leanlog`.
-
-The GitHub Pages build uses the `/leanlog/` base path automatically when the `GITHUB_PAGES=true` environment variable is set. The included workflow in [.github/workflows/deploy-pages.yml](/Users/nazrulhisham/Projects/learn/leanlog/.github/workflows/deploy-pages.yml) already does this for you.
-
-To enable deployment:
-
-1. Push this repository to GitHub.
-2. Open the repository `Settings` page, then `Pages`.
-3. Set `Source` to `GitHub Actions`.
-4. Push to `main`, or manually run the `Deploy GitHub Pages` workflow.
-
-The published app will be served from `https://<your-user>.github.io/leanlog/`, with the manifest scope and start URL aligned to that same path so the PWA can install correctly.
-
 ```bash
 npm run lint
 ```
@@ -104,6 +91,33 @@ npm run test:watch
 ```
 
 Runs Vitest in watch mode.
+
+## GitHub Pages Deployment
+
+Leanlog is configured to deploy as a GitHub Pages project site from this normal repo named `leanlog`.
+
+- Workflow: [.github/workflows/deploy-pages.yml](/Users/nazrulhisham/Projects/learn/leanlog/.github/workflows/deploy-pages.yml)
+- Published URL: https://lumachroma.github.io/leanlog/
+- Pages-aware build path: `/leanlog/`
+
+The GitHub Pages build uses the `/leanlog/` base path automatically when the `GITHUB_PAGES=true` environment variable is set, so manifest scope, start URL, and built asset URLs stay aligned with the published site.
+
+To enable deployment:
+
+1. Push this repository to GitHub.
+2. Open the repository `Settings` page, then `Pages`.
+3. Set `Source` to `GitHub Actions`.
+4. Make sure the default branch is `main`.
+5. Push to `main`, or manually run the `Deploy GitHub Pages` workflow.
+
+Deployment checklist:
+
+1. `Settings` -> `Actions` -> `General`: allow GitHub Actions to run.
+2. `Settings` -> `Pages`: source is `GitHub Actions`.
+3. `Settings` -> `Environments` -> `github-pages`: no blocking approval rules unless you want them.
+4. Repository visibility and Pages settings allow the site to be published.
+
+Once deployed, the PWA should install from https://lumachroma.github.io/leanlog/ with the correct GitHub Pages scope.
 
 ## Product Scope
 
