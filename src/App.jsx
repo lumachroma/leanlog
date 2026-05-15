@@ -2,6 +2,7 @@ import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { AppContent } from '@/components/app/AppContent'
 import { AppErrorBanner } from '@/components/app/AppErrorBanner'
 import { AppHeader } from '@/components/app/AppHeader'
+import { AppPwaManager } from '@/components/app/AppPwaManager'
 import { AppShell } from '@/components/app/AppShell'
 import { useAppShellState } from '@/hooks/useAppShellState'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
@@ -24,6 +25,8 @@ function App() {
   return (
     <AppShell>
       <AppHeader activePage={activePage} onPageChange={setActivePage} />
+
+      <AppPwaManager />
 
       <AppErrorBanner message={lifecycle.errorMessage} />
 

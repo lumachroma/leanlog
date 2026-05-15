@@ -1,13 +1,20 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createSampleAppViewModel } from '@/test/leanlog-test-fixtures'
 
 const mockUseAppViewModel = vi.fn()
+const mockUpdateServiceWorker = vi.fn()
+const mockRegisterSW = vi.fn()
+let registerSwOptions
 
 vi.mock('@/hooks/useAppViewModel', () => ({
   useAppViewModel: () => mockUseAppViewModel(),
+}))
+
+vi.mock('virtual:pwa-register', () => ({
+  registerSW: (options) => mockRegisterSW(options),
 }))
 
 import App from './App'
@@ -17,6 +24,13 @@ describe('App', () => {
 
   beforeEach(() => {
     window.localStorage.clear()
+    registerSwOptions = undefined
+    mockUpdateServiceWorker.mockReset()
+    mockRegisterSW.mockReset()
+    mockRegisterSW.mockImplementation((options) => {
+      registerSwOptions = options
+      return mockUpdateServiceWorker
+    })
     mockUseAppViewModel.mockReturnValue(baseViewModel)
   })
 
@@ -186,5 +200,40 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /open settings/i }))
 
     expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
+  })
+
+  it('shows an update prompt when a new service worker is ready', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await act(async () => {
+      registerSwOptions.onNeedRefresh()
+    })
+
+    expect(screen.getByText(/app update ready/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /refresh now/i }))
+
+    expect(mockUpdateServiceWorker).toHaveBeenCalledWith(true)
+  })
+
+  it('shows an offline-ready toast when the app shell has been cached', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await act(async () => {
+      registerSwOptions.onOfflineReady()
+    })
+
+    expect(screen.getByText(/offline ready/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/leanlog is cached and ready for faster repeat loads and basic offline use/i)
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /dismiss/i }))
+
+    expect(screen.queryByText(/offline ready/i)).not.toBeInTheDocument()
   })
 })
