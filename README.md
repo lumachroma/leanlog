@@ -2,6 +2,12 @@
 
 [![Deploy GitHub Pages](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml)
 
+**LeanLog** is a personal weight-loss operating system built for real life.
+A calm weight-loss tracker for real life - focused on consistency, forgiving trends, and long-term progress without pressure or noise.
+Fast daily logging, stable trend tracking, and lightweight progress reviews designed for sustainable fat loss over the long term.
+
+## Technical Description
+
 Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, CSV backup/restore for daily logs, and installable PWA support.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
