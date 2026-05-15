@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react'
 
+import { AppSectionLoadingState } from '@/components/app/AppSectionLoadingState'
 import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { SettingsPage } from '@/components/app/SettingsPage'
@@ -10,14 +11,6 @@ const DashboardSection = lazy(() =>
     default: module.DashboardSection,
   }))
 )
-
-function DashboardLoadingState() {
-  return (
-    <div className="mt-6 rounded-[1.75rem] border border-border/80 bg-background/90 px-5 py-8 text-sm leading-7 text-muted-foreground shadow-sm backdrop-blur">
-      Loading dashboard panels...
-    </div>
-  )
-}
 
 function AppContent({
   activePage,
@@ -63,7 +56,7 @@ function AppContent({
 
   return (
     <main className="py-8 xl:py-10">
-      <Suspense fallback={<DashboardLoadingState />}>
+      <Suspense fallback={<AppSectionLoadingState message="Loading dashboard panels..." />}>
         <DashboardSection
           metrics={dashboardView.metrics}
           chartSeries={dashboardView.chartSeries}

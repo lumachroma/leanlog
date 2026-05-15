@@ -1,5 +1,6 @@
 import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { AppContent } from '@/components/app/AppContent'
+import { AppErrorBanner } from '@/components/app/AppErrorBanner'
 import { AppHeader } from '@/components/app/AppHeader'
 import { AppShell } from '@/components/app/AppShell'
 import { useAppShellState } from '@/hooks/useAppShellState'
@@ -24,11 +25,7 @@ function App() {
     <AppShell>
       <AppHeader activePage={activePage} onPageChange={setActivePage} />
 
-      {lifecycle.errorMessage ? (
-        <div className="mt-6 rounded-[1.5rem] border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {lifecycle.errorMessage}
-        </div>
-      ) : null}
+      <AppErrorBanner message={lifecycle.errorMessage} />
 
       <AppContent
         activePage={activePage}
