@@ -42,47 +42,22 @@ const readPersistedPage = () => {
   return VALID_PAGES.has(persistedPage) ? persistedPage : 'dashboard'
 }
 
-const hasValue = (value) => String(value ?? '').trim().length > 0
-
 function App() {
   const [activePage, setActivePage] = useState(readPersistedPage)
 
   const {
-    settings,
-    entries,
-    selectedDate,
-    entryDraft,
-    isHydrated,
-    isSavingSettings,
-    isSavingEntry,
-    errorMessage,
-    metrics,
-    weeklyAverageCards,
-    monthlyAverageCards,
-    chartSeries,
-    calorieDelta,
-    stepDelta,
-    goalDistance,
-    updateSettingsField,
-    saveSettings,
-    setSelectedDate,
-    updateEntryDraftField,
-    saveEntry,
-    deleteEntry,
+    lifecycle,
+    settingsView,
+    historyView,
+    averagesView,
+    dashboardView,
   } = useAppViewModel()
 
   useEffect(() => {
     window.localStorage.setItem(PAGE_STORAGE_KEY, activePage)
   }, [activePage])
 
-  const targetsConfigured = [
-    settings.startWeight,
-    settings.goalWeight,
-    settings.dailyCalorieTarget,
-    settings.dailyStepTarget,
-  ].every(hasValue)
-
-  if (!isHydrated) {
+  if (!lifecycle.isHydrated) {
     return <AppLoadingState />
   }
 
@@ -90,45 +65,45 @@ function App() {
     <AppShell>
       <AppHeader activePage={activePage} onPageChange={setActivePage} />
 
-      {errorMessage ? (
+      {lifecycle.errorMessage ? (
         <div className="mt-6 rounded-[1.5rem] border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {errorMessage}
+          {lifecycle.errorMessage}
         </div>
       ) : null}
 
       {activePage === 'history' ? (
         <DailyHistoryPage
-          entries={entries}
-          selectedDate={selectedDate}
-          entryDraft={entryDraft}
-          isSavingEntry={isSavingEntry}
-          setSelectedDate={setSelectedDate}
-          updateEntryDraftField={updateEntryDraftField}
-          saveEntry={saveEntry}
-          deleteEntry={deleteEntry}
+          entries={historyView.entries}
+          selectedDate={historyView.selectedDate}
+          entryDraft={historyView.entryDraft}
+          isSavingEntry={historyView.isSavingEntry}
+          setSelectedDate={historyView.setSelectedDate}
+          updateEntryDraftField={historyView.updateEntryDraftField}
+          saveEntry={historyView.saveEntry}
+          deleteEntry={historyView.deleteEntry}
         />
       ) : activePage === 'weekly-averages' ? (
-        <WeeklyAveragesPage weeklyAverageCards={weeklyAverageCards} />
+        <WeeklyAveragesPage weeklyAverageCards={averagesView.weeklyAverageCards} />
       ) : activePage === 'monthly-averages' ? (
-        <MonthlyAveragesPage monthlyAverageCards={monthlyAverageCards} />
+        <MonthlyAveragesPage monthlyAverageCards={averagesView.monthlyAverageCards} />
       ) : activePage === 'settings' ? (
         <SettingsPage
-          settings={settings}
-          isSavingSettings={isSavingSettings}
-          updateSettingsField={updateSettingsField}
-          saveSettings={saveSettings}
+          settings={settingsView.settings}
+          isSavingSettings={settingsView.isSavingSettings}
+          updateSettingsField={settingsView.updateSettingsField}
+          saveSettings={settingsView.saveSettings}
         />
       ) : (
         <main className="py-8 xl:py-10">
           <Suspense fallback={<DashboardLoadingState />}>
             <DashboardSection
-              metrics={metrics}
-              chartSeries={chartSeries}
-              settings={settings}
-              calorieDelta={calorieDelta}
-              stepDelta={stepDelta}
-              goalDistance={goalDistance}
-              targetsConfigured={targetsConfigured}
+              metrics={dashboardView.metrics}
+              chartSeries={dashboardView.chartSeries}
+              settings={dashboardView.settings}
+              calorieDelta={dashboardView.calorieDelta}
+              stepDelta={dashboardView.stepDelta}
+              goalDistance={dashboardView.goalDistance}
+              targetsConfigured={dashboardView.targetsConfigured}
               onOpenSettings={() => setActivePage('settings')}
             />
           </Suspense>

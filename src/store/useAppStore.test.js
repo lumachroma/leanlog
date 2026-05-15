@@ -18,12 +18,20 @@ vi.mock('@/lib/db', async () => {
 })
 
 describe('useAppStore', () => {
+  let selectEntriesState
+  let selectLifecycleState
+  let selectSettingsState
   let useAppStore
 
   beforeEach(async () => {
     vi.resetModules()
 
-    ;({ useAppStore } = await import('./useAppStore'))
+    ;({
+      selectEntriesState,
+      selectLifecycleState,
+      selectSettingsState,
+      useAppStore,
+    } = await import('./useAppStore'))
 
     useAppStore.setState({
       settings: {
@@ -132,6 +140,34 @@ describe('useAppStore', () => {
       steps: '9000',
       exerciseType: 'Walking',
       exerciseMinutes: '40',
+    })
+  })
+
+  it('exposes stable domain selectors for settings, entries, and lifecycle state', () => {
+    const state = useAppStore.getState()
+
+    expect(selectSettingsState(state)).toEqual({
+      settings: state.settings,
+      isSavingSettings: false,
+      updateSettingsField: state.updateSettingsField,
+      saveSettings: state.saveSettings,
+    })
+
+    expect(selectEntriesState(state)).toEqual({
+      entries: state.entries,
+      selectedDate: state.selectedDate,
+      entryDraft: state.entryDraft,
+      isSavingEntry: false,
+      setSelectedDate: state.setSelectedDate,
+      updateEntryDraftField: state.updateEntryDraftField,
+      saveEntry: state.saveEntry,
+      deleteEntry: state.deleteEntry,
+    })
+
+    expect(selectLifecycleState(state)).toEqual({
+      isHydrated: true,
+      errorMessage: null,
+      hydrateApp: state.hydrateApp,
     })
   })
 })

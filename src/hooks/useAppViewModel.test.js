@@ -73,16 +73,16 @@ describe('useAppViewModel', () => {
       expect(storeState.hydrateApp).toHaveBeenCalledTimes(1)
     })
 
-    expect(result.current.metrics.latestWeight).toBe(80)
-    expect(result.current.metrics.latestWeight7dma).toBe(79.5)
-    expect(result.current.metrics.weightDelta).toBe(-5)
-    expect(result.current.metrics.goalProgressPercent).toBe(38)
-    expect(result.current.goalDistance).toBe(8)
-    expect(result.current.weeklyAverageCards).toHaveLength(1)
-    expect(result.current.weeklyAverageCards[0].daysLogged).toBe(2)
-    expect(result.current.monthlyAverageCards).toHaveLength(1)
-    expect(result.current.monthlyAverageCards[0].daysLogged).toBe(2)
-    expect(result.current.chartSeries.weightTrend).toEqual([
+    expect(result.current.dashboardView.metrics.latestWeight).toBe(80)
+    expect(result.current.dashboardView.metrics.latestWeight7dma).toBe(79.5)
+    expect(result.current.dashboardView.metrics.weightDelta).toBe(-5)
+    expect(result.current.dashboardView.metrics.goalProgressPercent).toBe(38)
+    expect(result.current.dashboardView.goalDistance).toBe(8)
+    expect(result.current.averagesView.weeklyAverageCards).toHaveLength(1)
+    expect(result.current.averagesView.weeklyAverageCards[0].daysLogged).toBe(2)
+    expect(result.current.averagesView.monthlyAverageCards).toHaveLength(1)
+    expect(result.current.averagesView.monthlyAverageCards[0].daysLogged).toBe(2)
+    expect(result.current.dashboardView.chartSeries.weightTrend).toEqual([
       {
         date: '2026-05-13',
         weight: 81,
@@ -102,22 +102,26 @@ describe('useAppViewModel', () => {
         exerciseMinutes: 40,
       },
     ])
-    expect(result.current.chartSeries.calorieTrend).toHaveLength(2)
-    expect(result.current.chartSeries.stepTrend).toHaveLength(2)
+    expect(result.current.dashboardView.chartSeries.calorieTrend).toHaveLength(2)
+    expect(result.current.dashboardView.chartSeries.stepTrend).toHaveLength(2)
   })
 
   it('passes through the store actions and current drafts', async () => {
     const { useAppViewModel } = await import('./useAppViewModel')
     const { result } = renderHook(() => useAppViewModel())
 
-    expect(result.current.settings).toEqual(storeState.settings)
-    expect(result.current.selectedDate).toBe('2026-05-14')
-    expect(result.current.entryDraft).toEqual(storeState.entryDraft)
-    expect(result.current.saveSettings).toBe(storeState.saveSettings)
-    expect(result.current.updateSettingsField).toBe(storeState.updateSettingsField)
-    expect(result.current.entries).toEqual(storeState.entries)
-    expect(result.current.saveEntry).toBe(storeState.saveEntry)
-    expect(result.current.deleteEntry).toBe(storeState.deleteEntry)
-    expect(result.current.updateEntryDraftField).toBe(storeState.updateEntryDraftField)
+    expect(result.current.settingsView.settings).toEqual(storeState.settings)
+    expect(result.current.historyView.selectedDate).toBe('2026-05-14')
+    expect(result.current.historyView.entryDraft).toEqual(storeState.entryDraft)
+    expect(result.current.settingsView.saveSettings).toBe(storeState.saveSettings)
+    expect(result.current.settingsView.updateSettingsField).toBe(
+      storeState.updateSettingsField
+    )
+    expect(result.current.historyView.entries).toEqual(storeState.entries)
+    expect(result.current.historyView.saveEntry).toBe(storeState.saveEntry)
+    expect(result.current.historyView.deleteEntry).toBe(storeState.deleteEntry)
+    expect(result.current.historyView.updateEntryDraftField).toBe(
+      storeState.updateEntryDraftField
+    )
   })
 })

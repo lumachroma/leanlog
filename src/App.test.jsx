@@ -12,14 +12,36 @@ import App from './App'
 
 describe('App', () => {
   const baseViewModel = {
-    settings: {
-      startWeight: '85',
-      goalWeight: '72',
-      dailyCalorieTarget: '2000',
-      dailyStepTarget: '8000',
+    lifecycle: {
+      isHydrated: true,
+      errorMessage: null,
+      hydrateApp: vi.fn(),
     },
-    entries: [
-      {
+    settingsView: {
+      settings: {
+        startWeight: '85',
+        goalWeight: '72',
+        dailyCalorieTarget: '2000',
+        dailyStepTarget: '8000',
+      },
+      isSavingSettings: false,
+      updateSettingsField: vi.fn(),
+      saveSettings: vi.fn(),
+    },
+    historyView: {
+      entries: [
+        {
+          date: '2026-05-14',
+          weight: '80',
+          weight7dma: 79.5,
+          calories: '1900',
+          steps: '9000',
+          exerciseType: 'Walking',
+          exerciseMinutes: '40',
+        },
+      ],
+      selectedDate: '2026-05-14',
+      entryDraft: {
         date: '2026-05-14',
         weight: '80',
         weight7dma: 79.5,
@@ -28,67 +50,63 @@ describe('App', () => {
         exerciseType: 'Walking',
         exerciseMinutes: '40',
       },
-    ],
-    selectedDate: '2026-05-14',
-    entryDraft: {
-      date: '2026-05-14',
-      weight: '80',
-      weight7dma: 79.5,
-      calories: '1900',
-      steps: '9000',
-      exerciseType: 'Walking',
-      exerciseMinutes: '40',
+      isSavingEntry: false,
+      setSelectedDate: vi.fn(),
+      updateEntryDraftField: vi.fn(),
+      saveEntry: vi.fn(),
+      deleteEntry: vi.fn(),
     },
-    isHydrated: true,
-    isSavingSettings: false,
-    isSavingEntry: false,
-    errorMessage: null,
-    metrics: {
-      latestWeight: 80,
-      latestWeight7dma: 79.5,
-      weightDelta: -5,
-      goalProgressPercent: 38,
-      calorieAverage: 2000,
-      stepAverage: 8000,
-      activeDays: 2,
-      exerciseDays: 1,
+    averagesView: {
+      weeklyAverageCards: [
+        {
+          periodKey: '2026-05-11',
+          label: 'Week of May 11, 2026',
+          daysLogged: 2,
+          exerciseDays: 1,
+          weightAverage: 80,
+          calorieAverage: 2000,
+          stepAverage: 8000,
+        },
+      ],
+      monthlyAverageCards: [
+        {
+          periodKey: '2026-05',
+          label: 'May 2026',
+          daysLogged: 2,
+          exerciseDays: 1,
+          weightAverage: 80,
+          calorieAverage: 2000,
+          stepAverage: 8000,
+        },
+      ],
     },
-    weeklyAverageCards: [
-      {
-        periodKey: '2026-05-11',
-        label: 'Week of May 11, 2026',
-        daysLogged: 2,
-        exerciseDays: 1,
-        weightAverage: 80,
+    dashboardView: {
+      settings: {
+        startWeight: '85',
+        goalWeight: '72',
+        dailyCalorieTarget: '2000',
+        dailyStepTarget: '8000',
+      },
+      metrics: {
+        latestWeight: 80,
+        latestWeight7dma: 79.5,
+        weightDelta: -5,
+        goalProgressPercent: 38,
         calorieAverage: 2000,
         stepAverage: 8000,
-      },
-    ],
-    monthlyAverageCards: [
-      {
-        periodKey: '2026-05',
-        label: 'May 2026',
-        daysLogged: 2,
+        activeDays: 2,
         exerciseDays: 1,
-        weightAverage: 80,
-        calorieAverage: 2000,
-        stepAverage: 8000,
       },
-    ],
-    chartSeries: {
-      weightTrend: [{ date: '2026-05-14', weight: 80, weight7dma: 79.5 }],
-      calorieTrend: [{ date: '2026-05-14', calories: 1900 }],
-      stepTrend: [{ date: '2026-05-14', steps: 9000 }],
+      chartSeries: {
+        weightTrend: [{ date: '2026-05-14', weight: 80, weight7dma: 79.5 }],
+        calorieTrend: [{ date: '2026-05-14', calories: 1900 }],
+        stepTrend: [{ date: '2026-05-14', steps: 9000 }],
+      },
+      calorieDelta: 0,
+      stepDelta: 0,
+      goalDistance: 8,
+      targetsConfigured: true,
     },
-    calorieDelta: 0,
-    stepDelta: 0,
-    goalDistance: 8,
-    updateSettingsField: vi.fn(),
-    saveSettings: vi.fn(),
-    setSelectedDate: vi.fn(),
-    updateEntryDraftField: vi.fn(),
-    saveEntry: vi.fn(),
-    deleteEntry: vi.fn(),
   }
 
   beforeEach(() => {
@@ -99,7 +117,10 @@ describe('App', () => {
   it('shows the loading state before hydration completes', () => {
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
-      isHydrated: false,
+      lifecycle: {
+        ...baseViewModel.lifecycle,
+        isHydrated: false,
+      },
     })
 
     render(<App />)
@@ -110,13 +131,19 @@ describe('App', () => {
   it('renders the header, error state, and primary panels when hydrated', async () => {
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
-      errorMessage: 'Unable to load your local data.',
-      chartSeries: {
-        ...baseViewModel.chartSeries,
-        weightTrend: [
-          { date: '2026-05-13', weight: 81, weight7dma: 81 },
-          { date: '2026-05-14', weight: 80, weight7dma: 79.5 },
-        ],
+      lifecycle: {
+        ...baseViewModel.lifecycle,
+        errorMessage: 'Unable to load your local data.',
+      },
+      dashboardView: {
+        ...baseViewModel.dashboardView,
+        chartSeries: {
+          ...baseViewModel.dashboardView.chartSeries,
+          weightTrend: [
+            { date: '2026-05-13', weight: 81, weight7dma: 81 },
+            { date: '2026-05-14', weight: 80, weight7dma: 79.5 },
+          ],
+        },
       },
     })
 
@@ -201,11 +228,24 @@ describe('App', () => {
 
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
-      settings: {
-        startWeight: '',
-        goalWeight: '',
-        dailyCalorieTarget: '',
-        dailyStepTarget: '',
+      settingsView: {
+        ...baseViewModel.settingsView,
+        settings: {
+          startWeight: '',
+          goalWeight: '',
+          dailyCalorieTarget: '',
+          dailyStepTarget: '',
+        },
+      },
+      dashboardView: {
+        ...baseViewModel.dashboardView,
+        settings: {
+          startWeight: '',
+          goalWeight: '',
+          dailyCalorieTarget: '',
+          dailyStepTarget: '',
+        },
+        targetsConfigured: false,
       },
     })
 
