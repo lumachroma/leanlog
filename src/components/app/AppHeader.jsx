@@ -5,6 +5,7 @@ function AppHeader({ activePage, onPageChange }) {
   const averagesActive =
     activePage === 'weekly-averages' || activePage === 'monthly-averages'
   const dashboardActive = activePage === 'dashboard'
+  const logoSrc = `${import.meta.env.BASE_URL}logo_transparent.svg`
 
   return (
     <header className="border-b border-border/80 pb-5 sm:pb-8">
@@ -23,7 +24,7 @@ function AppHeader({ activePage, onPageChange }) {
             )}
           >
             <img
-              src="/logo_transparent.svg"
+              src={logoSrc}
               alt="Leanlog logo"
               className="h-8 w-auto sm:h-10"
             />
