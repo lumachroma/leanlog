@@ -74,7 +74,7 @@ describe('App', () => {
     expect(
       await screen.findByRole('heading', { name: /progress toward your goal/i })
     ).toBeInTheDocument()
-    expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/tracking defaults/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })
 
@@ -120,8 +120,8 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /settings/i }))
 
-    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
-    expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
+    expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
+    expect(screen.getByText(/tracking defaults/i)).toBeInTheDocument()
     expect(screen.queryByText(/weekly trends/i)).not.toBeInTheDocument()
   })
 
@@ -168,6 +168,6 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /open settings/i }))
 
-    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
+    expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
   })
 })

@@ -110,8 +110,12 @@ function SettingsPanel({
             Settings
           </p>
           <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-            Initial targets
+            Tracking Defaults
           </h2>
+          <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+            These starting values power your dashboard, summaries, and future
+            progress calculations.
+          </p>
         </div>
         <Settings2 className="mt-1 size-4 text-muted-foreground" />
       </div>
@@ -185,12 +189,15 @@ function SettingsPanel({
               Daily logs
             </p>
             <h3 className="mt-2 text-xl font-medium tracking-[-0.03em]">
-              Import or export CSV backups
+              Data Backup & Restore
             </h3>
             <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-              Export your current daily logs into a simple CSV file. Imports are
-              merged by date and overwrite matching saved days, while missing days stay
-              untouched.
+              Keep a portable copy of your daily logs or restore saved entries
+              anytime using simple CSV files.
+            </p>
+            <p className="mt-2 max-w-lg text-sm italic leading-7 text-muted-foreground">
+              Imports are merged by date and overwrite matching saved days, while
+              missing days stay untouched.
             </p>
           </div>
           <p className="text-sm text-muted-foreground">

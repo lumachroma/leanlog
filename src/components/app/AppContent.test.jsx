@@ -74,6 +74,6 @@ describe('AppContent', () => {
   it('renders the settings branch', () => {
     render(<AppContent {...createProps()} activePage="settings" />)
 
-    expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
+    expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
   })
 })

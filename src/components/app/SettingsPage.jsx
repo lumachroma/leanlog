@@ -21,12 +21,11 @@ function SettingsPage({
                 Settings
               </p>
               <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-                Personal targets and defaults
+                Personal Targets
               </h2>
               <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-                Keep your dashboard focused by managing weight, calorie, and step
-                targets here. These values stay local-first and drive the summaries
-                across the app.
+                Manage your weight, calorie, and step targets to keep your daily
+                progress grounded and consistent.
               </p>
             </div>
             <SlidersHorizontal className="mt-1 size-4 text-muted-foreground" />
