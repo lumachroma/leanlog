@@ -23,6 +23,7 @@ const createProps = () => ({
   dashboardView: createSampleAppViewModel().dashboardView,
   historyView: createSampleAppViewModel().historyView,
   onOpenSettings: vi.fn(),
+  onPageChange: vi.fn(),
   settingsView: createSampleAppViewModel().settingsView,
 })
 
@@ -57,6 +58,17 @@ describe('AppContent', () => {
     render(<AppContent {...createProps()} activePage="monthly-averages" />)
 
     expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+  })
+
+  it('switches average periods from the averages page controls', async () => {
+    const user = userEvent.setup()
+    const props = createProps()
+
+    render(<AppContent {...props} activePage="weekly-averages" />)
+
+    await user.click(screen.getByRole('button', { name: /monthly/i }))
+
+    expect(props.onPageChange).toHaveBeenCalledWith('monthly-averages')
   })
 
   it('renders the settings branch', () => {

@@ -18,6 +18,7 @@ function AppContent({
   dashboardView,
   historyView,
   onOpenSettings,
+  onPageChange,
   settingsView,
 }) {
   if (activePage === 'history') {
@@ -36,11 +37,21 @@ function AppContent({
   }
 
   if (activePage === 'weekly-averages') {
-    return <WeeklyAveragesPage weeklyAverageCards={averagesView.weeklyAverageCards} />
+    return (
+      <WeeklyAveragesPage
+        weeklyAverageCards={averagesView.weeklyAverageCards}
+        onPageChange={onPageChange}
+      />
+    )
   }
 
   if (activePage === 'monthly-averages') {
-    return <MonthlyAveragesPage monthlyAverageCards={averagesView.monthlyAverageCards} />
+    return (
+      <MonthlyAveragesPage
+        monthlyAverageCards={averagesView.monthlyAverageCards}
+        onPageChange={onPageChange}
+      />
+    )
   }
 
   if (activePage === 'settings') {

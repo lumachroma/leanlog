@@ -1,13 +1,22 @@
 import { BarChart3, CalendarDays } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { formatAverage, formatWeight } from '@/lib/display-formatters'
 
-function AverageSummaryPage({ eyebrow, title, description, summaries, emptyState }) {
+function AverageSummaryPage({
+  eyebrow,
+  title,
+  description,
+  summaries,
+  emptyState,
+  activePeriod,
+  onPeriodChange,
+}) {
   return (
     <main className="py-8 xl:py-10">
       <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-4 border-b border-border/80 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
               {eyebrow}
@@ -17,7 +26,35 @@ function AverageSummaryPage({ eyebrow, title, description, summaries, emptyState
               {description}
             </p>
           </div>
-          <BarChart3 className="size-4 text-muted-foreground" />
+
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+            <div
+              aria-label="Averages period"
+              className="grid w-full grid-cols-2 items-center gap-1 rounded-[1rem] border border-border/80 bg-muted/30 p-1 sm:flex sm:w-auto sm:rounded-full"
+            >
+              <Button
+                type="button"
+                size="sm"
+                variant={activePeriod === 'weekly-averages' ? 'default' : 'ghost'}
+                onClick={() => onPeriodChange('weekly-averages')}
+                aria-pressed={activePeriod === 'weekly-averages'}
+                className="h-9 rounded-[0.85rem] px-4 sm:rounded-full"
+              >
+                Weekly
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={activePeriod === 'monthly-averages' ? 'default' : 'ghost'}
+                onClick={() => onPeriodChange('monthly-averages')}
+                aria-pressed={activePeriod === 'monthly-averages'}
+                className="h-9 rounded-[0.85rem] px-4 sm:rounded-full"
+              >
+                Monthly
+              </Button>
+            </div>
+            <BarChart3 className="hidden size-4 text-muted-foreground sm:block" />
+          </div>
         </div>
 
         {summaries.length ? (

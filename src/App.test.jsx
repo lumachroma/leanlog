@@ -59,7 +59,9 @@ describe('App', () => {
       screen.getByText(/a personal weight-loss operating system built for real life/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review/i)
+      screen.getByText(
+        /leanlog is a calm, local-first weight-loss tracker for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work/i
+      )
     ).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg calories/i)).toBeInTheDocument()
@@ -74,23 +76,24 @@ describe('App', () => {
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })
 
-  it('switches to the weekly averages page from the header navigation', async () => {
+  it('switches to the averages page from the header navigation', async () => {
     const user = userEvent.setup()
 
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: /weekly avg/i }))
+    await user.click(screen.getByRole('button', { name: /averages/i }))
 
     expect(screen.getByText(/weekly calories, steps, and weight averages/i)).toBeInTheDocument()
     expect(screen.getByText(/week of may 11, 2026/i)).toBeInTheDocument()
   })
 
-  it('switches to the monthly averages page from the header navigation', async () => {
+  it('switches to the monthly averages page from the averages page controls', async () => {
     const user = userEvent.setup()
 
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: /monthly avg/i }))
+    await user.click(screen.getByRole('button', { name: /averages/i }))
+    await user.click(screen.getByRole('button', { name: /monthly/i }))
 
     expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
     expect(screen.getByText(/^may 2026$/i)).toBeInTheDocument()

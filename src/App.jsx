@@ -33,6 +33,7 @@ function App() {
         dashboardView={dashboardView}
         historyView={historyView}
         onOpenSettings={openSettings}
+        onPageChange={setActivePage}
         settingsView={settingsView}
       />
     </AppShell>
