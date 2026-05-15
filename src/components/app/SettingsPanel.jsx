@@ -1,6 +1,12 @@
+import { useRef, useState } from 'react'
+
 import { Settings2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import {
+  createDailyLogCsvTemplate,
+  serializeEntriesToCsv,
+} from '@/lib/daily-log-csv'
 
 import { Field } from './Field'
 
@@ -8,14 +14,78 @@ const inputClassName =
   'mt-2 w-full rounded-2xl border border-border/80 bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
 
 function SettingsPanel({
+  entries,
+  isImportingEntries,
+  importEntriesFromCsv,
   settings,
   isSavingSettings,
   updateSettingsField,
   saveSettings,
 }) {
+  const fileInputRef = useRef(null)
+  const [importFeedback, setImportFeedback] = useState(null)
+
   const handleSubmit = (event) => {
     event.preventDefault()
     void saveSettings()
+  }
+
+  const handleExport = () => {
+    downloadCsvFile(
+      serializeEntriesToCsv(entries),
+      `leanlog-daily-logs-${new Date().toISOString().slice(0, 10)}.csv`
+    )
+  }
+
+  const handleDownloadTemplate = () => {
+    downloadCsvFile(createDailyLogCsvTemplate(), 'leanlog-daily-logs-template.csv')
+  }
+
+  const downloadCsvFile = (csv, filename) => {
+    const downloadUrl = URL.createObjectURL(
+      new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    )
+    const link = document.createElement('a')
+
+    link.href = downloadUrl
+    link.download = filename
+    link.click()
+
+    URL.revokeObjectURL(downloadUrl)
+  }
+
+  const handleImportChange = async (event) => {
+    const [file] = event.target.files ?? []
+
+    if (!file) {
+      return
+    }
+
+    const csvText = await file.text()
+    setImportFeedback(null)
+
+    const result = await importEntriesFromCsv(csvText)
+
+    if (result?.errorMessage) {
+      setImportFeedback({
+        tone: 'error',
+        message: result.errorMessage,
+      })
+    } else if (result?.importedCount) {
+      setImportFeedback({
+        tone: 'success',
+        message: `Imported ${result.importedCount} daily ${
+          result.importedCount === 1 ? 'log' : 'logs'
+        } from CSV.`,
+      })
+    } else {
+      setImportFeedback({
+        tone: 'neutral',
+        message: 'No importable daily logs were found in that CSV.',
+      })
+    }
+
+    event.target.value = ''
   }
 
   return (
@@ -23,6 +93,17 @@ function SettingsPanel({
       onSubmit={handleSubmit}
       className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur"
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,text/csv"
+        aria-label="Import daily logs CSV"
+        className="sr-only"
+        onChange={(event) => {
+          void handleImportChange(event)
+        }}
+      />
+
       <div className="flex items-start justify-between gap-3 border-b border-border/80 pb-5">
         <div>
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
@@ -96,6 +177,79 @@ function SettingsPanel({
           {isSavingSettings ? 'Saving...' : 'Save settings'}
         </Button>
       </div>
+
+      <section className="mt-6 border-t border-border/80 pt-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+              Daily logs
+            </p>
+            <h3 className="mt-2 text-xl font-medium tracking-[-0.03em]">
+              Import or export CSV backups
+            </h3>
+            <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+              Export your current daily logs into a simple CSV file. Imports are
+              merged by date and overwrite matching saved days, while missing days stay
+              untouched.
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {entries.length} saved {entries.length === 1 ? 'day' : 'days'}
+          </p>
+        </div>
+
+        <div className="mt-4 rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
+          <p className="text-sm text-muted-foreground">
+            CSV columns: date, weight, calories, steps, exerciseType, exerciseMinutes.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Download the template first if you want a clean starter file with the
+            expected column order.
+          </p>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDownloadTemplate}
+            >
+              Download CSV template
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={!entries.length}
+              onClick={handleExport}
+            >
+              Export daily logs
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isImportingEntries}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {isImportingEntries ? 'Importing...' : 'Import daily logs'}
+            </Button>
+          </div>
+
+          {importFeedback ? (
+            <p
+              aria-live="polite"
+              className={[
+                'mt-4 rounded-2xl px-4 py-3 text-sm',
+                importFeedback.tone === 'error'
+                  ? 'border border-destructive/20 bg-destructive/5 text-destructive'
+                  : importFeedback.tone === 'success'
+                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'border border-border/80 bg-background/80 text-muted-foreground',
+              ].join(' ')}
+            >
+              {importFeedback.message}
+            </p>
+          ) : null}
+        </div>
+      </section>
     </form>
   )
 }

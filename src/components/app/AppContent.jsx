@@ -57,6 +57,9 @@ function AppContent({
   if (activePage === 'settings') {
     return (
       <SettingsPage
+        entries={historyView.entries}
+        isImportingEntries={historyView.isSavingEntry}
+        importEntriesFromCsv={historyView.importEntriesFromCsv}
         settings={settingsView.settings}
         isSavingSettings={settingsView.isSavingSettings}
         updateSettingsField={settingsView.updateSettingsField}

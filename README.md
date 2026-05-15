@@ -1,6 +1,6 @@
 # Leanlog
 
-Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, and goal settings.
+Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, and CSV backup/restore for daily logs.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
 
@@ -12,7 +12,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 - Goal progress bar visualizing start weight, current weight, and goal weight
 - Daily history page for creating, editing, and deleting log entries
 - Weekly and monthly average pages for longer-view summaries
-- Settings page for start weight, goal weight, daily calorie target, and daily step target
+- Settings page for start weight, goal weight, daily calorie target, daily step target, and daily-log CSV import/export
 - Local-first persistence using Dexie on top of IndexedDB
 - Lightweight view-model driven app structure with focused component boundaries
 - Test coverage for app routing, view-model logic, settings flow, daily log flow, and history CRUD behavior
@@ -127,6 +127,7 @@ Key files:
 - `src/store/useAppStore.js`: Zustand store and app actions
 - `src/hooks/useAppViewModel.js`: App-facing view-model logic
 - `src/lib/metrics.js`: Dashboard calculations and chart-ready selectors
+- `src/lib/daily-log-csv.js`: CSV parsing and export helpers for daily-log backups
 - `src/components/app/DashboardSection.jsx`: Dashboard KPI section and composition of the visual dashboard sections
 - `src/components/app/WeightTrendChart.jsx`: Recharts-backed dual-line weight chart
 - `src/components/app/ConsistencyTrackingChart.jsx`: Calorie and step target comparison visuals
@@ -153,6 +154,7 @@ Leanlog stores data locally in the browser using IndexedDB through Dexie.
 - Hidden derived cells such as persisted 7DMA values are recalculated after entry changes
 - Empty daily entries are not persisted
 - Navigation state is also persisted locally so the app can reopen on the last active page
+- Daily logs can be exported from Settings as CSV and imported back as a date-merged backup flow
 
 If you clear site data in the browser, Leanlog data will be removed.
 

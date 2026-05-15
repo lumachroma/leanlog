@@ -171,3 +171,21 @@ export async function deleteEntryRecord(date) {
 
   return persistEntries(nextEntries)
 }
+
+export async function importEntryRecords(entries) {
+  const sanitizedImportedEntries = entries
+    .map(sanitizeEntry)
+    .filter((entry) => hasText(entry.date) && !isEntryEmpty(entry))
+
+  const importedEntriesByDate = new Map(
+    sanitizedImportedEntries.map((entry) => [entry.date, entry])
+  )
+
+  const currentEntries = await entriesTable.toArray()
+  const nextEntries = [
+    ...currentEntries.filter((entry) => !importedEntriesByDate.has(entry.date)),
+    ...importedEntriesByDate.values(),
+  ]
+
+  return persistEntries(nextEntries)
+}

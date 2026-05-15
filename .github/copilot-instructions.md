@@ -14,7 +14,7 @@
 - Use a dual-line weight trend chart for daily weight and 7-day moving average.
 - Visualize calorie and step consistency against targets without turning the product into accounting software.
 - Include dedicated weekly and monthly average pages for longer-view summaries.
-- Include a settings flow for start weight, goal weight, daily calorie target, and daily step target.
+- Include a settings flow for start weight, goal weight, daily calorie target, daily step target, and CSV import/export for daily logs.
 - Prioritize local-first behavior with IndexedDB.
 
 ## Iteration 2 Boundary
@@ -36,6 +36,7 @@
 - Dexie schema lives in `src/lib/db.js`.
 - Zustand store lives in `src/store/useAppStore.js`.
 - App view-model logic lives in `src/hooks/useAppViewModel.js`.
+- Daily-log CSV import/export helpers live in `src/lib/daily-log-csv.js`.
 - Dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
 - Dashboard section composition lives in `src/components/app/DashboardSection.jsx`.
 - Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`.
@@ -53,6 +54,7 @@
 - Favor psychologically lightweight flows: forgiving defaults, low-friction logging, and summaries that continue working even when the user misses entries.
 - Preserve the sectioned dashboard structure unless a broader product change is explicitly requested.
 - Favor simple data shapes that can evolve without breaking Dexie persistence.
+- Preserve CSV import/export as a simple backup flow: imports should merge by date, ignore derived fields, and recalculate persisted summaries like `weight7dma`.
 - When adding UI, preserve the existing spacing, tone, and minimal visual language.
 - When extending shared test data, add or adjust focused fixture modules under `src/test/fixtures` and re-export through `src/test/leanlog-test-fixtures.js` instead of growing a single grab-bag file.
 

@@ -1,17 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  createBlankEntryDraft,
+  createBlankStoreData,
+  createInvalidDailyLogCsv,
+  createParsedSampleDailyLogEntries,
+  createSampleDailyLogCsv,
   createSampleEntries,
   createSampleEntry,
   createSampleEntryDraft,
-  createSampleSettings,
 } from '@/test/leanlog-test-fixtures'
 
 const mockLoadAppSnapshot = vi.fn()
 const mockSaveSettingsSnapshot = vi.fn()
 const mockUpsertEntryRecord = vi.fn()
 const mockDeleteEntryRecord = vi.fn()
+const mockImportEntryRecords = vi.fn()
 
 vi.mock('@/lib/db', async () => {
   const actual = await vi.importActual('@/lib/db')
@@ -22,6 +25,7 @@ vi.mock('@/lib/db', async () => {
     saveSettingsSnapshot: mockSaveSettingsSnapshot,
     upsertEntryRecord: mockUpsertEntryRecord,
     deleteEntryRecord: mockDeleteEntryRecord,
+    importEntryRecords: mockImportEntryRecords,
   }
 })
 
@@ -41,30 +45,24 @@ describe('useAppStore', () => {
       useAppStore,
     } = await import('./useAppStore'))
 
-    useAppStore.setState({
-      settings: createSampleSettings(),
-      entries: [],
-      selectedDate: '2026-05-14',
-      entryDraft: createBlankEntryDraft(),
-      isHydrated: true,
-      isSavingSettings: false,
-      isSavingEntry: false,
-      errorMessage: null,
-    })
+    useAppStore.setState((state) => ({
+      ...state,
+      ...createBlankStoreData(),
+    }))
 
     mockLoadAppSnapshot.mockReset()
     mockSaveSettingsSnapshot.mockReset()
     mockUpsertEntryRecord.mockReset()
     mockDeleteEntryRecord.mockReset()
+    mockImportEntryRecords.mockReset()
   })
 
   afterEach(() => {
     useAppStore.setState((state) => ({
       ...state,
-      entries: [],
-      errorMessage: null,
-      isSavingSettings: false,
-      isSavingEntry: false,
+      ...createBlankStoreData({
+        selectedDate: state.selectedDate,
+      }),
     }))
   })
 
@@ -87,6 +85,37 @@ describe('useAppStore', () => {
     )
   })
 
+  it('imports csv daily logs and refreshes the selected draft from imported entries', async () => {
+    useAppStore.setState((state) => ({
+      ...state,
+      ...createBlankStoreData({ selectedDate: state.selectedDate }),
+    }))
+
+    mockImportEntryRecords.mockResolvedValue(createSampleEntries())
+
+    const result = await useAppStore.getState().importEntriesFromCsv(
+      createSampleDailyLogCsv()
+    )
+
+    expect(result).toEqual({ importedCount: 2, errorMessage: null })
+    expect(mockImportEntryRecords).toHaveBeenCalledWith(createParsedSampleDailyLogEntries())
+    expect(useAppStore.getState().entries).toEqual(createSampleEntries())
+    expect(useAppStore.getState().entryDraft).toEqual(createSampleEntryDraft())
+  })
+
+  it('returns a local csv parsing error while keeping the global import error state', async () => {
+    const result = await useAppStore.getState().importEntriesFromCsv(createInvalidDailyLogCsv())
+
+    expect(mockImportEntryRecords).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      importedCount: 0,
+      errorMessage: 'Row 2 has an invalid date.',
+    })
+    expect(useAppStore.getState().errorMessage).toBe(
+      'Unable to import daily logs from CSV.'
+    )
+  })
+
   it('exposes stable domain selectors for settings, entries, and lifecycle state', () => {
     const state = useAppStore.getState()
 
@@ -106,6 +135,7 @@ describe('useAppStore', () => {
       updateEntryDraftField: state.updateEntryDraftField,
       saveEntry: state.saveEntry,
       deleteEntry: state.deleteEntry,
+      importEntriesFromCsv: state.importEntriesFromCsv,
     })
 
     expect(selectLifecycleState(state)).toEqual({

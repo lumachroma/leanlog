@@ -7,3 +7,13 @@ export function createSampleSettings(overrides = {}) {
     ...overrides,
   }
 }
+
+export function createBlankSettings(overrides = {}) {
+  return createSampleSettings({
+    startWeight: '',
+    goalWeight: '',
+    dailyCalorieTarget: '',
+    dailyStepTarget: '',
+    ...overrides,
+  })
+}

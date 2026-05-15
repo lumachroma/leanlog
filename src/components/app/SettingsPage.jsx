@@ -3,6 +3,9 @@ import { SlidersHorizontal } from 'lucide-react'
 import { SettingsPanel } from './SettingsPanel'
 
 function SettingsPage({
+  entries,
+  isImportingEntries,
+  importEntriesFromCsv,
   settings,
   isSavingSettings,
   updateSettingsField,
@@ -59,6 +62,9 @@ function SettingsPage({
 
         <aside>
           <SettingsPanel
+            entries={entries}
+            isImportingEntries={isImportingEntries}
+            importEntriesFromCsv={importEntriesFromCsv}
             settings={settings}
             isSavingSettings={isSavingSettings}
             updateSettingsField={updateSettingsField}

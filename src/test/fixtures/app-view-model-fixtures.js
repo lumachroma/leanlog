@@ -36,6 +36,7 @@ export function createSampleAppViewModel(overrides = {}) {
       updateEntryDraftField: vi.fn(),
       saveEntry: vi.fn(),
       deleteEntry: vi.fn(),
+      importEntriesFromCsv: vi.fn(),
       ...overrides.historyView,
     },
     averagesView: {

@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import {
+  createBlankEntryDraft,
   createSampleEntries,
   createSampleEntryDraft,
 } from '@/test/fixtures/entry-fixtures'
@@ -15,10 +16,19 @@ export function createSampleStoreActions() {
     updateEntryDraftField: vi.fn(),
     saveEntry: vi.fn(),
     deleteEntry: vi.fn(),
+    importEntriesFromCsv: vi.fn(),
   }
 }
 
 export function createSampleStoreState(overrides = {}) {
+  return {
+    ...createSampleStoreData(),
+    ...createSampleStoreActions(),
+    ...overrides,
+  }
+}
+
+export function createSampleStoreData(overrides = {}) {
   return {
     settings: createSampleSettings(),
     entries: createSampleEntries(),
@@ -28,7 +38,14 @@ export function createSampleStoreState(overrides = {}) {
     isSavingSettings: false,
     isSavingEntry: false,
     errorMessage: null,
-    ...createSampleStoreActions(),
     ...overrides,
   }
+}
+
+export function createBlankStoreData(overrides = {}) {
+  return createSampleStoreData({
+    entries: [],
+    entryDraft: createBlankEntryDraft(),
+    ...overrides,
+  })
 }

@@ -37,6 +37,7 @@ export function createHistoryViewModel(state) {
     updateEntryDraftField: state.updateEntryDraftField,
     saveEntry: state.saveEntry,
     deleteEntry: state.deleteEntry,
+    importEntriesFromCsv: state.importEntriesFromCsv,
   }
 }
 

@@ -74,6 +74,9 @@ describe('useAppViewModel', () => {
     expect(result.current.historyView.entries).toEqual(storeState.entries)
     expect(result.current.historyView.saveEntry).toBe(storeState.saveEntry)
     expect(result.current.historyView.deleteEntry).toBe(storeState.deleteEntry)
+    expect(result.current.historyView.importEntriesFromCsv).toBe(
+      storeState.importEntriesFromCsv
+    )
     expect(result.current.historyView.updateEntryDraftField).toBe(
       storeState.updateEntryDraftField
     )

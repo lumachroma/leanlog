@@ -1,5 +1,6 @@
 export * from '@/test/fixtures/settings-fixtures'
 export * from '@/test/fixtures/entry-fixtures'
+export * from '@/test/fixtures/csv-fixtures'
 export * from '@/test/fixtures/derived-fixtures'
 export * from '@/test/fixtures/store-fixtures'
 export * from '@/test/fixtures/app-view-model-fixtures'

@@ -2,17 +2,20 @@ import {
   DEFAULT_SETTINGS,
   createEmptyEntryDraft,
   deleteEntryRecord,
+  importEntryRecords,
   loadAppSnapshot,
   saveSettingsSnapshot,
   todayDate,
   upsertEntryRecord,
 } from '@/lib/db'
+import { parseEntriesCsv } from '@/lib/daily-log-csv'
 
 const STORE_ERROR_MESSAGES = {
   hydrate: 'Unable to load your local data.',
   saveSettings: 'Unable to save your settings.',
   saveEntry: 'Unable to save this daily entry.',
   deleteEntry: 'Unable to delete this daily entry.',
+  importEntries: 'Unable to import daily logs from CSV.',
 }
 
 const createDefaultSettings = () => ({ ...DEFAULT_SETTINGS })
@@ -139,6 +142,37 @@ export const createEntriesSlice = (set, get) => ({
       }),
     })
   },
+
+  importEntriesFromCsv: async (csvText) => {
+    set({ isSavingEntry: true, errorMessage: null })
+
+    try {
+      const importedEntries = parseEntriesCsv(csvText)
+      const entries = await importEntryRecords(importedEntries)
+
+      set((state) => ({
+        ...createEntriesState(entries, state.selectedDate),
+        isSavingEntry: false,
+        errorMessage: null,
+      }))
+
+      return {
+        importedCount: importedEntries.length,
+        errorMessage: null,
+      }
+    } catch (error) {
+      set({
+        isSavingEntry: false,
+        errorMessage: STORE_ERROR_MESSAGES.importEntries,
+      })
+
+      return {
+        importedCount: 0,
+        errorMessage:
+          error instanceof Error ? error.message : STORE_ERROR_MESSAGES.importEntries,
+      }
+    }
+  },
 })
 
 export const createLifecycleSlice = (set) => ({
@@ -177,6 +211,7 @@ export const selectEntriesState = (state) => ({
   updateEntryDraftField: state.updateEntryDraftField,
   saveEntry: state.saveEntry,
   deleteEntry: state.deleteEntry,
+  importEntriesFromCsv: state.importEntriesFromCsv,
 })
 
 export const selectLifecycleState = (state) => ({
