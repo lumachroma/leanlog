@@ -1,32 +1,5 @@
-const numberFormatter = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: 0,
-})
-
-const formatAverage = (value, suffix) => {
-  if (value === null) {
-    return suffix ? `-- ${suffix}` : '--'
-  }
-
-  return suffix
-    ? `${numberFormatter.format(Math.round(value))} ${suffix}`
-    : numberFormatter.format(Math.round(value))
-}
-
-function SectionHeading({ eyebrow, title, description }) {
-  return (
-    <div>
-      <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">{title}</h2>
-      {description ? (
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-          {description}
-        </p>
-      ) : null}
-    </div>
-  )
-}
+import { SectionHeading } from '@/components/app/SectionHeading'
+import { formatAverage, numberFormatter } from '@/lib/display-formatters'
 
 function ConsistencyMetric({
   label,

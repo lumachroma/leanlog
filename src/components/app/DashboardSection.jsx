@@ -1,27 +1,18 @@
 import { Activity, Flame, Footprints, Scale, Target } from 'lucide-react'
 
+import { SectionHeading } from '@/components/app/SectionHeading'
 import { Button } from '@/components/ui/button'
+import {
+  formatAverage,
+  formatPercent,
+  formatWeight,
+  numberFormatter,
+} from '@/lib/display-formatters'
 import { getNumericSettings } from '@/lib/metrics'
 
 import { ConsistencyTrackingChart } from './ConsistencyTrackingChart'
 import { GoalProgressChart } from './GoalProgressChart'
 import { WeightTrendChart } from './WeightTrendChart'
-
-function SectionHeading({ eyebrow, title, description }) {
-  return (
-    <div>
-      <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">{title}</h2>
-      {description ? (
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-          {description}
-        </p>
-      ) : null}
-    </div>
-  )
-}
 
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
@@ -38,37 +29,12 @@ function MetricCard({ icon: Icon, label, value, detail }) {
   )
 }
 
-const numberFormatter = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: 0,
-})
-
-const weightFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-})
-
-const formatWeight = (value) =>
-  value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
-
-const formatAverage = (value, suffix) => {
-  if (value === null) {
-    return suffix ? `-- ${suffix}` : '--'
-  }
-
-  return suffix
-    ? `${numberFormatter.format(Math.round(value))} ${suffix}`
-    : numberFormatter.format(Math.round(value))
-}
-
-const formatPercent = (value) =>
-  value === null ? '-- %' : `${numberFormatter.format(value)}%`
-
 const formatSignedWeight = (value) => {
   if (value === null) {
     return null
   }
 
-  const absoluteValue = weightFormatter.format(Math.abs(value))
+  const absoluteValue = formatWeight(Math.abs(value)).replace(' kg', '')
   const direction = value <= 0 ? 'down' : 'up'
   return `${absoluteValue} kg ${direction} from your baseline`
 }

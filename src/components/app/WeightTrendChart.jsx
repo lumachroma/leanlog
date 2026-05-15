@@ -8,18 +8,13 @@ import {
   YAxis,
 } from 'recharts'
 
+import { SectionHeading } from '@/components/app/SectionHeading'
+import { formatWeight, weightFormatter } from '@/lib/display-formatters'
+
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
 })
-
-const weightFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-})
-
-const formatWeight = (value) =>
-  value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
 
 const formatDate = (date) => dateFormatter.format(new Date(`${date}T00:00:00`))
 
@@ -105,17 +100,7 @@ function WeightTrendChart({
   return (
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
       <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-            {eyebrow}
-          </p>
-          <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-            {title}
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-            {description}
-          </p>
-        </div>
+        <SectionHeading eyebrow={eyebrow} title={title} description={description} />
         <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
           <div>
             <p className="text-xs uppercase tracking-[0.18em]">Latest Daily</p>

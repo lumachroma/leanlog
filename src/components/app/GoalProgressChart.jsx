@@ -1,33 +1,5 @@
-const numberFormatter = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: 0,
-})
-
-const weightFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-})
-
-const formatWeight = (value) =>
-  value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
-
-const formatPercent = (value) =>
-  value === null ? '-- %' : `${numberFormatter.format(value)}%`
-
-function SectionHeading({ eyebrow, title, description }) {
-  return (
-    <div>
-      <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">{title}</h2>
-      {description ? (
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-          {description}
-        </p>
-      ) : null}
-    </div>
-  )
-}
+import { SectionHeading } from '@/components/app/SectionHeading'
+import { formatPercent, formatWeight } from '@/lib/display-formatters'
 
 function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPercent }) {
   const hasGoalData =

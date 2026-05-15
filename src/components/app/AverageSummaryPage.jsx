@@ -1,26 +1,6 @@
 import { BarChart3, CalendarDays } from 'lucide-react'
 
-const numberFormatter = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: 0,
-})
-
-const weightFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-})
-
-const formatAverage = (value, suffix) => {
-  if (value === null) {
-    return suffix ? `-- ${suffix}` : '--'
-  }
-
-  return suffix
-    ? `${numberFormatter.format(Math.round(value))} ${suffix}`
-    : numberFormatter.format(Math.round(value))
-}
-
-const formatWeight = (value) =>
-  value === null ? '-- kg' : `${weightFormatter.format(value)} kg`
+import { formatAverage, formatWeight } from '@/lib/display-formatters'
 
 function AverageSummaryPage({ eyebrow, title, description, summaries, emptyState }) {
   return (
