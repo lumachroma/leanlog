@@ -1,6 +1,6 @@
 # Leanlog
 
-Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, and CSV backup/restore for daily logs.
+Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, CSV backup/restore for daily logs, and installable PWA support.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
 
@@ -14,6 +14,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 - Weekly and monthly average pages for longer-view summaries
 - Settings page for start weight, goal weight, daily calorie target, daily step target, and daily-log CSV import/export
 - Local-first persistence using Dexie on top of IndexedDB
+- Installable PWA with cached app shell assets for a more app-like experience
 - Lightweight view-model driven app structure with focused component boundaries
 - Test coverage for app routing, view-model logic, settings flow, daily log flow, and history CRUD behavior
 
@@ -149,6 +150,8 @@ The dashboard is intentionally split into four sections so the app stays readabl
 
 Leanlog stores data locally in the browser using IndexedDB through Dexie.
 
+- The app can be installed as a PWA from supported browsers
+- The app shell is cached for faster repeat loads and basic offline availability
 - Settings are stored as a single profile record
 - Daily entries are stored by date
 - Hidden derived cells such as persisted 7DMA values are recalculated after entry changes
