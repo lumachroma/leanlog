@@ -5,6 +5,7 @@ const mockUseAppStore = vi.fn()
 
 vi.mock('@/store/useAppStore', () => ({
   useAppStore: (selector) => mockUseAppStore(selector),
+  selectAppViewModelState: (state) => state,
 }))
 
 describe('useAppViewModel', () => {

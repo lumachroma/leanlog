@@ -10,12 +10,54 @@ import {
   upsertEntryRecord,
 } from '@/lib/db'
 
+const STORE_ERROR_MESSAGES = {
+  hydrate: 'Unable to load your local data.',
+  saveSettings: 'Unable to save your settings.',
+  saveEntry: 'Unable to save this daily entry.',
+  deleteEntry: 'Unable to delete this daily entry.',
+}
+
 const createDefaultSettings = () => ({ ...DEFAULT_SETTINGS })
 
 const draftForDate = (entries, date) => {
   const matchingEntry = entries.find((entry) => entry.date === date)
 
   return matchingEntry ? { ...matchingEntry } : createEmptyEntryDraft(date)
+}
+
+const createDraftSelectionState = (entries, selectedDate) => ({
+  selectedDate,
+  entryDraft: draftForDate(entries, selectedDate),
+})
+
+const createEntryState = (entries, selectedDate) => ({
+  entries,
+  ...createDraftSelectionState(entries, selectedDate),
+})
+
+const createFieldUpdater = (key, set) => (field, value) => {
+  set((state) => ({
+    [key]: {
+      ...state[key],
+      [field]: value,
+    },
+  }))
+}
+
+const runStoreAction = async ({ set, startState, task, onSuccess, onFailure }) => {
+  set(startState)
+
+  try {
+    const result = await task()
+
+    set((state) => onSuccess(result, state))
+
+    return result
+  } catch {
+    set((state) => onFailure(state))
+
+    return null
+  }
 }
 
 const createInitialState = () => {
@@ -33,116 +75,106 @@ const createInitialState = () => {
   }
 }
 
+export const selectAppViewModelState = (state) => ({
+  settings: state.settings,
+  entries: state.entries,
+  selectedDate: state.selectedDate,
+  entryDraft: state.entryDraft,
+  isHydrated: state.isHydrated,
+  isSavingSettings: state.isSavingSettings,
+  isSavingEntry: state.isSavingEntry,
+  errorMessage: state.errorMessage,
+  hydrateApp: state.hydrateApp,
+  updateSettingsField: state.updateSettingsField,
+  saveSettings: state.saveSettings,
+  setSelectedDate: state.setSelectedDate,
+  updateEntryDraftField: state.updateEntryDraftField,
+  saveEntry: state.saveEntry,
+  deleteEntry: state.deleteEntry,
+})
+
 export const useAppStore = create((set, get) => ({
   ...createInitialState(),
 
   hydrateApp: async () => {
-    try {
-      const snapshot = await loadAppSnapshot()
-      const selectedDate = get().selectedDate
-
-      set({
+    await runStoreAction({
+      set,
+      startState: { errorMessage: null },
+      task: loadAppSnapshot,
+      onSuccess: (snapshot, state) => ({
         settings: snapshot.settings,
-        entries: snapshot.entries,
-        entryDraft: draftForDate(snapshot.entries, selectedDate),
+        ...createEntryState(snapshot.entries, state.selectedDate),
         isHydrated: true,
         errorMessage: null,
-      })
-    } catch {
-      set({
+      }),
+      onFailure: () => ({
         isHydrated: true,
-        errorMessage: 'Unable to load your local data.',
-      })
-    }
+        errorMessage: STORE_ERROR_MESSAGES.hydrate,
+      }),
+    })
   },
 
-  updateSettingsField: (field, value) => {
-    set((state) => ({
-      settings: {
-        ...state.settings,
-        [field]: value,
-      },
-    }))
-  },
+  updateSettingsField: createFieldUpdater('settings', set),
 
   saveSettings: async () => {
-    set({ isSavingSettings: true, errorMessage: null })
-
-    try {
-      const savedSettings = await saveSettingsSnapshot(get().settings)
-
-      set({
-        settings: savedSettings,
+    await runStoreAction({
+      set,
+      startState: { isSavingSettings: true, errorMessage: null },
+      task: () => saveSettingsSnapshot(get().settings),
+      onSuccess: (settings) => ({
+        settings,
         isSavingSettings: false,
-      })
-    } catch {
-      set({
+        errorMessage: null,
+      }),
+      onFailure: () => ({
         isSavingSettings: false,
-        errorMessage: 'Unable to save your settings.',
-      })
-    }
+        errorMessage: STORE_ERROR_MESSAGES.saveSettings,
+      }),
+    })
   },
 
   setSelectedDate: (date) => {
-    set((state) => ({
-      selectedDate: date,
-      entryDraft: draftForDate(state.entries, date),
-    }))
+    set((state) => createDraftSelectionState(state.entries, date))
   },
 
-  updateEntryDraftField: (field, value) => {
-    set((state) => ({
-      entryDraft: {
-        ...state.entryDraft,
-        [field]: value,
-      },
-    }))
-  },
+  updateEntryDraftField: createFieldUpdater('entryDraft', set),
 
   saveEntry: async () => {
-    const selectedDate = get().selectedDate
     const draft = {
       ...get().entryDraft,
-      date: selectedDate,
+      date: get().selectedDate,
     }
 
-    set({ isSavingEntry: true, errorMessage: null })
-
-    try {
-      const entries = await upsertEntryRecord(draft)
-
-      set(() => ({
-        entries,
-        entryDraft: draftForDate(entries, selectedDate),
+    await runStoreAction({
+      set,
+      startState: { isSavingEntry: true, errorMessage: null },
+      task: () => upsertEntryRecord(draft),
+      onSuccess: (entries, state) => ({
+        ...createEntryState(entries, state.selectedDate),
         isSavingEntry: false,
-      }))
-    } catch {
-      set({
+        errorMessage: null,
+      }),
+      onFailure: () => ({
         isSavingEntry: false,
-        errorMessage: 'Unable to save this daily entry.',
-      })
-    }
+        errorMessage: STORE_ERROR_MESSAGES.saveEntry,
+      }),
+    })
   },
 
   deleteEntry: async (date) => {
-    set({ isSavingEntry: true, errorMessage: null })
-
-    try {
-      const entries = await deleteEntryRecord(date)
-
-      set((state) => ({
-        entries,
-        entryDraft:
-          state.selectedDate === date
-            ? createEmptyEntryDraft(state.selectedDate)
-            : state.entryDraft,
+    await runStoreAction({
+      set,
+      startState: { isSavingEntry: true, errorMessage: null },
+      task: () => deleteEntryRecord(date),
+      onSuccess: (entries, state) => ({
+        ...createEntryState(entries, state.selectedDate),
         isSavingEntry: false,
-      }))
-    } catch {
-      set({
+        errorMessage: null,
+      }),
+      onFailure: () => ({
         isSavingEntry: false,
-        errorMessage: 'Unable to delete this daily entry.',
-      })
-    }
+        errorMessage: STORE_ERROR_MESSAGES.deleteEntry,
+      }),
+    })
   },
 }))

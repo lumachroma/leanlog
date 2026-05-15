@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 
 import {
   getChartSeries,
@@ -9,24 +10,26 @@ import {
   getTargetDelta,
   getWeeklyAverageCards,
 } from '@/lib/metrics'
-import { useAppStore } from '@/store/useAppStore'
+import { selectAppViewModelState, useAppStore } from '@/store/useAppStore'
 
 export function useAppViewModel() {
-  const hydrateApp = useAppStore((state) => state.hydrateApp)
-  const settings = useAppStore((state) => state.settings)
-  const entries = useAppStore((state) => state.entries)
-  const selectedDate = useAppStore((state) => state.selectedDate)
-  const entryDraft = useAppStore((state) => state.entryDraft)
-  const isHydrated = useAppStore((state) => state.isHydrated)
-  const isSavingSettings = useAppStore((state) => state.isSavingSettings)
-  const isSavingEntry = useAppStore((state) => state.isSavingEntry)
-  const errorMessage = useAppStore((state) => state.errorMessage)
-  const updateSettingsField = useAppStore((state) => state.updateSettingsField)
-  const saveSettings = useAppStore((state) => state.saveSettings)
-  const setSelectedDate = useAppStore((state) => state.setSelectedDate)
-  const updateEntryDraftField = useAppStore((state) => state.updateEntryDraftField)
-  const saveEntry = useAppStore((state) => state.saveEntry)
-  const deleteEntry = useAppStore((state) => state.deleteEntry)
+  const {
+    hydrateApp,
+    settings,
+    entries,
+    selectedDate,
+    entryDraft,
+    isHydrated,
+    isSavingSettings,
+    isSavingEntry,
+    errorMessage,
+    updateSettingsField,
+    saveSettings,
+    setSelectedDate,
+    updateEntryDraftField,
+    saveEntry,
+    deleteEntry,
+  } = useAppStore(useShallow(selectAppViewModelState))
 
   useEffect(() => {
     void hydrateApp()
