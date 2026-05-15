@@ -51,13 +51,13 @@ describe('AppContent', () => {
   it('renders the weekly averages branch', () => {
     render(<AppContent {...createProps()} activePage="weekly-averages" />)
 
-    expect(screen.getByText(/weekly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/weekly trends/i)).toBeInTheDocument()
   })
 
   it('renders the monthly averages branch', () => {
     render(<AppContent {...createProps()} activePage="monthly-averages" />)
 
-    expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/monthly trends/i)).toBeInTheDocument()
   })
 
   it('switches average periods from the averages page controls', async () => {

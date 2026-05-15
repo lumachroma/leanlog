@@ -85,7 +85,7 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /averages/i }))
 
-    expect(screen.getByText(/weekly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/weekly trends/i)).toBeInTheDocument()
     expect(screen.getByText(/week of may 11, 2026/i)).toBeInTheDocument()
   })
 
@@ -97,7 +97,7 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /averages/i }))
     await user.click(screen.getByRole('button', { name: /monthly/i }))
 
-    expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/monthly trends/i)).toBeInTheDocument()
     expect(screen.getByText(/^may 2026$/i)).toBeInTheDocument()
   })
 
@@ -122,7 +122,7 @@ describe('App', () => {
 
     expect(screen.getByText(/personal targets and defaults/i)).toBeInTheDocument()
     expect(screen.getByText(/initial targets/i)).toBeInTheDocument()
-    expect(screen.queryByText(/weekly calories, steps, and weight averages/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/weekly trends/i)).not.toBeInTheDocument()
   })
 
   it('restores the last active page from local storage', () => {
@@ -130,7 +130,7 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(screen.getByText(/monthly calories, steps, and weight averages/i)).toBeInTheDocument()
+    expect(screen.getByText(/monthly trends/i)).toBeInTheDocument()
     expect(screen.queryByText(/7-day moving average/i)).not.toBeInTheDocument()
   })
 

@@ -4,8 +4,8 @@ function MonthlyAveragesPage({ monthlyAverageCards, onPageChange }) {
   return (
     <AverageSummaryPage
       eyebrow="Monthly averages"
-      title="Monthly calories, steps, and weight averages"
-      description="Monthly rollups keep the long view visible without cluttering the dashboard. Only saved values are counted."
+      title="Monthly Trends"
+      description="A broader view of your long-term progress, consistency, and overall direction month by month."
       summaries={monthlyAverageCards}
       emptyState="Save a few daily entries to unlock monthly averages."
       activePeriod="monthly-averages"
