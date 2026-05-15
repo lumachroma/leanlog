@@ -60,7 +60,7 @@ describe('App', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /leanlog is a calm, local-first weight-loss tracker for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work/i
+        /a calm weight-loss tracker for real life - focused on consistency, forgiving trends, and long-term progress without pressure or noise/i
       )
     ).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()

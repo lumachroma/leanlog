@@ -22,12 +22,12 @@ function AppHeader({ activePage, onPageChange }) {
           </span>
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:mt-4 sm:max-w-3xl sm:text-base sm:leading-7">
-          Leanlog is a calm, local-first weight-loss tracker for fast daily logging,
-          lightweight progress review, and sustainable long-term fat-loss work.
+          A calm weight-loss tracker for real life - focused on consistency,
+          forgiving trends, and long-term progress without pressure or noise.
         </p>
         <p className="mt-3 hidden max-w-2xl text-sm leading-7 text-muted-foreground/90 sm:block">
-          Forgiving trends, simple inputs, and stable summaries keep the system useful
-          even when life gets messy and some days go unlogged.
+          Fast daily logging, stable trend tracking, and lightweight progress
+          reviews designed for sustainable fat loss over the long term.
         </p>
 
         <div className="mt-4 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:mt-5">
