@@ -42,6 +42,7 @@
 - Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`.
 - Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`.
 - App composition is split into focused components under `src/components/app`.
+- Shared test fixtures live in focused modules under `src/test/fixtures`, with `src/test/leanlog-test-fixtures.js` kept as the stable barrel import path for tests.
 
 ## Implementation Guidance
 
@@ -53,8 +54,9 @@
 - Preserve the sectioned dashboard structure unless a broader product change is explicitly requested.
 - Favor simple data shapes that can evolve without breaking Dexie persistence.
 - When adding UI, preserve the existing spacing, tone, and minimal visual language.
+- When extending shared test data, add or adjust focused fixture modules under `src/test/fixtures` and re-export through `src/test/leanlog-test-fixtures.js` instead of growing a single grab-bag file.
 
 ## Validation
 
 - Run `npm test`, `npm run lint`, and `npm run build` after meaningful changes when feasible.
-- Keep tests focused on view-model logic, form flows, and app composition boundaries.
+- Keep tests focused on view-model logic, form flows, app composition boundaries, and reuse the shared fixture barrel where practical.

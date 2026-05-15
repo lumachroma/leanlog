@@ -118,7 +118,7 @@ src/
 	hooks/               App view-model hooks
 	lib/                 Dexie database helpers and derived metrics
 	store/               Zustand store
-	test/                Shared test setup
+	test/                Shared test setup, fixture barrel, and focused fixture modules
 ```
 
 Key files:
@@ -132,6 +132,8 @@ Key files:
 - `src/components/app/ConsistencyTrackingChart.jsx`: Calorie and step target comparison visuals
 - `src/components/app/GoalProgressChart.jsx`: Start-to-goal progress bar with current weight marker
 - `src/App.jsx`: Top-level page composition and local page persistence
+- `src/test/leanlog-test-fixtures.js`: Stable test-fixture barrel used by tests across the app
+- `src/test/fixtures/`: Focused shared fixture families for settings, entries, derived data, store state, and app view-models
 
 ## Dashboard Structure
 
@@ -306,6 +308,8 @@ erDiagram
 ## Testing And Validation
 
 The project uses Vitest with Testing Library for UI and view-model coverage.
+
+Shared test data is organized into focused fixture modules under `src/test/fixtures/`. Tests should prefer the stable barrel export at `src/test/leanlog-test-fixtures.js` so fixture internals can keep evolving without causing broad import churn.
 
 Recommended validation before merging meaningful changes:
 
