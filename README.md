@@ -72,6 +72,21 @@ npm run preview
 
 Serves the production build locally.
 
+## GitHub Pages Deployment
+
+Leanlog is configured to deploy as a GitHub Pages project site from a normal repo named `leanlog`.
+
+The GitHub Pages build uses the `/leanlog/` base path automatically when the `GITHUB_PAGES=true` environment variable is set. The included workflow in [.github/workflows/deploy-pages.yml](/Users/nazrulhisham/Projects/learn/leanlog/.github/workflows/deploy-pages.yml) already does this for you.
+
+To enable deployment:
+
+1. Push this repository to GitHub.
+2. Open the repository `Settings` page, then `Pages`.
+3. Set `Source` to `GitHub Actions`.
+4. Push to `main`, or manually run the `Deploy GitHub Pages` workflow.
+
+The published app will be served from `https://<your-user>.github.io/leanlog/`, with the manifest scope and start URL aligned to that same path so the PWA can install correctly.
+
 ```bash
 npm run lint
 ```
