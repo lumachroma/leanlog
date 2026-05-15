@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { todayDate } from '@/lib/db'
 
 import { DailyLogPanel } from './DailyLogPanel'
+import { EmptyStatePanel } from './EmptyStatePanel'
 
 const formatValue = (value, suffix) => {
   if (!value) {
@@ -285,16 +286,14 @@ function DailyHistoryPage({
                 </section>
               ))
             ) : (
-              <div className="rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
-                No saved days match this month filter.
-              </div>
+              <EmptyStatePanel>No saved days match this month filter.</EmptyStatePanel>
             )}
           </div>
         ) : (
-          <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
+          <EmptyStatePanel className="mt-6">
             No saved history yet. Create your first daily entry from the editor on the
             right.
-          </div>
+          </EmptyStatePanel>
         )}
       </section>
 

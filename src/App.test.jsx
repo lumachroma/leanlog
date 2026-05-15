@@ -107,7 +107,7 @@ describe('App', () => {
     expect(screen.getByText(/loading your local dashboard/i)).toBeInTheDocument()
   })
 
-  it('renders the header, error state, and primary panels when hydrated', () => {
+  it('renders the header, error state, and primary panels when hydrated', async () => {
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
       errorMessage: 'Unable to load your local data.',
@@ -129,14 +129,14 @@ describe('App', () => {
       screen.getByText(/leanlog is a calm, local-first weight loss tracker built for fast daily logging and lightweight progress review/i)
     ).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
-    expect(screen.getByText(/avg calories/i)).toBeInTheDocument()
-    expect(screen.getByText(/avg steps/i)).toBeInTheDocument()
-    expect(screen.getByText(/7-day moving average/i)).toBeInTheDocument()
-    expect(screen.getByText(/goal progress %/i)).toBeInTheDocument()
-    expect(screen.getByText(/kpi cards/i)).toBeInTheDocument()
-    expect(screen.getByText(/main weight trend graph/i)).toBeInTheDocument()
-    expect(screen.getByText(/consistency tracking/i)).toBeInTheDocument()
-    expect(screen.getByText(/goal progress bar/i)).toBeInTheDocument()
+    expect(await screen.findByText(/avg calories/i)).toBeInTheDocument()
+    expect(await screen.findByText(/avg steps/i)).toBeInTheDocument()
+    expect(await screen.findByText(/7-day moving average/i)).toBeInTheDocument()
+    expect(await screen.findByText(/goal progress %/i)).toBeInTheDocument()
+    expect(await screen.findByText(/kpi cards/i)).toBeInTheDocument()
+    expect(await screen.findByText(/main weight trend graph/i)).toBeInTheDocument()
+    expect(await screen.findByText(/consistency tracking/i)).toBeInTheDocument()
+    expect(await screen.findByText(/goal progress bar/i)).toBeInTheDocument()
     expect(screen.queryByText(/initial targets/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
   })
@@ -211,7 +211,9 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(screen.getByText(/add your targets to make the dashboard more useful/i)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/add your targets to make the dashboard more useful/i)
+    ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /open settings/i }))
 

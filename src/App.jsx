@@ -1,14 +1,27 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 
 import { AppLoadingState } from '@/components/app/AppLoadingState'
 import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
 import { AppHeader } from '@/components/app/AppHeader'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { AppShell } from '@/components/app/AppShell'
-import { DashboardSection } from '@/components/app/DashboardSection'
 import { SettingsPage } from '@/components/app/SettingsPage'
 import { WeeklyAveragesPage } from '@/components/app/WeeklyAveragesPage'
 import { useAppViewModel } from '@/hooks/useAppViewModel'
+
+const DashboardSection = lazy(() =>
+  import('@/components/app/DashboardSection').then((module) => ({
+    default: module.DashboardSection,
+  }))
+)
+
+function DashboardLoadingState() {
+  return (
+    <div className="mt-6 rounded-[1.75rem] border border-border/80 bg-background/90 px-5 py-8 text-sm leading-7 text-muted-foreground shadow-sm backdrop-blur">
+      Loading dashboard panels...
+    </div>
+  )
+}
 
 const PAGE_STORAGE_KEY = 'leanlog.active-page'
 const VALID_PAGES = new Set([
@@ -107,16 +120,18 @@ function App() {
         />
       ) : (
         <main className="py-8 xl:py-10">
-          <DashboardSection
-            metrics={metrics}
-            chartSeries={chartSeries}
-            settings={settings}
-            calorieDelta={calorieDelta}
-            stepDelta={stepDelta}
-            goalDistance={goalDistance}
-            targetsConfigured={targetsConfigured}
-            onOpenSettings={() => setActivePage('settings')}
-          />
+          <Suspense fallback={<DashboardLoadingState />}>
+            <DashboardSection
+              metrics={metrics}
+              chartSeries={chartSeries}
+              settings={settings}
+              calorieDelta={calorieDelta}
+              stepDelta={stepDelta}
+              goalDistance={goalDistance}
+              targetsConfigured={targetsConfigured}
+              onOpenSettings={() => setActivePage('settings')}
+            />
+          </Suspense>
         </main>
       )}
     </AppShell>

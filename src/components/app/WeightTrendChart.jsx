@@ -8,6 +8,7 @@ import {
   YAxis,
 } from 'recharts'
 
+import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { formatWeight, weightFormatter } from '@/lib/display-formatters'
 
@@ -74,10 +75,10 @@ function WeightTrendChart({
 }) {
   if (!points.length) {
     return (
-      <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
+      <EmptyStatePanel className="mt-6">
         Save a few weight entries to unlock the trend chart. Missed days are fine.
         The 7DMA will stay calm and continue once data returns.
-      </div>
+      </EmptyStatePanel>
     )
   }
 
@@ -85,10 +86,10 @@ function WeightTrendChart({
 
   if (!domain) {
     return (
-      <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
+      <EmptyStatePanel className="mt-6">
         Weight entries are still blank. Log your first weigh-in and the chart will
         render both daily weight and 7DMA without punishing skipped days.
-      </div>
+      </EmptyStatePanel>
     )
   }
 

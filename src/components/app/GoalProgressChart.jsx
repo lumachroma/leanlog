@@ -1,3 +1,4 @@
+import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { formatPercent, formatWeight } from '@/lib/display-formatters'
 
@@ -62,10 +63,10 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
           </div>
         </div>
       ) : (
-        <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
+        <EmptyStatePanel className="mt-6">
           Add your start weight, goal weight, and at least one current weigh-in to
           unlock the goal progress bar.
-        </div>
+        </EmptyStatePanel>
       )}
     </section>
   )

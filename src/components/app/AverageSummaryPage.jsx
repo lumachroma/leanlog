@@ -1,5 +1,6 @@
 import { BarChart3, CalendarDays } from 'lucide-react'
 
+import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { formatAverage, formatWeight } from '@/lib/display-formatters'
 
 function AverageSummaryPage({ eyebrow, title, description, summaries, emptyState }) {
@@ -60,9 +61,7 @@ function AverageSummaryPage({ eyebrow, title, description, summaries, emptyState
             ))}
           </div>
         ) : (
-          <div className="mt-6 rounded-[1.75rem] border border-dashed border-border/80 bg-muted/20 px-5 py-8 text-sm leading-7 text-muted-foreground">
-            {emptyState}
-          </div>
+          <EmptyStatePanel className="mt-6">{emptyState}</EmptyStatePanel>
         )}
       </section>
     </main>
