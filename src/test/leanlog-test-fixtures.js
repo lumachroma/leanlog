@@ -53,6 +53,18 @@ export function createSampleEntryDraft(overrides = {}) {
   }
 }
 
+export function createBlankEntry(overrides = {}) {
+  return createSampleEntry({
+    weight: '',
+    weight7dma: '',
+    calories: '',
+    steps: '',
+    exerciseType: '',
+    exerciseMinutes: '',
+    ...overrides,
+  })
+}
+
 export function createBlankEntryDraft(overrides = {}) {
   return createSampleEntryDraft({
     weight: '',

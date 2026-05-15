@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  createBlankEntry,
+  createSampleEntry,
+  createSampleSettings,
+} from '@/test/leanlog-test-fixtures'
+
+import {
   getChartSeries,
   getDashboardMetrics,
   getMonthlyAverageCards,
@@ -11,31 +17,21 @@ describe('metrics blank tolerance', () => {
   it('keeps dashboard formulas stable when values are blank', () => {
     const metrics = getDashboardMetrics(
       [
-        {
-          date: '2026-05-15',
-          weight: '',
-          weight7dma: '',
-          calories: '',
-          steps: '',
-          exerciseType: '',
-          exerciseMinutes: '',
-        },
-        {
-          date: '2026-05-14',
-          weight: '80',
+        createBlankEntry({ date: '2026-05-15' }),
+        createSampleEntry({
           weight7dma: '79.5',
           calories: '',
           steps: '9000',
           exerciseType: '',
           exerciseMinutes: '',
-        },
+        }),
       ],
-      {
+      createSampleSettings({
         startWeight: '',
         goalWeight: '72',
         dailyCalorieTarget: '',
         dailyStepTarget: '',
-      }
+      })
     )
 
     expect(metrics).toEqual({
@@ -52,30 +48,9 @@ describe('metrics blank tolerance', () => {
 
   it('ignores blanks in weekly and monthly average formulas', () => {
     const entries = [
-      {
-        date: '2026-05-15',
-        weight: '',
-        calories: '',
-        steps: '',
-        exerciseType: '',
-        exerciseMinutes: '',
-      },
-      {
-        date: '2026-05-14',
-        weight: '80',
-        calories: '',
-        steps: '9000',
-        exerciseType: 'Walking',
-        exerciseMinutes: '',
-      },
-      {
-        date: '2026-05-01',
-        weight: '',
-        calories: '1800',
-        steps: '',
-        exerciseType: '',
-        exerciseMinutes: '',
-      },
+      createBlankEntry({ date: '2026-05-15' }),
+      createSampleEntry({ calories: '', steps: '9000', exerciseMinutes: '' }),
+      createBlankEntry({ date: '2026-05-01', calories: '1800' }),
     ]
 
     expect(getWeeklyAverageCards(entries)).toEqual([
@@ -114,33 +89,15 @@ describe('metrics blank tolerance', () => {
 
   it('filters blank values out of chart series so missing logs do not ruin charts', () => {
     const series = getChartSeries([
-      {
-        date: '2026-05-13',
-        weight: '',
-        weight7dma: '79.8',
-        calories: '',
-        steps: '',
-        exerciseType: '',
-        exerciseMinutes: '',
-      },
-      {
-        date: '2026-05-14',
-        weight: '80',
+      createBlankEntry({ date: '2026-05-13', weight7dma: '79.8' }),
+      createSampleEntry({
         weight7dma: '79.5',
         calories: '',
         steps: '9000',
         exerciseType: '',
         exerciseMinutes: '',
-      },
-      {
-        date: '2026-05-15',
-        weight: '',
-        weight7dma: '',
-        calories: '1900',
-        steps: '',
-        exerciseType: '',
-        exerciseMinutes: '',
-      },
+      }),
+      createBlankEntry({ date: '2026-05-15', calories: '1900' }),
     ])
 
     expect(series.weightTrend).toEqual([
