@@ -55,6 +55,11 @@ describe('App', () => {
 
     render(<App />)
 
+    expect(screen.getByRole('img', { name: /leanlog logo/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
     expect(
       screen.getByText(/a personal weight-loss operating system built for real life/i)
     ).toBeInTheDocument()
@@ -111,6 +116,18 @@ describe('App', () => {
     expect(screen.getByText(/daily timeline/i)).toBeInTheDocument()
     expect(screen.getByText(/^edit entry$/i)).toBeInTheDocument()
     expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
+
+    await user.click(screen.getByRole('button', { name: /go to dashboard/i }))
+
+    expect(await screen.findByText(/today's snapshot/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
   })
 
   it('switches to the settings page from the header navigation', async () => {

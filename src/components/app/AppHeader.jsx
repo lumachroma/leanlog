@@ -1,16 +1,33 @@
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 function AppHeader({ activePage, onPageChange }) {
   const averagesActive =
     activePage === 'weekly-averages' || activePage === 'monthly-averages'
+  const dashboardActive = activePage === 'dashboard'
 
   return (
     <header className="border-b border-border/80 pb-5 sm:pb-8">
       <div className="max-w-2xl sm:max-w-3xl">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-            Leanlog
-          </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onPageChange('dashboard')}
+            aria-pressed={dashboardActive}
+            aria-label="Go to dashboard"
+            className={cn(
+              'inline-flex shrink-0 items-center rounded-[1rem] border p-1.5 -ml-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+              dashboardActive
+                ? 'border-border/80 bg-background/95 shadow-sm'
+                : 'border-transparent bg-transparent hover:border-border/60 hover:bg-background/70 hover:shadow-sm'
+            )}
+          >
+            <img
+              src="/logo_transparent.svg"
+              alt="Leanlog logo"
+              className="h-8 w-auto sm:h-10"
+            />
+          </button>
           <span className="hidden items-center rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
             Sustainable by design
           </span>
@@ -51,9 +68,9 @@ function AppHeader({ activePage, onPageChange }) {
           <Button
             type="button"
             size="sm"
-            variant={activePage === 'dashboard' ? 'default' : 'ghost'}
+            variant={dashboardActive ? 'default' : 'ghost'}
             onClick={() => onPageChange('dashboard')}
-            aria-pressed={activePage === 'dashboard'}
+            aria-pressed={dashboardActive}
             className="h-9 rounded-[1rem] px-4 sm:flex-1 sm:rounded-full"
           >
             Dashboard
