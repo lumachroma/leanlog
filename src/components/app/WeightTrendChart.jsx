@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import {
   CartesianGrid,
   Line,
@@ -18,6 +20,14 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 })
 
 const formatDate = (date) => dateFormatter.format(new Date(`${date}T00:00:00`))
+
+const getChartHeight = () => {
+  if (typeof window === 'undefined') {
+    return 288
+  }
+
+  return window.innerWidth < 640 ? 208 : 288
+}
 
 const getChartDomain = (points) => {
   const values = points.flatMap((point) => [point.weight, point.weight7dma]).filter((value) => value !== null)
@@ -73,6 +83,21 @@ function WeightTrendChart({
   description =
     'Daily weight shows the honest day-to-day signal. The 7DMA carries the trend forward so missed weigh-ins do not break the story.',
 }) {
+  const [chartHeight, setChartHeight] = useState(getChartHeight)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setChartHeight(getChartHeight())
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   if (!points.length) {
     return (
       <EmptyStatePanel className="mt-6">
@@ -102,7 +127,7 @@ function WeightTrendChart({
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
       <div className="flex flex-col gap-3 border-b border-border/80 pb-4 sm:gap-4 sm:pb-5 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading eyebrow={eyebrow} title={title} description={description} />
-        <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
           <div>
             <p className="text-xs uppercase tracking-[0.18em]">Latest Daily</p>
             <p className="mt-1 font-medium text-foreground">
@@ -136,7 +161,7 @@ function WeightTrendChart({
             role="img"
             aria-label="Weight trend chart with daily weight and seven day moving average"
           >
-            <ResponsiveContainer width="100%" height={288} minWidth={0}>
+            <ResponsiveContainer width="100%" height={chartHeight} minWidth={0}>
               <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: -18 }}>
                 <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
                 <XAxis
