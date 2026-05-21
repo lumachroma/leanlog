@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import {
   ChartColumn,
   History,
@@ -10,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 function AppHeader({ activePage, onPageChange }) {
+  const [isNavScrolled, setIsNavScrolled] = useState(false)
   const averagesActive =
     activePage === 'weekly-averages' || activePage === 'monthly-averages'
   const dashboardActive = activePage === 'dashboard'
@@ -46,6 +49,19 @@ function AppHeader({ activePage, onPageChange }) {
       Icon: SlidersHorizontal,
     },
   ]
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsNavScrolled(window.scrollY > 20)
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   return (
     <>
@@ -96,7 +112,12 @@ function AppHeader({ activePage, onPageChange }) {
 
       <nav
         aria-label="Primary"
-        className="sticky top-3 z-20 mt-3 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] py-1.5 backdrop-blur sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:backdrop-blur-0"
+        className={cn(
+          'sticky top-3 z-20 mt-3 rounded-[1.75rem] py-1.5 transition-[background-color,box-shadow,transform] duration-200 sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-0',
+          isNavScrolled
+            ? 'bg-[linear-gradient(180deg,rgba(247,247,245,0.98)_0%,rgba(247,247,245,0.92)_100%)] shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur'
+            : 'bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] backdrop-blur'
+        )}
       >
         <div className="grid w-full min-w-0 grid-cols-5 gap-1 rounded-[1.5rem] border border-border/80 bg-background/95 p-1.5 shadow-sm sm:flex sm:items-center">
           {navItems.map(({ label, page, active, Icon }) => (
