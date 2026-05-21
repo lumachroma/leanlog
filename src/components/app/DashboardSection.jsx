@@ -53,7 +53,7 @@ function DashboardSection({
     getNumericSettings(settings)
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-5 sm:space-y-6">
       {!targetsConfigured ? (
         <section className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
