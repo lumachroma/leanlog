@@ -48,53 +48,55 @@ function AppHeader({ activePage, onPageChange }) {
   ]
 
   return (
-    <header className="border-b border-border/80 pb-5 sm:pb-8">
-      <div className="flex flex-col gap-4 sm:gap-5">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={() => onPageChange('dashboard')}
-            aria-pressed={dashboardActive}
-            aria-label="Go to dashboard"
-            className={cn(
-              'inline-flex shrink-0 items-center rounded-[1rem] border p-1.5 -ml-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-              dashboardActive
-                ? 'border-border/80 bg-background/95 shadow-sm'
-                : 'border-transparent bg-transparent hover:border-border/60 hover:bg-background/70 hover:shadow-sm'
-            )}
-          >
-            <img
-              src={logoSrc}
-              alt="Leanlog logo"
-              className="h-8 w-auto sm:h-10"
-            />
-          </button>
-            <div className="min-w-0">
-              <p className="text-lg font-medium tracking-[-0.04em] text-foreground sm:text-xl">
-                Leanlog
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Calm local-first weight-loss tracking.
-              </p>
+    <>
+      <header className="border-b border-border/80 pb-5 sm:pb-6">
+        <div className="flex flex-col gap-4 sm:gap-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onPageChange('dashboard')}
+                aria-pressed={dashboardActive}
+                aria-label="Go to dashboard"
+                className={cn(
+                  'inline-flex shrink-0 items-center rounded-[1rem] border p-1.5 -ml-1 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                  dashboardActive
+                    ? 'border-border/80 bg-background/95 shadow-sm'
+                    : 'border-transparent bg-transparent hover:border-border/60 hover:bg-background/70 hover:shadow-sm'
+                )}
+              >
+                <img
+                  src={logoSrc}
+                  alt="Leanlog logo"
+                  className="h-8 w-auto sm:h-10"
+                />
+              </button>
+              <div className="min-w-0">
+                <p className="text-lg font-medium tracking-[-0.04em] text-foreground sm:text-xl">
+                  Leanlog
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Calm local-first weight-loss tracking.
+                </p>
+              </div>
             </div>
+            <span className="hidden items-center rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
+              Sustainable by design
+            </span>
           </div>
-          <span className="hidden items-center rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
-            Sustainable by design
-          </span>
+          <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">
+            <span>Local-first</span>
+            <span aria-hidden="true">•</span>
+            <span>IndexedDB</span>
+            <span aria-hidden="true">•</span>
+            <span>Iteration 1</span>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">
-          <span>Local-first</span>
-          <span aria-hidden="true">•</span>
-          <span>IndexedDB</span>
-          <span aria-hidden="true">•</span>
-          <span>Iteration 1</span>
-        </div>
-      </div>
+      </header>
 
       <nav
         aria-label="Primary"
-        className="sticky top-3 z-20 mt-5 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] py-1.5 backdrop-blur sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:backdrop-blur-0"
+        className="sticky top-3 z-20 mt-3 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] py-1.5 backdrop-blur sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:backdrop-blur-0"
       >
         <div className="grid w-full min-w-0 grid-cols-5 gap-1 rounded-[1.5rem] border border-border/80 bg-background/95 p-1.5 shadow-sm sm:flex sm:items-center">
           {navItems.map(({ label, page, active, Icon }) => (
@@ -117,7 +119,7 @@ function AppHeader({ activePage, onPageChange }) {
           ))}
         </div>
       </nav>
-    </header>
+    </>
   )
 }
 
