@@ -19,6 +19,31 @@ vi.mock('virtual:pwa-register', () => ({
 
 import App from './App'
 
+function mockMatchMedia(matcher) {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: matcher(query),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+}
+
+function mockNavigatorStandalone(value) {
+  Object.defineProperty(window.navigator, 'standalone', {
+    configurable: true,
+    writable: true,
+    value,
+  })
+}
+
 describe('App', () => {
   const baseViewModel = createSampleAppViewModel()
 
@@ -32,6 +57,8 @@ describe('App', () => {
       return mockUpdateServiceWorker
     })
     mockUseAppViewModel.mockReturnValue(baseViewModel)
+    mockMatchMedia(() => false)
+    mockNavigatorStandalone(false)
   })
 
   it('shows the loading state before hydration completes', () => {
@@ -179,7 +206,7 @@ describe('App', () => {
         name: /a personal weight-loss operating system built for real life/i,
       })
     ).toBeInTheDocument()
-    expect(screen.queryByText(/7-day moving average/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /^weight trend$/i })).not.toBeInTheDocument()
   })
 
   it('shows a dashboard CTA when targets are missing and opens settings from it', async () => {
@@ -233,6 +260,32 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /refresh now/i }))
 
     expect(mockUpdateServiceWorker).toHaveBeenCalledWith(true)
+  })
+
+  it('auto-applies a ready update in Android standalone display mode', async () => {
+    mockMatchMedia((query) => query === '(display-mode: standalone)')
+
+    render(<App />)
+
+    await act(async () => {
+      registerSwOptions.onNeedRefresh()
+    })
+
+    expect(mockUpdateServiceWorker).toHaveBeenCalledWith(true)
+    expect(screen.queryByText(/app update ready/i)).not.toBeInTheDocument()
+  })
+
+  it('auto-applies a ready update in iOS home-screen standalone mode', async () => {
+    mockNavigatorStandalone(true)
+
+    render(<App />)
+
+    await act(async () => {
+      registerSwOptions.onNeedRefresh()
+    })
+
+    expect(mockUpdateServiceWorker).toHaveBeenCalledWith(true)
+    expect(screen.queryByText(/app update ready/i)).not.toBeInTheDocument()
   })
 
   it('shows an offline-ready toast when the app shell has been cached', async () => {

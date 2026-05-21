@@ -3,6 +3,18 @@ import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { registerSW } from 'virtual:pwa-register'
 
+function isStandalonePwa() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const matchesDisplayMode =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(display-mode: standalone)').matches
+
+  return matchesDisplayMode || window.navigator.standalone === true
+}
+
 function PwaUpdateBanner({ onDismiss, onRefresh }) {
   return (
     <div className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/95 p-4 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
@@ -57,6 +69,11 @@ function AppPwaManager() {
     updateServiceWorkerRef.current = registerSW({
       immediate: true,
       onNeedRefresh() {
+        if (isStandalonePwa()) {
+          void updateServiceWorkerRef.current(true)
+          return
+        }
+
         setShowUpdatePrompt(true)
       },
       onOfflineReady() {
