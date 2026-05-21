@@ -13,68 +13,14 @@ import {
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { formatWeight, weightFormatter } from '@/lib/display-formatters'
+import { getWeightTrendChartDetails } from '@/lib/weight-trend-metrics'
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-})
-
-const formatDate = (date) => dateFormatter.format(new Date(`${date}T00:00:00`))
-
-const getChartHeight = () => {
-  if (typeof window === 'undefined') {
-    return 288
-  }
-
-  return window.innerWidth < 640 ? 208 : 288
-}
-
-const getChartAxisConfig = () => {
-  if (typeof window === 'undefined') {
-    return {
-      minTickGap: 44,
-      tickFontSize: 12,
-      yAxisWidth: 60,
-    }
-  }
-
-  return window.innerWidth < 640
-    ? {
-        minTickGap: 56,
-        tickFontSize: 11,
-        yAxisWidth: 58,
-      }
-    : {
-        minTickGap: 44,
-        tickFontSize: 12,
-        yAxisWidth: 60,
-      }
-}
-
-const getChartDomain = (points) => {
-  const values = points.flatMap((point) => [point.weight, point.weight7dma]).filter((value) => value !== null)
-
-  if (!values.length) {
-    return null
-  }
-
-  const minValue = Math.min(...values)
-  const maxValue = Math.max(...values)
-
-  if (minValue === maxValue) {
-    return {
-      min: minValue - 1,
-      max: maxValue + 1,
-    }
-  }
-
-  const padding = Math.max((maxValue - minValue) * 0.12, 0.6)
-
-  return {
-    min: minValue - padding,
-    max: maxValue + padding,
-  }
-}
+import {
+  formatWeightTrendDate,
+  getWeightTrendAxisConfig,
+  getWeightTrendChartHeight,
+  WEIGHT_TREND_EMPTY_STATE_COPY,
+} from './WeightTrendChart.helpers'
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) {
@@ -88,7 +34,7 @@ function CustomTooltip({ active, payload, label }) {
   return (
     <div className="rounded-2xl border border-border/80 bg-background/95 px-4 py-3 shadow-sm backdrop-blur">
       <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        {formatDate(label)}
+        {formatWeightTrendDate(label)}
       </p>
       <div className="mt-2 space-y-1.5 text-sm">
         <p className="text-foreground/70">Daily: <span className="font-medium text-foreground">{formatWeight(dailyWeight)}</span></p>
@@ -105,13 +51,13 @@ function WeightTrendChart({
   description =
     'Daily weight shows the honest day-to-day signal. The 7DMA carries the trend forward so missed weigh-ins do not break the story.',
 }) {
-  const [chartHeight, setChartHeight] = useState(getChartHeight)
-  const [chartAxisConfig, setChartAxisConfig] = useState(getChartAxisConfig)
+  const [chartHeight, setChartHeight] = useState(getWeightTrendChartHeight)
+  const [chartAxisConfig, setChartAxisConfig] = useState(getWeightTrendAxisConfig)
 
   useEffect(() => {
     const handleResize = () => {
-      setChartHeight(getChartHeight())
-      setChartAxisConfig(getChartAxisConfig())
+      setChartHeight(getWeightTrendChartHeight())
+      setChartAxisConfig(getWeightTrendAxisConfig())
     }
 
     handleResize()
@@ -122,30 +68,30 @@ function WeightTrendChart({
     }
   }, [])
 
-  if (!points.length) {
+  const {
+    domain,
+    hasDomain,
+    hasPoints,
+    latestDailyWeight,
+    latestMovingAverageWeight,
+  } = getWeightTrendChartDetails(points)
+
+  if (!hasPoints) {
     return (
       <EmptyStatePanel className="mt-6">
-        Save a few weight entries to unlock the trend chart. Missed days are fine.
-        The 7DMA will stay calm and continue once data returns.
+        {WEIGHT_TREND_EMPTY_STATE_COPY.noPoints}
       </EmptyStatePanel>
     )
   }
 
-  const domain = getChartDomain(points)
-
-  if (!domain) {
+  if (!hasDomain) {
     return (
       <EmptyStatePanel className="mt-6">
-        Weight entries are still blank. Log your first weigh-in and the chart will
-        render both daily weight and 7DMA without punishing skipped days.
+        {WEIGHT_TREND_EMPTY_STATE_COPY.noDomain}
       </EmptyStatePanel>
     )
   }
 
-  const latestDailyPoint = [...points].reverse().find((point) => point.weight !== null)
-  const latestMovingAveragePoint = [...points]
-    .reverse()
-    .find((point) => point.weight7dma !== null)
   const { minTickGap, tickFontSize, yAxisWidth } = chartAxisConfig
 
   return (
@@ -156,13 +102,13 @@ function WeightTrendChart({
           <div>
             <p className="text-xs uppercase tracking-[0.18em]">Latest Daily</p>
             <p className="mt-1 font-medium text-foreground">
-              {formatWeight(latestDailyPoint?.weight ?? null)}
+              {formatWeight(latestDailyWeight)}
             </p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.18em]">Latest 7DMA</p>
             <p className="mt-1 font-medium text-foreground">
-              {formatWeight(latestMovingAveragePoint?.weight7dma ?? null)}
+              {formatWeight(latestMovingAverageWeight)}
             </p>
           </div>
         </div>
@@ -196,7 +142,7 @@ function WeightTrendChart({
                   interval="preserveStartEnd"
                   minTickGap={minTickGap}
                   tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
-                  tickFormatter={formatDate}
+                  tickFormatter={formatWeightTrendDate}
                 />
                 <YAxis
                   domain={[domain.min, domain.max]}

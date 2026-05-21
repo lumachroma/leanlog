@@ -1,16 +1,21 @@
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { formatPercent, formatWeight } from '@/lib/display-formatters'
+import { getGoalProgressDetails } from '@/lib/goal-progress-metrics'
+
+import {
+  GOAL_PROGRESS_EMPTY_STATE_COPY,
+  getGoalProgressStatusText,
+} from './GoalProgressChart.helpers'
 
 function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPercent }) {
-  const hasGoalData =
-    startWeight !== null &&
-    goalWeight !== null &&
-    currentWeight !== null &&
-    progressPercent !== null
-  const markerPosition = hasGoalData
-    ? `${Math.max(0, Math.min(100, progressPercent))}%`
-    : '0%'
+  const { hasGoalData, markerPosition } = getGoalProgressDetails({
+    startWeight,
+    goalWeight,
+    currentWeight,
+    progressPercent,
+  })
+  const progressPercentText = formatPercent(progressPercent)
 
   return (
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
@@ -21,9 +26,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
           description="Your starting point, current trend, and target weight shown together in one clear view."
         />
         <div className="text-xs text-muted-foreground sm:text-sm">
-          {hasGoalData
-            ? `${formatPercent(progressPercent)} complete`
-            : 'Add start, goal, and current weight to visualize progress.'}
+          {getGoalProgressStatusText({ hasGoalData, progressPercentText })}
         </div>
       </div>
 
@@ -64,8 +67,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
         </div>
       ) : (
         <EmptyStatePanel className="mt-6">
-          Add your start weight, goal weight, and at least one current weigh-in to
-          unlock the goal progress bar.
+          {GOAL_PROGRESS_EMPTY_STATE_COPY}
         </EmptyStatePanel>
       )}
     </section>

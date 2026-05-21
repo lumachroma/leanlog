@@ -16,7 +16,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 
 - Dashboard with four structured sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal
 - Recharts-based dual-line weight trend chart showing daily weight and 7-day moving average
-- Consistency tracking visuals for calorie and step averages versus targets
+- 30-day consistency tracking visuals for calories and steps with target states, hit rate, and streak summaries
 - Goal progress bar visualizing start weight, current weight, and goal weight
 - Daily history page for creating, editing, and deleting log entries
 - Weekly and monthly average pages for longer-view summaries
@@ -162,15 +162,33 @@ Key files:
 - `src/lib/db.js`: Dexie schema, local date helpers, and persistence helpers
 - `src/store/useAppStore.js`: Zustand store and app actions
 - `src/hooks/useAppViewModel.js`: App-facing view-model logic
-- `src/lib/metrics.js`: Dashboard calculations and chart-ready selectors
+- `src/lib/metrics.js`: Shared dashboard calculations and chart-ready selectors built from entry and settings data
+- `src/lib/dashboard-section-metrics.js`: Dashboard section view data shaping for snapshot, chart, and goal-progress props
+- `src/lib/weight-trend-metrics.js`: Weight chart domain and latest-value derivation
+- `src/lib/consistency-metrics.js`: 30-day consistency window, state classification, hit-rate, and streak derivation
+- `src/lib/goal-progress-metrics.js`: Goal progress completeness and marker-position derivation
 - `src/lib/daily-log-csv.js`: CSV parsing and export helpers for daily-log backups
-- `src/components/app/DashboardSection.jsx`: Dashboard KPI section and composition of the visual dashboard sections
-- `src/components/app/WeightTrendChart.jsx`: Recharts-backed dual-line weight chart
-- `src/components/app/ConsistencyTrackingChart.jsx`: Calorie and step target comparison visuals
-- `src/components/app/GoalProgressChart.jsx`: Start-to-goal progress bar with current weight marker
+- `src/components/app/DashboardSection.jsx`: Thin dashboard section renderer that composes the visual dashboard sections
+- `src/components/app/DashboardSection.helpers.js`: Snapshot card copy, icon mapping, and setup-callout display helpers
+- `src/components/app/WeightTrendChart.jsx`: Thin Recharts-backed dual-line weight chart renderer
+- `src/components/app/WeightTrendChart.helpers.js`: Weight chart date formatting, responsive chart config, and empty-state copy
+- `src/components/app/ConsistencyTrackingChart.jsx`: Thin calorie and step consistency renderer
+- `src/components/app/ConsistencyTrackingChart.helpers.js`: Consistency display labels, classes, and summary copy
+- `src/components/app/GoalProgressChart.jsx`: Thin start-to-goal progress renderer with current-weight marker
+- `src/components/app/GoalProgressChart.helpers.js`: Goal-progress display copy helpers
 - `src/App.jsx`: Top-level page composition and local page persistence
 - `src/test/leanlog-test-fixtures.js`: Stable test-fixture barrel used by tests across the app
 - `src/test/fixtures/`: Focused shared fixture families for settings, entries, derived data, store state, and app view-models
+
+## Dashboard Architecture
+
+The dashboard now follows a consistent split between data derivation and rendering:
+
+- Pure calculations live in focused `src/lib/*-metrics.js` modules.
+- Display-only copy, labels, icon selection, and class-name mapping live in colocated `src/components/app/*.helpers.js` files.
+- React components stay thin and mostly render the derived model they receive.
+
+This keeps chart logic easier to test, makes rendering components easier to read, and preserves the current local-first data flow without introducing broader architectural complexity.
 
 ## Dashboard Structure
 
@@ -350,6 +368,8 @@ erDiagram
 The project uses Vitest with Testing Library for UI and view-model coverage.
 
 Shared test data is organized into focused fixture modules under `src/test/fixtures/`. Tests should prefer the stable barrel export at `src/test/leanlog-test-fixtures.js` so fixture internals can keep evolving without causing broad import churn.
+
+Pure dashboard derivation now also has focused lib-level coverage in files such as `src/lib/consistency-metrics.test.js`, `src/lib/weight-trend-metrics.test.js`, `src/lib/goal-progress-metrics.test.js`, and `src/lib/dashboard-section-metrics.test.js`, while component tests stay focused on rendered output and composition boundaries.
 
 Recommended validation before merging meaningful changes:
 

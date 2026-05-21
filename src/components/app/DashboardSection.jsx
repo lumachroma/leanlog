@@ -1,16 +1,12 @@
-import { Activity, Flame, Footprints, Scale, Target } from 'lucide-react'
-
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { Button } from '@/components/ui/button'
-import {
-  formatAverage,
-  formatPercent,
-  formatWeight,
-  numberFormatter,
-} from '@/lib/display-formatters'
-import { getNumericSettings } from '@/lib/metrics'
+import { getDashboardSectionDetails } from '@/lib/dashboard-section-metrics'
 
 import { ConsistencyTrackingChart } from './ConsistencyTrackingChart'
+import {
+  DASHBOARD_SETUP_CALLOUT,
+  getDashboardSnapshotCards,
+} from './DashboardSection.helpers'
 import { GoalProgressChart } from './GoalProgressChart'
 import { WeightTrendChart } from './WeightTrendChart'
 
@@ -29,16 +25,6 @@ function MetricCard({ icon: Icon, label, value, detail }) {
   )
 }
 
-const formatSignedWeight = (value) => {
-  if (value === null) {
-    return null
-  }
-
-  const absoluteValue = formatWeight(Math.abs(value)).replace(' kg', '')
-  const direction = value <= 0 ? 'down' : 'up'
-  return `${absoluteValue} kg ${direction} from your baseline`
-}
-
 function DashboardSection({
   metrics,
   chartSeries,
@@ -49,28 +35,35 @@ function DashboardSection({
   targetsConfigured,
   onOpenSettings,
 }) {
-  const { startWeight, goalWeight, dailyCalorieTarget, dailyStepTarget } =
-    getNumericSettings(settings)
+  const sectionDetails = getDashboardSectionDetails({
+    metrics,
+    chartSeries,
+    settings,
+    calorieDelta,
+    stepDelta,
+    goalDistance,
+    targetsConfigured,
+  })
+  const snapshotCards = getDashboardSnapshotCards(sectionDetails.snapshot)
 
   return (
     <section className="space-y-5 sm:space-y-6">
-      {!targetsConfigured ? (
+      {sectionDetails.showSetupCallout ? (
         <section className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
               <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                Setup
+                {DASHBOARD_SETUP_CALLOUT.eyebrow}
               </p>
               <h2 className="mt-1.5 text-xl font-medium tracking-[-0.04em] sm:mt-2 sm:text-2xl">
-                Add your targets to make the dashboard more useful.
+                {DASHBOARD_SETUP_CALLOUT.title}
               </h2>
               <p className="mt-2.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-3 sm:leading-7">
-                Start weight, goal weight, calorie target, and step target help the
-                summaries explain your daily trend instead of only showing raw numbers.
+                {DASHBOARD_SETUP_CALLOUT.description}
               </p>
             </div>
             <Button type="button" size="sm" className="self-start sm:self-auto" onClick={onOpenSettings}>
-              Open settings
+              {DASHBOARD_SETUP_CALLOUT.actionLabel}
             </Button>
           </div>
         </section>
@@ -86,84 +79,23 @@ function DashboardSection({
         </div>
 
         <div className="mt-4 grid gap-4 sm:mt-6 md:grid-cols-2 xl:grid-cols-5">
-          <MetricCard
-            icon={Scale}
-            label="Weight trend"
-            value={formatWeight(metrics.latestWeight)}
-            detail={
-              formatSignedWeight(metrics.weightDelta) ??
-              'Set your baseline weight and log a few days to reveal direction.'
-            }
-          />
-          <MetricCard
-            icon={Activity}
-            label="7-Day Moving Average"
-            value={formatWeight(metrics.latestWeight7dma)}
-            detail={
-              metrics.latestWeight7dma === null
-                ? '7-day moving average appears after saved weight entries. Missed days are ignored, not punished.'
-                : 'Smoothed weight trend across the trailing 7 days.'
-            }
-          />
-          <MetricCard
-            icon={Flame}
-            label="Avg Calories"
-            value={formatAverage(metrics.calorieAverage, 'kcal')}
-            detail={
-              calorieDelta === null
-                ? 'Your average updates automatically from saved daily entries.'
-                : `${Math.abs(calorieDelta)} kcal ${calorieDelta <= 0 ? 'under' : 'over'} target`
-            }
-          />
-          <MetricCard
-            icon={Footprints}
-            label="Avg Steps"
-            value={formatAverage(metrics.stepAverage, 'steps')}
-            detail={
-              stepDelta === null
-                ? 'Once you save steps, this card becomes your movement baseline.'
-                : `${numberFormatter.format(Math.abs(stepDelta))} steps ${stepDelta >= 0 ? 'above' : 'below'} target`
-            }
-          />
-          <MetricCard
-            icon={Target}
-            label="Goal Progress %"
-            value={formatPercent(metrics.goalProgressPercent)}
-            detail={
-              metrics.goalProgressPercent === null
-                ? 'Add a start weight, goal weight, and current weight to track progress.'
-                : goalDistance === 0
-                  ? 'Goal reached based on your latest logged weight.'
-                  : `${formatWeight(goalDistance)} remaining to your goal`
-            }
-          />
+          {snapshotCards.map((card) => (
+            <MetricCard
+              key={card.label}
+              icon={card.icon}
+              label={card.label}
+              value={card.value}
+              detail={card.detail}
+            />
+          ))}
         </div>
       </section>
 
-      <WeightTrendChart
-        points={chartSeries.weightTrend}
-        eyebrow="Section 2"
-        title="Weight Trend"
-        description="Daily fluctuations stay visible while the long-term direction remains clear."
-      />
+      <WeightTrendChart {...sectionDetails.weightTrendChart} />
 
-      <ConsistencyTrackingChart
-        calorieAverage={metrics.calorieAverage}
-        calorieTarget={dailyCalorieTarget}
-        calorieDelta={calorieDelta}
-        caloriePoints={chartSeries.calorieTrend}
-        stepAverage={metrics.stepAverage}
-        stepTarget={dailyStepTarget}
-        stepDelta={stepDelta}
-        stepPoints={chartSeries.stepTrend}
-      />
+      <ConsistencyTrackingChart {...sectionDetails.consistencyChart} />
 
-      <GoalProgressChart
-        startWeight={startWeight}
-        goalWeight={goalWeight}
-        currentWeight={metrics.latestWeight}
-        progressPercent={metrics.goalProgressPercent}
-      />
+      <GoalProgressChart {...sectionDetails.goalProgressChart} />
     </section>
   )
 }

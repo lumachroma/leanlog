@@ -37,11 +37,13 @@
 - Zustand store lives in `src/store/useAppStore.js`.
 - App view-model logic lives in `src/hooks/useAppViewModel.js`.
 - Daily-log CSV import/export helpers live in `src/lib/daily-log-csv.js`.
-- Dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
-- Dashboard section composition lives in `src/components/app/DashboardSection.jsx`.
-- Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`.
-- Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`.
-- Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`.
+- Shared dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
+- Dashboard-specific derived models live in focused lib modules such as `src/lib/dashboard-section-metrics.js`, `src/lib/weight-trend-metrics.js`, `src/lib/consistency-metrics.js`, and `src/lib/goal-progress-metrics.js`.
+- Dashboard section composition lives in `src/components/app/DashboardSection.jsx` and should stay mostly render-only.
+- Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`, with display-only helpers in `src/components/app/WeightTrendChart.helpers.js`.
+- Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`, with display-only helpers in `src/components/app/ConsistencyTrackingChart.helpers.js`.
+- Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`, with display-only helpers in `src/components/app/GoalProgressChart.helpers.js`.
+- Dashboard snapshot card copy, icon selection, and setup-callout display mapping live in `src/components/app/DashboardSection.helpers.js`.
 - App composition is split into focused components under `src/components/app`.
 - Shared test fixtures live in focused modules under `src/test/fixtures`, with `src/test/leanlog-test-fixtures.js` kept as the stable barrel import path for tests.
 
@@ -50,6 +52,7 @@
 - Prefer small, local refactors over broad rewrites.
 - Preserve the narrow product scope. Do not add extra health metrics, social features, gamification systems, auth, or analytics unless asked.
 - Keep forms and dashboard behavior local-first and fast.
+- For dashboard UI, keep pure derivation in focused `src/lib/*-metrics.js` modules, keep display-only label/copy/class/icon mappings in colocated component helper files, and keep React components thin renderers over that derived model.
 - Treat missing logs as normal. Every formula, derived metric, summary, and chart input must tolerate blanks without breaking, throwing errors, or punishing the user for skipped days.
 - Favor psychologically lightweight flows: forgiving defaults, low-friction logging, and summaries that continue working even when the user misses entries.
 - Preserve the sectioned dashboard structure unless a broader product change is explicitly requested.
@@ -57,6 +60,7 @@
 - Preserve CSV import/export as a simple backup flow: imports should merge by date, ignore derived fields, and recalculate persisted summaries like `weight7dma`.
 - When adding UI, preserve the existing spacing, tone, and minimal visual language.
 - When extending shared test data, add or adjust focused fixture modules under `src/test/fixtures` and re-export through `src/test/leanlog-test-fixtures.js` instead of growing a single grab-bag file.
+- Prefer focused lib tests for pure dashboard derivation modules and keep component tests centered on rendering and composition boundaries.
 
 ## Validation
 
