@@ -100,13 +100,6 @@ function AppHeader({ activePage, onPageChange }) {
               Sustainable by design
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-[0.66rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            <span>Local-first</span>
-            <span aria-hidden="true">•</span>
-            <span>IndexedDB</span>
-            <span aria-hidden="true">•</span>
-            <span>Iteration 1</span>
-          </div>
         </div>
       </header>
 
