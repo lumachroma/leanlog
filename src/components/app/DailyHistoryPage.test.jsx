@@ -55,6 +55,26 @@ const stubImmediateAnimationFrame = () => {
   })
 }
 
+const stubIntersectionObserver = ({ isIntersecting = true } = {}) => {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: class {
+      constructor(callback) {
+        this.callback = callback
+      }
+
+      observe = (target) => {
+        this.callback([{ isIntersecting, target }])
+      }
+
+      disconnect = vi.fn()
+      unobserve = vi.fn()
+      takeRecords = vi.fn(() => [])
+    },
+  })
+}
+
 describe('DailyHistoryPage', () => {
   it('renders saved entries and routes edit/delete actions', async () => {
     const user = userEvent.setup()
@@ -171,6 +191,7 @@ describe('DailyHistoryPage', () => {
 
     stubMobileViewport()
     stubImmediateAnimationFrame()
+    stubIntersectionObserver({ isIntersecting: false })
     Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
       configurable: true,
       value: scrollIntoView,

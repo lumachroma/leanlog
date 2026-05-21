@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Clock3, PencilLine, Plus, Trash2 } from 'lucide-react'
 
@@ -82,6 +82,7 @@ function DailyHistoryPage({
 }) {
   const [pendingDeleteDate, setPendingDeleteDate] = useState(null)
   const [activeMonthKey, setActiveMonthKey] = useState('all')
+  const [isEditorVisible, setIsEditorVisible] = useState(true)
   const editorPanelRef = useRef(null)
 
   const availableMonthKeys = useMemo(
@@ -109,6 +110,31 @@ function DailyHistoryPage({
     return [...groups.entries()]
   }, [visibleEntries])
   const isEditingExistingEntry = entries.some((entry) => entry.date === selectedDate)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.IntersectionObserver !== 'function') {
+      return undefined
+    }
+
+    const editorPanel = editorPanelRef.current
+
+    if (!editorPanel) {
+      return undefined
+    }
+
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        setIsEditorVisible(entry?.isIntersecting ?? true)
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(editorPanel)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
 
   const revealEditorPanel = () => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -379,24 +405,26 @@ function DailyHistoryPage({
         )}
       </section>
 
-      <div className="fixed inset-x-4 bottom-4 z-20 xl:hidden">
-        <div className="rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                Quick add
-              </p>
-              <p className="mt-1 truncate text-sm font-medium text-foreground">
-                Next open day: {formatShortDateLabel(nextEntryDate)}
-              </p>
+      {!isEditorVisible ? (
+        <div className="fixed inset-x-4 bottom-4 z-20 xl:hidden">
+          <div className="rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                  Quick add
+                </p>
+                <p className="mt-1 truncate text-sm font-medium text-foreground">
+                  Next open day: {formatShortDateLabel(nextEntryDate)}
+                </p>
+              </div>
+              <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
+                <Plus className="size-4" />
+                Add entry
+              </Button>
             </div>
-            <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
-              <Plus className="size-4" />
-              Add entry
-            </Button>
           </div>
         </div>
-      </div>
+      ) : null}
     </main>
   )
 }
