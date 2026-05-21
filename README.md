@@ -16,7 +16,7 @@ The app is designed to stay minimal. There is no backend, no authentication, and
 
 - Dashboard with four structured sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal
 - Recharts-based dual-line weight trend chart showing daily weight and 7-day moving average
-- 30-day consistency tracking visuals for calories and steps with target states, hit rate, and streak summaries
+- Rolling 30-day Daily Consistency charts for calories and steps with on-target, near-target, off-target, logged, and missing states plus hit rate and streak summaries
 - Goal progress bar visualizing start weight, current weight, and goal weight
 - Daily history page for creating, editing, and deleting log entries
 - Weekly and monthly average pages for longer-view summaries
@@ -196,8 +196,60 @@ The dashboard is intentionally split into four sections so the app stays readabl
 
 - Section 1: Today's Snapshot for weight trend, 7-day moving average, average calories, average steps, and goal progress
 - Section 2: Weight Trend using daily weight plus 7-day moving average to keep fluctuations visible while the long-term direction stays clear
-- Section 3: Daily Consistency comparing calorie and step averages against targets over time
+- Section 3: Daily Consistency using rolling 30-day adherence charts for calories and steps so each logged day stays visible instead of collapsing the view into a single average comparison
 - Section 4: Progress Toward Your Goal showing the relationship between start weight, current trend, and goal weight
+
+## Weight Trend View
+
+The Weight Trend section keeps the daily signal visible without letting normal fluctuations dominate the story. It pairs raw daily weigh-ins with a calmer 7-day moving average so the chart still feels truthful, but easier to read over time.
+
+The chart shows two lines:
+
+- Daily weight: the honest day-to-day measurement, including normal short-term variation
+- 7-day moving average: the smoothed trend line that keeps the longer direction readable even when weigh-ins are noisy or uneven
+
+The section also surfaces the latest logged daily weight and the latest available 7DMA above the chart so the current state is visible at a glance.
+
+The chart domain is derived from the actual logged values and padded slightly so the line does not feel cramped. If weight data is missing entirely, the section falls back to an empty state instead of rendering a misleading chart.
+
+## Daily Consistency View
+
+The Daily Consistency section no longer uses the older average-versus-target bar view. It now shows a rolling 30-day adherence chart for calories and steps so the dashboard answers a better question: not just whether your average is above or below target, but how consistently you are showing up day to day.
+
+Each metric renders one square per day across the latest 30-day window and classifies that day into one of five states:
+
+- On target: the logged value met the target for that metric
+- Near target: the logged value landed close to the target without fully hitting it
+- Off target: the logged value was outside the target range
+- Logged: the day has data but no target is configured yet
+- Missing: no entry exists for that metric on that day
+
+Calories and steps use different target direction rules:
+
+- Calories treat lower-or-equal values as on target
+- Steps treat higher-or-equal values as on target
+
+Alongside the daily squares, each chart also summarizes:
+
+- Hit rate across logged days in the current 30-day window
+- Current streak of on-target days
+- Best on-target streak inside the window
+- Average delta versus the configured target when a target exists
+
+Missing days are tolerated by design. They stay visible in the chart, but they do not break the app or get counted as logged successes. This keeps the view psychologically lightweight while still making patterns visible over time.
+
+## Progress Toward Your Goal View
+
+The Progress Toward Your Goal section turns start weight, current weight, and goal weight into one simple progress view. Instead of showing a dense breakdown, it uses a single progress bar and marker so the dashboard answers the practical question of how far along the current trend is.
+
+This section shows:
+
+- Start weight: the baseline pulled from settings
+- Current weight: the latest logged weight used as the live marker on the progress bar
+- Goal weight: the target pulled from settings
+- Progress percent: the portion of total start-to-goal distance already covered
+
+The marker position is clamped to the valid range of the bar so edge cases do not break the layout. If start weight, goal weight, current weight, or progress percent is missing, the section falls back to an empty state and prompts the user to complete the required inputs first.
 
 ## Data Persistence
 
