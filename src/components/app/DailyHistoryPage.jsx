@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
-import { Clock3, PencilLine, Trash2 } from 'lucide-react'
+import { Clock3, PencilLine, Plus, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { todayDate } from '@/lib/db'
@@ -29,6 +29,13 @@ const formatMonthLabel = (monthKey) =>
     month: 'long',
     year: 'numeric',
   }).format(new Date(`${monthKey}-01T00:00:00`))
+
+const formatShortDateLabel = (date) =>
+  new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(`${date}T00:00:00`))
 
 const formatExerciseSummary = (entry) => {
   const exerciseType = entry.exerciseType?.trim()
@@ -75,11 +82,13 @@ function DailyHistoryPage({
 }) {
   const [pendingDeleteDate, setPendingDeleteDate] = useState(null)
   const [activeMonthKey, setActiveMonthKey] = useState('all')
+  const editorPanelRef = useRef(null)
 
   const availableMonthKeys = useMemo(
     () => [...new Set(entries.map((entry) => entry.date.slice(0, 7)))],
     [entries]
   )
+  const nextEntryDate = useMemo(() => getNextAvailableDate(entries), [entries])
   const visibleMonthKey = availableMonthKeys.includes(activeMonthKey)
     ? activeMonthKey
     : 'all'
@@ -101,8 +110,47 @@ function DailyHistoryPage({
   }, [visibleEntries])
   const isEditingExistingEntry = entries.some((entry) => entry.date === selectedDate)
 
+  const revealEditorPanel = () => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return
+    }
+
+    if (window.matchMedia('(min-width: 1280px)').matches) {
+      return
+    }
+
+    const reveal = () => {
+      const editorPanel = editorPanelRef.current
+
+      if (!editorPanel) {
+        return
+      }
+
+      if (typeof editorPanel.scrollIntoView === 'function') {
+        editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+
+      if (typeof editorPanel.focus === 'function') {
+        editorPanel.focus()
+      }
+    }
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(reveal)
+      return
+    }
+
+    reveal()
+  }
+
   const handleCreateEntry = () => {
-    setSelectedDate(getNextAvailableDate(entries))
+    setSelectedDate(nextEntryDate)
+    revealEditorPanel()
+  }
+
+  const handleSelectEntry = (date) => {
+    setSelectedDate(date)
+    revealEditorPanel()
   }
 
   const handleDeleteRequest = (date) => {
@@ -119,8 +167,32 @@ function DailyHistoryPage({
   }
 
   return (
-    <main className="grid flex-1 gap-6 pb-8 pt-4 sm:pt-6 xl:grid-cols-[0.9fr_1.1fr] xl:py-10">
-      <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
+    <main className="grid flex-1 items-start gap-6 pb-28 pt-4 sm:pb-8 sm:pt-6 xl:grid-cols-[0.9fr_1.1fr] xl:py-10">
+      <aside
+        ref={editorPanelRef}
+        tabIndex={-1}
+        className="order-first outline-none xl:order-last xl:sticky xl:top-6"
+      >
+        <DailyLogPanel
+          selectedDate={selectedDate}
+          entryDraft={entryDraft}
+          isSavingEntry={isSavingEntry}
+          activeDays={entries.length}
+          exerciseDays={entries.filter(hasExercise).length}
+          title={isEditingExistingEntry ? 'Edit Entry' : 'New Entry'}
+          modeLabel={isEditingExistingEntry ? 'Editing saved day' : 'Ready for a new day'}
+          description={
+            isEditingExistingEntry
+              ? 'Update or remove a saved day while keeping your long-term trends and summaries intact.'
+              : 'Capture a new day first, then use the history below to review or fine-tune older entries.'
+          }
+          setSelectedDate={setSelectedDate}
+          updateEntryDraftField={updateEntryDraftField}
+          saveEntry={saveEntry}
+        />
+      </aside>
+
+      <section className="order-last rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur xl:order-first">
         <div className="flex items-start justify-between gap-4 border-b border-border/80 pb-5">
           <div>
             <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
@@ -187,15 +259,15 @@ function DailyHistoryPage({
                     return (
                       <article
                         key={entry.date}
-                        className={`rounded-[1.5rem] border p-4 transition ${
+                        className={`rounded-[1.5rem] border px-4 py-3 transition sm:p-4 ${
                           isSelected
                             ? 'border-foreground/15 bg-muted/50 shadow-sm'
                             : 'border-border/80 bg-muted/30'
                         }`}
                       >
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                          <div className="space-y-3">
-                            <div>
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
                               <p className="text-sm font-medium text-foreground">
                                 {formatDateLabel(entry.date)}
                               </p>
@@ -204,75 +276,81 @@ function DailyHistoryPage({
                               </p>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 text-sm">
-                              <div>
-                                <p className="text-muted-foreground">Weight</p>
-                                <p className="mt-1 font-medium text-foreground">
-                                  {formatValue(entry.weight, 'kg')}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">Calories</p>
-                                <p className="mt-1 font-medium text-foreground">
-                                  {formatValue(entry.calories, 'kcal')}
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground">Steps</p>
-                                <p className="mt-1 font-medium text-foreground">
-                                  {formatValue(entry.steps, '')}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              variant={isSelected ? 'default' : 'outline'}
-                              size="sm"
-                              className="gap-2"
-                              onClick={() => setSelectedDate(entry.date)}
-                            >
-                              <PencilLine className="size-4" />
-                              Edit
-                            </Button>
-                            {isPendingDelete ? (
-                              <>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={handleDeleteCancel}
-                                  disabled={isSavingEntry}
-                                >
-                                  Cancel
-                                </Button>
+                            <div className="flex shrink-0 gap-2">
+                              <Button
+                                type="button"
+                                variant={isSelected ? 'default' : 'outline'}
+                                size="sm"
+                                className="gap-2"
+                                onClick={() => handleSelectEntry(entry.date)}
+                              >
+                                <PencilLine className="size-4" />
+                                Edit
+                              </Button>
+                              {isPendingDelete ? (
+                                <>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleDeleteCancel}
+                                    disabled={isSavingEntry}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    className="gap-2"
+                                    onClick={() => void handleDeleteConfirm(entry.date)}
+                                    disabled={isSavingEntry}
+                                  >
+                                    <Trash2 className="size-4" />
+                                    Confirm delete
+                                  </Button>
+                                </>
+                              ) : (
                                 <Button
                                   type="button"
                                   variant="destructive"
                                   size="sm"
                                   className="gap-2"
-                                  onClick={() => void handleDeleteConfirm(entry.date)}
+                                  onClick={() => handleDeleteRequest(entry.date)}
                                   disabled={isSavingEntry}
                                 >
                                   <Trash2 className="size-4" />
-                                  Confirm delete
+                                  Delete
                                 </Button>
-                              </>
-                            ) : (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                className="gap-2"
-                                onClick={() => handleDeleteRequest(entry.date)}
-                                disabled={isSavingEntry}
-                              >
-                                <Trash2 className="size-4" />
-                                Delete
-                              </Button>
-                            )}
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2 rounded-[1.25rem] bg-background/70 p-3 text-sm">
+                            <div className="min-w-0">
+                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
+                                Weight
+                              </p>
+                              <p className="mt-1 truncate font-medium text-foreground">
+                                {formatValue(entry.weight, 'kg')}
+                              </p>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
+                                Calories
+                              </p>
+                              <p className="mt-1 truncate font-medium text-foreground">
+                                {formatValue(entry.calories, 'kcal')}
+                              </p>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
+                                Steps
+                              </p>
+                              <p className="mt-1 truncate font-medium text-foreground">
+                                {formatValue(entry.steps, '')}
+                              </p>
+                            </div>
                           </div>
                         </div>
                         {isPendingDelete ? (
@@ -291,27 +369,29 @@ function DailyHistoryPage({
           </div>
         ) : (
           <EmptyStatePanel className="mt-6">
-            No saved history yet. Create your first daily entry from the editor on the
-            right.
+            No saved history yet. Create your first daily entry from the editor above.
           </EmptyStatePanel>
         )}
       </section>
 
-      <aside>
-        <DailyLogPanel
-          selectedDate={selectedDate}
-          entryDraft={entryDraft}
-          isSavingEntry={isSavingEntry}
-          activeDays={entries.length}
-          exerciseDays={entries.filter(hasExercise).length}
-          title="Edit Entry"
-          modeLabel={isEditingExistingEntry ? 'Editing mode' : 'Create mode'}
-          description="Update or remove a saved day while keeping your long-term trends and summaries intact."
-          setSelectedDate={setSelectedDate}
-          updateEntryDraftField={updateEntryDraftField}
-          saveEntry={saveEntry}
-        />
-      </aside>
+      <div className="fixed inset-x-4 bottom-4 z-20 xl:hidden">
+        <div className="rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                Quick add
+              </p>
+              <p className="mt-1 truncate text-sm font-medium text-foreground">
+                Next open day: {formatShortDateLabel(nextEntryDate)}
+              </p>
+            </div>
+            <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
+              <Plus className="size-4" />
+              Add entry
+            </Button>
+          </div>
+        </div>
+      </div>
     </main>
   )
 }

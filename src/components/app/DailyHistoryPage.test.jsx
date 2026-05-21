@@ -23,6 +23,38 @@ const getNextAvailableDate = (entries) => {
   return nextDate.toISOString().slice(0, 10)
 }
 
+const stubMobileViewport = () => {
+  const matchMedia = vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }))
+
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: matchMedia,
+  })
+
+  return matchMedia
+}
+
+const stubImmediateAnimationFrame = () => {
+  Object.defineProperty(window, 'requestAnimationFrame', {
+    writable: true,
+    configurable: true,
+    value: vi.fn((callback) => {
+      callback(0)
+      return 0
+    }),
+  })
+}
+
 describe('DailyHistoryPage', () => {
   it('renders saved entries and routes edit/delete actions', async () => {
     const user = userEvent.setup()
@@ -99,11 +131,11 @@ describe('DailyHistoryPage', () => {
       />
     )
 
-    expect(screen.getByText(/edit entry/i)).toBeInTheDocument()
-    expect(screen.getByText(/create mode/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /new entry/i })).toBeInTheDocument()
+    expect(screen.getByText(/ready for a new day/i)).toBeInTheDocument()
     expect(
       screen.getByText(
-        /update or remove a saved day while keeping your long-term trends and summaries intact/i
+        /capture a new day first, then use the history below to review or fine-tune older entries/i
       )
     ).toBeInTheDocument()
   })
@@ -128,6 +160,47 @@ describe('DailyHistoryPage', () => {
 
     await user.click(screen.getByRole('button', { name: /new entry/i }))
 
+    expect(setSelectedDate).toHaveBeenCalledWith(getNextAvailableDate(entries))
+  })
+
+  it('keeps the editor first on mobile and reveals it after quick actions', async () => {
+    const user = userEvent.setup()
+    const setSelectedDate = vi.fn()
+    const scrollIntoView = vi.fn()
+    const entries = [createSampleEntry()]
+
+    stubMobileViewport()
+    stubImmediateAnimationFrame()
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView,
+    })
+
+    render(
+      <DailyHistoryPage
+        entries={entries}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft()}
+        isSavingEntry={false}
+        setSelectedDate={setSelectedDate}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    const editorHeading = screen.getByRole('heading', { name: /edit entry/i })
+    const historyHeading = screen.getByRole('heading', { name: /daily timeline/i })
+
+    expect(editorHeading.compareDocumentPosition(historyHeading)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+
+    expect(screen.getByText(/next open day:/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /add entry/i }))
+
+    expect(scrollIntoView).toHaveBeenCalled()
     expect(setSelectedDate).toHaveBeenCalledWith(getNextAvailableDate(entries))
   })
 
