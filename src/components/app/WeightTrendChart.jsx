@@ -29,6 +29,28 @@ const getChartHeight = () => {
   return window.innerWidth < 640 ? 208 : 288
 }
 
+const getChartAxisConfig = () => {
+  if (typeof window === 'undefined') {
+    return {
+      isCompact: false,
+      minTickGap: 24,
+      tickFontSize: 12,
+    }
+  }
+
+  return window.innerWidth < 640
+    ? {
+        isCompact: true,
+        minTickGap: 40,
+        tickFontSize: 11,
+      }
+    : {
+        isCompact: false,
+        minTickGap: 24,
+        tickFontSize: 12,
+      }
+}
+
 const getChartDomain = (points) => {
   const values = points.flatMap((point) => [point.weight, point.weight7dma]).filter((value) => value !== null)
 
@@ -84,10 +106,12 @@ function WeightTrendChart({
     'Daily weight shows the honest day-to-day signal. The 7DMA carries the trend forward so missed weigh-ins do not break the story.',
 }) {
   const [chartHeight, setChartHeight] = useState(getChartHeight)
+  const [chartAxisConfig, setChartAxisConfig] = useState(getChartAxisConfig)
 
   useEffect(() => {
     const handleResize = () => {
       setChartHeight(getChartHeight())
+      setChartAxisConfig(getChartAxisConfig())
     }
 
     handleResize()
@@ -122,6 +146,7 @@ function WeightTrendChart({
   const latestMovingAveragePoint = [...points]
     .reverse()
     .find((point) => point.weight7dma !== null)
+  const { isCompact, minTickGap, tickFontSize } = chartAxisConfig
 
   return (
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
@@ -144,13 +169,13 @@ function WeightTrendChart({
       </div>
 
       <div className="mt-4 rounded-[1.75rem] border border-border/80 bg-muted/20 p-4 sm:mt-6 sm:p-5">
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:gap-4">
           <div className="inline-flex items-center gap-2">
-            <span className="h-px w-8 bg-foreground/35" />
+            <span className="h-px w-6 bg-foreground/35 sm:w-8" />
             Daily weight
           </div>
           <div className="inline-flex items-center gap-2">
-            <span className="h-0.5 w-8 bg-foreground" />
+            <span className="h-0.5 w-6 bg-foreground sm:w-8" />
             7DMA weight
           </div>
         </div>
@@ -168,8 +193,9 @@ function WeightTrendChart({
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  minTickGap={24}
-                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: 12 }}
+                  interval={isCompact ? 'preserveStartEnd' : 0}
+                  minTickGap={minTickGap}
+                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
                   tickFormatter={formatDate}
                 />
                 <YAxis
@@ -177,7 +203,7 @@ function WeightTrendChart({
                   axisLine={false}
                   tickLine={false}
                   width={48}
-                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: 12 }}
+                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
                   tickFormatter={(value) => weightFormatter.format(value)}
                 />
                 <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(15, 23, 42, 0.12)', strokeWidth: 1 }} />
