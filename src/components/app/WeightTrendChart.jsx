@@ -99,8 +99,8 @@ function WeightTrendChart({
     .find((point) => point.weight7dma !== null)
 
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-      <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
+    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+      <div className="flex flex-col gap-3 border-b border-border/80 pb-4 sm:gap-4 sm:pb-5 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading eyebrow={eyebrow} title={title} description={description} />
         <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
           <div>
@@ -118,7 +118,7 @@ function WeightTrendChart({
         </div>
       </div>
 
-      <div className="mt-6 rounded-[1.75rem] border border-border/80 bg-muted/20 p-4 sm:p-5">
+      <div className="mt-4 rounded-[1.75rem] border border-border/80 bg-muted/20 p-4 sm:mt-6 sm:p-5">
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div className="inline-flex items-center gap-2">
             <span className="h-px w-8 bg-foreground/35" />
@@ -130,7 +130,7 @@ function WeightTrendChart({
           </div>
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:p-4">
+        <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:mt-5 sm:p-4">
           <div
             className="w-full"
             role="img"

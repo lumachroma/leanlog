@@ -13,8 +13,8 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
     : '0%'
 
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-      <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
+    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+      <div className="flex flex-col gap-3 border-b border-border/80 pb-4 sm:gap-4 sm:pb-5 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading
           eyebrow="Section 4"
           title="Progress Toward Your Goal"
@@ -28,7 +28,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
       </div>
 
       {hasGoalData ? (
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <div className="relative h-4 rounded-full bg-muted/70">
             <div
               className="h-full rounded-full bg-foreground/85"
@@ -47,7 +47,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
             Current {formatWeight(currentWeight)}
           </div>
 
-          <div className="mt-5 grid gap-4 text-sm text-muted-foreground sm:grid-cols-3">
+          <div className="mt-4 grid gap-4 text-sm text-muted-foreground sm:mt-5 sm:grid-cols-3">
             <div>
               <p className="text-xs uppercase tracking-[0.18em]">Start</p>
               <p className="mt-1 font-medium text-foreground">{formatWeight(startWeight)}</p>

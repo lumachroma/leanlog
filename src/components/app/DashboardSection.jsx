@@ -16,12 +16,12 @@ import { WeightTrendChart } from './WeightTrendChart'
 
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
-    <article className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur">
+    <article className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-5">
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>
         <Icon className="size-4 text-muted-foreground" />
       </div>
-      <p className="mt-6 text-3xl font-medium tracking-[-0.04em] text-foreground">
+      <p className="mt-4 text-3xl font-medium tracking-[-0.04em] text-foreground sm:mt-6">
         {value}
       </p>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{detail}</p>
@@ -55,29 +55,29 @@ function DashboardSection({
   return (
     <section className="space-y-6">
       {!targetsConfigured ? (
-        <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <section className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
               <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
                 Setup
               </p>
-              <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+              <h2 className="mt-1.5 text-xl font-medium tracking-[-0.04em] sm:mt-2 sm:text-2xl">
                 Add your targets to make the dashboard more useful.
               </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
+              <p className="mt-2.5 max-w-2xl text-sm leading-6 text-muted-foreground sm:mt-3 sm:leading-7">
                 Start weight, goal weight, calorie target, and step target help the
                 summaries explain your daily trend instead of only showing raw numbers.
               </p>
             </div>
-            <Button type="button" onClick={onOpenSettings}>
+            <Button type="button" size="sm" className="self-start sm:self-auto" onClick={onOpenSettings}>
               Open settings
             </Button>
           </div>
         </section>
       ) : null}
 
-      <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-        <div className="border-b border-border/80 pb-5">
+      <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+        <div className="border-b border-border/80 pb-4 sm:pb-5">
           <SectionHeading
             eyebrow="Section 1"
             title="Today's Snapshot"
@@ -85,7 +85,7 @@ function DashboardSection({
           />
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-4 grid gap-4 sm:mt-6 md:grid-cols-2 xl:grid-cols-5">
           <MetricCard
             icon={Scale}
             label="Weight trend"

@@ -22,7 +22,7 @@ function ConsistencyMetric({
       : null
 
   return (
-    <article className="rounded-[1.75rem] border border-border/80 bg-background/80 p-5 shadow-sm">
+    <article className="rounded-[1.75rem] border border-border/80 bg-background/80 p-4 shadow-sm sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-base font-medium tracking-[-0.02em] text-foreground">
@@ -39,7 +39,7 @@ function ConsistencyMetric({
         </span>
       </div>
 
-      <div className="relative mt-5 h-3 rounded-full bg-muted/70">
+      <div className="relative mt-4 h-3 rounded-full bg-muted/70 sm:mt-5">
         <div
           className={`h-full rounded-full transition-all ${
             isOnTrack === null
@@ -58,7 +58,7 @@ function ConsistencyMetric({
         ) : null}
       </div>
 
-      <p className="mt-4 text-sm leading-6 text-muted-foreground">
+      <p className="mt-3 text-sm leading-6 text-muted-foreground sm:mt-4">
         {delta === null || !hasTarget
           ? 'This comparison appears automatically once both an average and a target exist.'
           : prefersLower
@@ -78,8 +78,8 @@ function ConsistencyTrackingChart({
   stepDelta,
 }) {
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
-      <div className="border-b border-border/80 pb-5">
+    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+      <div className="border-b border-border/80 pb-4 sm:pb-5">
         <SectionHeading
           eyebrow="Section 3"
           title="Daily Consistency"
@@ -87,7 +87,7 @@ function ConsistencyTrackingChart({
         />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid gap-4 sm:mt-6 lg:grid-cols-2">
         <ConsistencyMetric
           label="Calories"
           average={calorieAverage}
