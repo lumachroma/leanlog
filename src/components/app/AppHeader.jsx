@@ -65,7 +65,7 @@ function AppHeader({ activePage, onPageChange }) {
 
   return (
     <>
-      <header className="border-b border-border/80 pb-5 sm:pb-6">
+      <header className="border-b border-border/80 pb-4 sm:pb-5">
         <div className="flex flex-col gap-3 sm:gap-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
@@ -106,7 +106,7 @@ function AppHeader({ activePage, onPageChange }) {
       <nav
         aria-label="Primary"
         className={cn(
-          'sticky top-2 z-20 mt-2 rounded-[1.5rem] py-1 transition-[background-color,box-shadow,transform] duration-200 sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-0',
+          'sticky top-2 z-20 mt-1.5 rounded-[1.5rem] py-1 transition-[background-color,box-shadow,transform] duration-200 sm:static sm:mt-5 sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-0',
           isNavScrolled
             ? 'bg-[linear-gradient(180deg,rgba(247,247,245,0.98)_0%,rgba(247,247,245,0.92)_100%)] shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur'
             : 'bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] backdrop-blur'
