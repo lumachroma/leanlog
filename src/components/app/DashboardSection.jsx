@@ -16,7 +16,7 @@ import { WeightTrendChart } from './WeightTrendChart'
 
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
-    <article className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-5">
+    <article className="rounded-[2rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(249,249,247,0.9)_100%)] p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur sm:p-5">
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>
         <Icon className="size-4 text-muted-foreground" />
