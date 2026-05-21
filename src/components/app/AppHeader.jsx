@@ -1,3 +1,11 @@
+import {
+  ChartColumn,
+  History,
+  Info,
+  LayoutDashboard,
+  SlidersHorizontal,
+} from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -6,11 +14,44 @@ function AppHeader({ activePage, onPageChange }) {
     activePage === 'weekly-averages' || activePage === 'monthly-averages'
   const dashboardActive = activePage === 'dashboard'
   const logoSrc = `${import.meta.env.BASE_URL}logo_transparent.svg`
+  const navItems = [
+    {
+      label: 'Dashboard',
+      page: 'dashboard',
+      active: dashboardActive,
+      Icon: LayoutDashboard,
+    },
+    {
+      label: 'History',
+      page: 'history',
+      active: activePage === 'history',
+      Icon: History,
+    },
+    {
+      label: 'Averages',
+      page: 'weekly-averages',
+      active: averagesActive,
+      Icon: ChartColumn,
+    },
+    {
+      label: 'About',
+      page: 'about',
+      active: activePage === 'about',
+      Icon: Info,
+    },
+    {
+      label: 'Settings',
+      page: 'settings',
+      active: activePage === 'settings',
+      Icon: SlidersHorizontal,
+    },
+  ]
 
   return (
     <header className="border-b border-border/80 pb-5 sm:pb-8">
-      <div className="max-w-2xl sm:max-w-3xl">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-4 sm:gap-5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
             onClick={() => onPageChange('dashboard')}
@@ -29,83 +70,51 @@ function AppHeader({ activePage, onPageChange }) {
               className="h-8 w-auto sm:h-10"
             />
           </button>
+            <div className="min-w-0">
+              <p className="text-lg font-medium tracking-[-0.04em] text-foreground sm:text-xl">
+                Leanlog
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Calm local-first weight-loss tracking.
+              </p>
+            </div>
+          </div>
           <span className="hidden items-center rounded-full border border-border/70 bg-muted/40 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
             Sustainable by design
           </span>
         </div>
-        <h1 className="mt-3 max-w-lg text-[1.95rem] font-medium leading-[1.02] tracking-[-0.06em] text-balance sm:mt-4 sm:max-w-2xl sm:text-4xl sm:leading-tight xl:text-5xl">
-          <span className="sm:hidden">Weight-loss OS for real life.</span>
-          <span className="hidden sm:inline">
-            A personal weight-loss operating system built for real life.
-          </span>
-        </h1>
-        <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:mt-4 sm:max-w-3xl sm:text-base sm:leading-7">
-          A calm weight-loss tracker for real life - focused on consistency,
-          forgiving trends, and long-term progress without pressure or noise.
-        </p>
-        <p className="mt-3 hidden max-w-2xl text-sm leading-7 text-muted-foreground/90 sm:block">
-          Fast daily logging, stable trend tracking, and lightweight progress
-          reviews designed for sustainable fat loss over the long term.
-        </p>
-
-        <div className="mt-4 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:mt-5">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 sm:hidden">
-            <span>Local-first</span>
-            <span aria-hidden="true">•</span>
-            <span>IndexedDB</span>
-            <span aria-hidden="true">•</span>
-            <span>Iteration 1</span>
-          </div>
-          <div className="hidden flex-wrap items-center gap-2 sm:flex">
-            <span className="rounded-full bg-muted/45 px-2.5 py-1">Local-first</span>
-            <span className="rounded-full bg-muted/45 px-2.5 py-1">IndexedDB</span>
-            <span className="rounded-full bg-muted/45 px-2.5 py-1">Iteration 1</span>
-          </div>
+        <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:hidden">
+          <span>Local-first</span>
+          <span aria-hidden="true">•</span>
+          <span>IndexedDB</span>
+          <span aria-hidden="true">•</span>
+          <span>Iteration 1</span>
         </div>
       </div>
 
-      <nav aria-label="Primary" className="mt-5 sm:mt-6">
-        <div className="grid grid-cols-2 gap-1.5 rounded-[1.5rem] border border-border/80 bg-background/95 p-1.5 shadow-sm sm:flex sm:w-full sm:items-center">
-          <Button
-            type="button"
-            size="sm"
-            variant={dashboardActive ? 'default' : 'ghost'}
-            onClick={() => onPageChange('dashboard')}
-            aria-pressed={dashboardActive}
-            className="h-9 rounded-[1rem] px-4 sm:flex-1 sm:rounded-full"
-          >
-            Dashboard
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={activePage === 'history' ? 'default' : 'ghost'}
-            onClick={() => onPageChange('history')}
-            aria-pressed={activePage === 'history'}
-            className="h-9 rounded-[1rem] px-4 sm:flex-1 sm:rounded-full"
-          >
-            History
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={averagesActive ? 'default' : 'ghost'}
-            onClick={() => onPageChange('weekly-averages')}
-            aria-pressed={averagesActive}
-            className="h-9 rounded-[1rem] px-4 sm:flex-1 sm:rounded-full"
-          >
-            Averages
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={activePage === 'settings' ? 'default' : 'ghost'}
-            onClick={() => onPageChange('settings')}
-            aria-pressed={activePage === 'settings'}
-            className="h-9 rounded-[1rem] px-4 sm:flex-1 sm:rounded-full"
-          >
-            Settings
-          </Button>
+      <nav
+        aria-label="Primary"
+        className="sticky top-3 z-20 mt-5 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] py-1.5 backdrop-blur sm:static sm:mt-6 sm:rounded-none sm:bg-transparent sm:py-0 sm:backdrop-blur-0"
+      >
+        <div className="grid w-full min-w-0 grid-cols-5 gap-1 rounded-[1.5rem] border border-border/80 bg-background/95 p-1.5 shadow-sm sm:flex sm:items-center">
+          {navItems.map(({ label, page, active, Icon }) => (
+            <Button
+              key={page}
+              type="button"
+              size="sm"
+              variant={active ? 'default' : 'ghost'}
+              onClick={() => onPageChange(page)}
+              aria-pressed={active}
+              className="h-auto w-full min-w-0 shrink rounded-[1rem] px-1 py-2 sm:flex-1 sm:min-h-10 sm:rounded-full sm:px-4 sm:py-0"
+            >
+              <span className="flex w-full min-w-0 flex-col items-center justify-center gap-1 sm:flex-row sm:gap-1.5">
+                <Icon className="size-4 shrink-0 sm:size-3.5" />
+                <span className="line-clamp-2 text-center text-[0.55rem] leading-[1.05] break-words sm:line-clamp-none sm:text-[0.8rem] sm:leading-none sm:whitespace-nowrap">
+                  {label}
+                </span>
+              </span>
+            </Button>
+          ))}
         </div>
       </nav>
     </header>

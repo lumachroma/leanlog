@@ -76,4 +76,14 @@ describe('AppContent', () => {
 
     expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
   })
+
+  it('renders the about branch', () => {
+    render(<AppContent {...createProps()} activePage="about" />)
+
+    expect(
+      screen.getByRole('heading', {
+        name: /a personal weight-loss operating system built for real life/i,
+      })
+    ).toBeInTheDocument()
+  })
 })

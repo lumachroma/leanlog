@@ -74,14 +74,8 @@ describe('App', () => {
       'aria-pressed',
       'true'
     )
-    expect(
-      screen.getByText(/a personal weight-loss operating system built for real life/i)
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        /a calm weight-loss tracker for real life - focused on consistency, forgiving trends, and long-term progress without pressure or noise/i
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByText(/^leanlog$/i)).toBeInTheDocument()
+    expect(screen.getByText(/calm local-first weight-loss tracking/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg calories/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg steps/i)).toBeInTheDocument()
@@ -95,6 +89,9 @@ describe('App', () => {
     ).toBeInTheDocument()
     expect(screen.queryByText(/tracking defaults/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(/a personal weight-loss operating system built for real life/i)
+    ).not.toBeInTheDocument()
   })
 
   it('switches to the averages page from the header navigation', async () => {
@@ -156,12 +153,32 @@ describe('App', () => {
     expect(screen.queryByText(/weekly trends/i)).not.toBeInTheDocument()
   })
 
-  it('restores the last active page from local storage', () => {
-    window.localStorage.setItem('leanlog.active-page', 'monthly-averages')
+  it('switches to the about page from the header navigation', async () => {
+    const user = userEvent.setup()
 
     render(<App />)
 
-    expect(screen.getByText(/monthly trends/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /about/i }))
+
+    expect(
+      screen.getByRole('heading', {
+        name: /a personal weight-loss operating system built for real life/i,
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /review targets/i })).toBeInTheDocument()
+    expect(screen.queryByText(/today's snapshot/i)).not.toBeInTheDocument()
+  })
+
+  it('restores the last active page from local storage', () => {
+    window.localStorage.setItem('leanlog.active-page', 'about')
+
+    render(<App />)
+
+    expect(
+      screen.getByRole('heading', {
+        name: /a personal weight-loss operating system built for real life/i,
+      })
+    ).toBeInTheDocument()
     expect(screen.queryByText(/7-day moving average/i)).not.toBeInTheDocument()
   })
 

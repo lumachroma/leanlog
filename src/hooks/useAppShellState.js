@@ -7,6 +7,7 @@ const VALID_PAGES = new Set([
   'weekly-averages',
   'monthly-averages',
   'history',
+  'about',
   'settings',
 ])
 

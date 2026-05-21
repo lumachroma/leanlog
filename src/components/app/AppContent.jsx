@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react'
 
+import { AboutPage } from '@/components/app/AboutPage'
 import { AppSectionLoadingState } from '@/components/app/AppSectionLoadingState'
 import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
@@ -66,6 +67,10 @@ function AppContent({
         saveSettings={settingsView.saveSettings}
       />
     )
+  }
+
+  if (activePage === 'about') {
+    return <AboutPage onPageChange={onPageChange} />
   }
 
   return (

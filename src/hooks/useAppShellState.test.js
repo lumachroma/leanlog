@@ -18,11 +18,11 @@ describe('useAppShellState', () => {
   })
 
   it('restores persisted page changes and supports opening settings', () => {
-    window.localStorage.setItem('leanlog.active-page', 'monthly-averages')
+    window.localStorage.setItem('leanlog.active-page', 'about')
 
     const { result } = renderHook(() => useAppShellState())
 
-    expect(result.current.activePage).toBe('monthly-averages')
+    expect(result.current.activePage).toBe('about')
 
     act(() => {
       result.current.setActivePage('history')
