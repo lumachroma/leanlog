@@ -14,7 +14,7 @@ function AverageSummaryPage({
   onPeriodChange,
 }) {
   return (
-    <main className="py-8 xl:py-10">
+    <main className="pb-8 pt-4 sm:pt-6 xl:py-10">
       <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
         <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>

@@ -25,7 +25,7 @@ const ABOUT_PILLARS = [
 
 function AboutPage({ onPageChange }) {
   return (
-    <main className="flex flex-1 py-8 xl:py-10">
+    <main className="flex flex-1 pb-8 pt-4 sm:pt-6 xl:py-10">
       <section className="grid w-full gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="rounded-[2rem] border border-border/80 bg-background/92 p-6 shadow-sm backdrop-blur sm:p-8">
           <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">

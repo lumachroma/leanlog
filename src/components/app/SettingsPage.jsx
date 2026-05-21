@@ -12,7 +12,7 @@ function SettingsPage({
   saveSettings,
 }) {
   return (
-    <main className="flex flex-1 py-8 xl:py-10">
+    <main className="flex flex-1 pb-8 pt-4 sm:pt-6 xl:py-10">
       <section className="grid w-full gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
           <div className="flex items-start justify-between gap-4 border-b border-border/80 pb-5">

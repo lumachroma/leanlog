@@ -74,7 +74,7 @@ function AppContent({
   }
 
   return (
-    <main className="py-8 xl:py-10">
+    <main className="pb-8 pt-4 sm:pt-6 xl:py-10">
       <Suspense fallback={<AppSectionLoadingState message="Loading dashboard panels..." />}>
         <DashboardSection
           metrics={dashboardView.metrics}
