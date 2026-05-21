@@ -151,9 +151,11 @@ function DashboardSection({
         calorieAverage={metrics.calorieAverage}
         calorieTarget={dailyCalorieTarget}
         calorieDelta={calorieDelta}
+        caloriePoints={chartSeries.calorieTrend}
         stepAverage={metrics.stepAverage}
         stepTarget={dailyStepTarget}
         stepDelta={stepDelta}
+        stepPoints={chartSeries.stepTrend}
       />
 
       <GoalProgressChart
