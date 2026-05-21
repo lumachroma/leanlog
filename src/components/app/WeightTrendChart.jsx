@@ -32,22 +32,22 @@ const getChartHeight = () => {
 const getChartAxisConfig = () => {
   if (typeof window === 'undefined') {
     return {
-      isCompact: false,
-      minTickGap: 24,
+      minTickGap: 44,
       tickFontSize: 12,
+      yAxisWidth: 60,
     }
   }
 
   return window.innerWidth < 640
     ? {
-        isCompact: true,
-        minTickGap: 40,
+        minTickGap: 56,
         tickFontSize: 11,
+        yAxisWidth: 58,
       }
     : {
-        isCompact: false,
-        minTickGap: 24,
+        minTickGap: 44,
         tickFontSize: 12,
+        yAxisWidth: 60,
       }
 }
 
@@ -146,7 +146,7 @@ function WeightTrendChart({
   const latestMovingAveragePoint = [...points]
     .reverse()
     .find((point) => point.weight7dma !== null)
-  const { isCompact, minTickGap, tickFontSize } = chartAxisConfig
+  const { minTickGap, tickFontSize, yAxisWidth } = chartAxisConfig
 
   return (
     <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
@@ -187,13 +187,13 @@ function WeightTrendChart({
             aria-label="Weight trend chart with daily weight and seven day moving average"
           >
             <ResponsiveContainer width="100%" height={chartHeight} minWidth={0}>
-              <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: -18 }}>
+              <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 4 }}>
                 <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  interval={isCompact ? 'preserveStartEnd' : 0}
+                  interval="preserveStartEnd"
                   minTickGap={minTickGap}
                   tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
                   tickFormatter={formatDate}
@@ -202,7 +202,7 @@ function WeightTrendChart({
                   domain={[domain.min, domain.max]}
                   axisLine={false}
                   tickLine={false}
-                  width={48}
+                  width={yAxisWidth}
                   tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
                   tickFormatter={(value) => weightFormatter.format(value)}
                 />
