@@ -153,6 +153,10 @@ function DailyHistoryPage({
     revealEditorPanel()
   }
 
+  const handleSelectEntryClick = (event) => {
+    handleSelectEntry(event.currentTarget.dataset.entryDate)
+  }
+
   const handleDeleteRequest = (date) => {
     setPendingDeleteDate(date)
   }
@@ -282,7 +286,8 @@ function DailyHistoryPage({
                                 variant={isSelected ? 'default' : 'outline'}
                                 size="sm"
                                 className="gap-2"
-                                onClick={() => handleSelectEntry(entry.date)}
+                                data-entry-date={entry.date}
+                                onClick={handleSelectEntryClick}
                               >
                                 <PencilLine className="size-4" />
                                 Edit
