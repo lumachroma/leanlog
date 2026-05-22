@@ -1,17 +1,9 @@
-import { Suspense, lazy } from 'react'
-
 import { AboutPage } from '@/components/app/AboutPage'
-import { AppSectionLoadingState } from '@/components/app/AppSectionLoadingState'
+import { DashboardSection } from '@/components/app/DashboardSection'
 import { MonthlyAveragesPage } from '@/components/app/MonthlyAveragesPage'
 import { DailyHistoryPage } from '@/components/app/DailyHistoryPage'
 import { SettingsPage } from '@/components/app/SettingsPage'
 import { WeeklyAveragesPage } from '@/components/app/WeeklyAveragesPage'
-
-const DashboardSection = lazy(() =>
-  import('@/components/app/DashboardSection').then((module) => ({
-    default: module.DashboardSection,
-  }))
-)
 
 function AppContent({
   activePage,
@@ -75,18 +67,16 @@ function AppContent({
 
   return (
     <main className="pb-8 pt-4 sm:pt-6 xl:py-10">
-      <Suspense fallback={<AppSectionLoadingState message="Loading dashboard panels..." />}>
-        <DashboardSection
-          metrics={dashboardView.metrics}
-          chartSeries={dashboardView.chartSeries}
-          settings={dashboardView.settings}
-          calorieDelta={dashboardView.calorieDelta}
-          stepDelta={dashboardView.stepDelta}
-          goalDistance={dashboardView.goalDistance}
-          targetsConfigured={dashboardView.targetsConfigured}
-          onOpenSettings={onOpenSettings}
-        />
-      </Suspense>
+      <DashboardSection
+        metrics={dashboardView.metrics}
+        chartSeries={dashboardView.chartSeries}
+        settings={dashboardView.settings}
+        calorieDelta={dashboardView.calorieDelta}
+        stepDelta={dashboardView.stepDelta}
+        goalDistance={dashboardView.goalDistance}
+        targetsConfigured={dashboardView.targetsConfigured}
+        onOpenSettings={onOpenSettings}
+      />
     </main>
   )
 }
