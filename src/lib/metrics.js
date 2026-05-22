@@ -1,5 +1,10 @@
 import { average, toNumber as parseNumber } from '@/lib/number-utils'
-import { formatMonthLabel, formatWeekLabel, toDateAtMidnight } from '@/lib/date-utils'
+import {
+  formatMonthLabel,
+  formatWeekLabel,
+  toDateAtMidnight,
+  toDateKey,
+} from '@/lib/date-utils'
 
 const hasText = (value) => String(value ?? '').trim().length > 0
 
@@ -26,9 +31,7 @@ const getWeekStart = (date) => {
   const offset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
 
   nextDate.setDate(nextDate.getDate() + offset)
-
-  const timezoneOffsetInMs = nextDate.getTimezoneOffset() * 60_000
-  return new Date(nextDate.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
+  return toDateKey(nextDate)
 }
 
 const hasExercise = (entry) => hasText(entry.exerciseType) || hasText(entry.exerciseMinutes)

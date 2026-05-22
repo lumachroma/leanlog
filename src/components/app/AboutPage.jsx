@@ -8,6 +8,7 @@ import {
   Target,
 } from 'lucide-react'
 
+import { AppSurface } from '@/components/app/AppSurface'
 import { Button } from '@/components/ui/button'
 
 const ABOUT_PILLARS = [
@@ -81,7 +82,7 @@ const ABOUT_DASHBOARD_GUIDES = [
 
 function DashboardGuideCard({ eyebrow, title, description, points, Icon }) {
   return (
-    <article className="rounded-[1.75rem] border border-border/80 bg-background/88 p-5 shadow-sm backdrop-blur sm:p-6">
+    <AppSurface as="article" className="rounded-[1.75rem] bg-background/88 p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[0.68rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
@@ -110,7 +111,7 @@ function DashboardGuideCard({ eyebrow, title, description, points, Icon }) {
           </div>
         ))}
       </div>
-    </article>
+    </AppSurface>
   )
 }
 
@@ -119,7 +120,7 @@ function AboutPage({ onPageChange }) {
     <main className="flex flex-1 pb-8 pt-4 sm:pt-6 xl:py-10">
       <section className="w-full space-y-6">
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[2rem] border border-border/80 bg-background/92 p-6 shadow-sm backdrop-blur sm:p-8">
+          <AppSurface as="div" className="bg-background/92 p-6 sm:p-8">
             <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
               About LeanLog
             </p>
@@ -158,9 +159,9 @@ function AboutPage({ onPageChange }) {
                 Review targets
               </Button>
             </div>
-          </div>
+          </AppSurface>
 
-          <article className="rounded-[1.75rem] border border-border/80 bg-background/88 p-4 shadow-sm backdrop-blur sm:p-5">
+          <AppSurface as="article" className="rounded-[1.75rem] bg-background/88 p-4 sm:p-5">
             <div className="grid gap-3 sm:gap-0 lg:h-full lg:grid-cols-1 xl:h-auto xl:grid-cols-1">
               {ABOUT_PILLARS.map(({ title, description, Icon }, index) => (
                 <div
@@ -179,10 +180,10 @@ function AboutPage({ onPageChange }) {
                 </div>
               ))}
             </div>
-          </article>
+          </AppSurface>
         </div>
 
-        <section className="rounded-[2rem] border border-border/80 bg-background/92 p-6 shadow-sm backdrop-blur sm:p-8">
+        <AppSurface className="bg-background/92 p-6 sm:p-8">
           <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
             Why the dashboard works
           </p>
@@ -194,7 +195,7 @@ function AboutPage({ onPageChange }) {
             language. What is happening right now? Is the trend improving? Am I
             staying consistent? Am I actually getting closer to the goal?
           </p>
-        </section>
+        </AppSurface>
 
         <div className="grid gap-4">
           {ABOUT_DASHBOARD_GUIDES.map((guide) => (

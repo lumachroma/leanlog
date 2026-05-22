@@ -1,13 +1,8 @@
-import { toDateAtMidnight } from '@/lib/date-utils'
+import { toDateAtMidnight, toDateKey } from '@/lib/date-utils'
 
 export const CONSISTENCY_DAY_WINDOW = 30
 
 const CLOSE_ENOUGH_RATIO = 0.08
-
-const toDateKey = (date) => {
-  const timezoneOffsetInMs = date.getTimezoneOffset() * 60_000
-  return new Date(date.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
-}
 
 const buildDayWindow = (endDate) => {
   const end = toDateAtMidnight(endDate)

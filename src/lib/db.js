@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
 
-import { toDateAtMidnight } from '@/lib/date-utils'
+import { addDaysToDateKey, toDateKey } from '@/lib/date-utils'
 import { average, toNumber as parseNumber } from '@/lib/number-utils'
 
 export const SETTINGS_RECORD_ID = 'profile'
@@ -21,10 +21,7 @@ export const DEFAULT_SETTINGS = {
   dailyStepTarget: '',
 }
 
-export const toDateInputValue = (date = new Date()) => {
-  const timezoneOffsetInMs = date.getTimezoneOffset() * 60_000
-  return new Date(date.getTime() - timezoneOffsetInMs).toISOString().slice(0, 10)
-}
+export const toDateInputValue = (date = new Date()) => toDateKey(date)
 
 export const todayDate = () => toDateInputValue()
 
@@ -40,11 +37,7 @@ export const createEmptyEntryDraft = (date = todayDate()) => ({
 
 const hasText = (value) => String(value ?? '').trim().length > 0
 
-const addDays = (date, days) => {
-  const nextDate = new Date(toDateAtMidnight(date))
-  nextDate.setDate(nextDate.getDate() + days)
-  return toDateInputValue(nextDate)
-}
+const addDays = (date, days) => addDaysToDateKey(date, days)
 
 const sanitizeSettings = (settings = DEFAULT_SETTINGS) => ({
   startWeight: settings.startWeight ?? '',

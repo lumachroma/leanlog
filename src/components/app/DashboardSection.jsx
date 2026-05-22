@@ -1,3 +1,4 @@
+import { AppSurface } from '@/components/app/AppSurface'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { Button } from '@/components/ui/button'
 import { getDashboardSectionDetails } from '@/lib/dashboard-section-metrics'
@@ -49,7 +50,7 @@ function DashboardSection({
   return (
     <section className="space-y-5 sm:space-y-6">
       {sectionDetails.showSetupCallout ? (
-        <section className="rounded-[2rem] border border-border/80 bg-background/90 p-4 shadow-sm backdrop-blur sm:p-6">
+        <AppSurface className="p-4 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
               <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
@@ -66,10 +67,10 @@ function DashboardSection({
               {DASHBOARD_SETUP_CALLOUT.actionLabel}
             </Button>
           </div>
-        </section>
+        </AppSurface>
       ) : null}
 
-      <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+      <AppSurface className="p-5 sm:p-6">
         <div className="border-b border-border/80 pb-4 sm:pb-5">
           <SectionHeading
             eyebrow="Section 1"
@@ -89,7 +90,7 @@ function DashboardSection({
             />
           ))}
         </div>
-      </section>
+      </AppSurface>
 
       <WeightTrendChart {...sectionDetails.weightTrendChart} />
 
