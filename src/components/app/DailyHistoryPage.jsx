@@ -223,25 +223,27 @@ function DailyHistoryPage({
       </aside>
 
       <section className="order-last rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur xl:order-first">
-        <div className="flex items-start justify-between gap-4 border-b border-border/80 pb-5">
-          <div>
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-              Daily history
-            </p>
-            <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-              Daily Timeline
-            </h2>
-            <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-              Browse, review, and update your saved entries through a clear
-              day-by-day history of your progress.
-            </p>
+        <div className="border-b border-border/80 pb-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                Daily history
+              </p>
+              <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
+                Daily Timeline
+              </h2>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              <Button type="button" variant="outline" size="sm" onClick={handleCreateEntry}>
+                New entry
+              </Button>
+              <Clock3 className="size-4 text-muted-foreground" />
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="outline" size="sm" onClick={handleCreateEntry}>
-              New entry
-            </Button>
-            <Clock3 className="size-4 text-muted-foreground" />
-          </div>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            Browse, review, and update your saved entries through a clear
+            day-by-day history of your progress.
+          </p>
         </div>
 
         {availableMonthKeys.length ? (

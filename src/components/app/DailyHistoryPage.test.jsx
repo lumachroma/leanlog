@@ -100,8 +100,8 @@ describe('DailyHistoryPage', () => {
     expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /edit/i }))
-    await user.click(screen.getByRole('button', { name: /^delete$/i }))
-    expect(screen.getByText(/delete this saved day permanently/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /delete entry/i }))
+    expect(screen.getByText(/permanently delete this entry/i)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /confirm delete/i }))
 
     expect(setSelectedDate).toHaveBeenCalledWith('2026-05-14')
@@ -133,7 +133,7 @@ describe('DailyHistoryPage', () => {
 
     await user.click(screen.getByRole('button', { name: /^April 2026$/i }))
 
-    expect(screen.getByText(/no exercise saved/i)).toBeInTheDocument()
+    expect(screen.getByText(/apr 14, 2026/i)).toBeInTheDocument()
     expect(screen.queryByText(/thu, may 14, 2026/i)).not.toBeInTheDocument()
   })
 
