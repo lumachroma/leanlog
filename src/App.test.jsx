@@ -148,8 +148,8 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /averages/i }))
 
-    expect(screen.getByText(/weekly trends/i)).toBeInTheDocument()
-    expect(screen.getByText(/week of may 11, 2026/i)).toBeInTheDocument()
+    expect(await screen.findByText(/weekly trends/i)).toBeInTheDocument()
+    expect(await screen.findByText(/week of may 11, 2026/i)).toBeInTheDocument()
   })
 
   it('switches to the monthly averages page from the averages page controls', async () => {
@@ -158,10 +158,10 @@ describe('App', () => {
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /averages/i }))
-    await user.click(screen.getByRole('button', { name: /monthly/i }))
+    await user.click(await screen.findByRole('button', { name: /monthly/i }))
 
-    expect(screen.getByText(/monthly trends/i)).toBeInTheDocument()
-    expect(screen.getByText(/^may 2026$/i)).toBeInTheDocument()
+    expect(await screen.findByText(/monthly trends/i)).toBeInTheDocument()
+    expect(await screen.findByText(/^may 2026$/i)).toBeInTheDocument()
   })
 
   it('switches to the history page from the header navigation', async () => {
@@ -171,9 +171,9 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /history/i }))
 
-    expect(screen.getByText(/daily timeline/i)).toBeInTheDocument()
-    expect(screen.getByText(/^edit entry$/i)).toBeInTheDocument()
-    expect(screen.getByText(/thu, may 14, 2026/i)).toBeInTheDocument()
+    expect(await screen.findByText(/daily timeline/i)).toBeInTheDocument()
+    expect(await screen.findByText(/^edit entry$/i)).toBeInTheDocument()
+    expect(await screen.findByText(/thu, may 14, 2026/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
       'aria-pressed',
       'false'
@@ -197,8 +197,8 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /^settings$/i }))
 
-    expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
-    expect(screen.getByText(/tracking defaults/i)).toBeInTheDocument()
+    expect(await screen.findByText(/personal targets/i)).toBeInTheDocument()
+    expect(await screen.findByText(/tracking defaults/i)).toBeInTheDocument()
     expect(screen.queryByText(/weekly trends/i)).not.toBeInTheDocument()
   })
 
@@ -210,21 +210,21 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /about/i }))
 
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /a personal weight-loss operating system built for real life/i,
       })
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /review targets/i })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /review targets/i })).toBeInTheDocument()
     expect(screen.queryByText(/today's snapshot/i)).not.toBeInTheDocument()
   })
 
-  it('restores the last active page from local storage', () => {
+  it('restores the last active page from local storage', async () => {
     window.localStorage.setItem('leanlog.active-page', 'about')
 
     render(<App />)
 
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /a personal weight-loss operating system built for real life/i,
       })
     ).toBeInTheDocument()
