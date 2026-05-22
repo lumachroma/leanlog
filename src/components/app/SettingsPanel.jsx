@@ -11,7 +11,8 @@ import {
 import { Field } from './Field'
 
 const inputClassName =
-  'mt-2 w-full rounded-2xl border border-border/80 bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
+  'mt-1.5 w-full rounded-[1.15rem] border border-border/80 bg-background/90 px-3.5 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
+const settingsGridLabelClassName = 'flex min-h-10 items-end sm:min-h-0'
 
 function SettingsPanel({
   entries,
@@ -112,7 +113,7 @@ function SettingsPanel({
           <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
             Tracking Defaults
           </h2>
-          <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
             These starting values power your dashboard, summaries, and future
             progress calculations.
           </p>
@@ -120,8 +121,8 @@ function SettingsPanel({
         <Settings2 className="mt-1 size-4 text-muted-foreground" />
       </div>
 
-      <div className="mt-6 grid gap-4">
-        <Field label="Start weight (kg)">
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <Field label="Start weight (kg)" labelClassName={settingsGridLabelClassName}>
           <input
             type="number"
             step="0.1"
@@ -133,7 +134,7 @@ function SettingsPanel({
           />
         </Field>
 
-        <Field label="Goal weight (kg)">
+        <Field label="Goal weight (kg)" labelClassName={settingsGridLabelClassName}>
           <input
             type="number"
             step="0.1"
@@ -145,7 +146,10 @@ function SettingsPanel({
           />
         </Field>
 
-        <Field label="Daily calorie target (kcal)">
+        <Field
+          label="Daily calorie target (kcal)"
+          labelClassName={settingsGridLabelClassName}
+        >
           <input
             type="number"
             inputMode="numeric"
@@ -160,7 +164,7 @@ function SettingsPanel({
 
         <Field
           label="Daily step target (steps)"
-          hint="These settings are stored locally in IndexedDB."
+          labelClassName={settingsGridLabelClassName}
         >
           <input
             type="number"
@@ -172,6 +176,10 @@ function SettingsPanel({
           />
         </Field>
       </div>
+
+      <p className="mt-3 text-xs leading-5 text-muted-foreground">
+        These settings are stored locally in IndexedDB.
+      </p>
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <p className="text-xs leading-6 text-muted-foreground">
@@ -190,11 +198,11 @@ function SettingsPanel({
           <h3 className="mt-2 text-xl font-medium tracking-[-0.03em]">
             Data Backup & Restore
           </h3>
-          <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
             Keep a portable copy of your daily logs or restore saved entries
             anytime using simple CSV files.
           </p>
-          <p className="mt-2 max-w-lg text-sm italic leading-7 text-muted-foreground">
+          <p className="mt-2 text-sm italic leading-7 text-muted-foreground">
             Imports are merged by date and overwrite matching saved days, while
             missing days stay untouched.
           </p>

@@ -23,7 +23,7 @@ function SettingsPage({
               <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
                 Personal Targets
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 Manage your weight, calorie, and step targets to keep your daily
                 progress grounded and consistent.
               </p>
