@@ -1,14 +1,10 @@
-import { CONSISTENCY_DAY_WINDOW } from '@/lib/consistency-metrics'
+import { formatMonthDayLabel } from '@/lib/date-utils'
 
-const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-})
+import { CONSISTENCY_DAY_WINDOW } from '@/lib/consistency-metrics'
 
 const formatDayCount = (count) => `${count} ${count === 1 ? 'day' : 'days'}`
 
-export const formatConsistencyDateLabel = (date) =>
-  shortDateFormatter.format(new Date(`${date}T00:00:00`))
+export const formatConsistencyDateLabel = formatMonthDayLabel
 
 export const getConsistencyStateClassName = (state) => {
   switch (state) {

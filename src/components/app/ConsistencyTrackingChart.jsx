@@ -1,3 +1,4 @@
+import { AppSurface } from '@/components/app/AppSurface'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { ViewportAnimationGroup } from '@/components/app/ViewportAnimationGroup'
 import {
@@ -140,7 +141,7 @@ function ConsistencyTrackingChart({
   const showLoggedLegend = calorieTarget === null || stepTarget === null
 
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+    <AppSurface className="p-5 sm:p-6">
       <div className="border-b border-border/80 pb-4 sm:pb-5">
         <SectionHeading
           eyebrow="Section 3"
@@ -200,7 +201,7 @@ function ConsistencyTrackingChart({
           </>
         )}
       </ViewportAnimationGroup>
-    </section>
+    </AppSurface>
   )
 }
 

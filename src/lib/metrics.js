@@ -1,4 +1,5 @@
 import { average, toNumber as parseNumber } from '@/lib/number-utils'
+import { formatMonthLabel, formatWeekLabel, toDateAtMidnight } from '@/lib/date-utils'
 
 const hasText = (value) => String(value ?? '').trim().length > 0
 
@@ -19,21 +20,8 @@ const getFirstNumericFieldValue = (entries, field) =>
 const getLastNumericFieldValue = (entries, field) =>
   getEntryNumber(entries.findLast((entry) => hasEntryNumber(entry, field)), field)
 
-const formatMonthLabel = (monthKey) =>
-  new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(`${monthKey}-01T00:00:00`))
-
-const formatWeekLabel = (weekStart) =>
-  `Week of ${new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(`${weekStart}T00:00:00`))}`
-
 const getWeekStart = (date) => {
-  const nextDate = new Date(`${date}T00:00:00`)
+  const nextDate = toDateAtMidnight(date)
   const dayOfWeek = nextDate.getDay()
   const offset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
 

@@ -1,7 +1,9 @@
 import { BarChart3, CalendarDays } from 'lucide-react'
 
+import { AppSurface } from '@/components/app/AppSurface'
 import { Button } from '@/components/ui/button'
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
+import { SectionHeading } from '@/components/app/SectionHeading'
 import { formatAverage, formatWeight } from '@/lib/display-formatters'
 
 function AverageSummaryPage({
@@ -15,17 +17,9 @@ function AverageSummaryPage({
 }) {
   return (
     <main className="pb-8 pt-4 sm:pt-6 xl:py-10">
-      <section className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
+      <AppSurface className="p-6">
         <div className="flex flex-col gap-4 border-b border-border/80 pb-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-              {eyebrow}
-            </p>
-            <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">{title}</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
-              {description}
-            </p>
-          </div>
+          <SectionHeading eyebrow={eyebrow} title={title} description={description} />
 
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <div
@@ -100,7 +94,7 @@ function AverageSummaryPage({
         ) : (
           <EmptyStatePanel className="mt-6">{emptyState}</EmptyStatePanel>
         )}
-      </section>
+      </AppSurface>
     </main>
   )
 }

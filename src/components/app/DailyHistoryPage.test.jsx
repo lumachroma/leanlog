@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import { todayDate } from '@/lib/db'
 import {
   createBlankEntryDraft,
   createSampleEntry,
@@ -10,18 +9,8 @@ import {
   createSecondarySampleEntry,
 } from '@/test/leanlog-test-fixtures'
 
+import { getNextAvailableDate } from './DailyHistoryPage.helpers'
 import { DailyHistoryPage } from './DailyHistoryPage'
-
-const getNextAvailableDate = (entries) => {
-  const occupiedDates = new Set(entries.map((entry) => entry.date))
-  const nextDate = new Date(`${todayDate()}T00:00:00`)
-
-  while (occupiedDates.has(nextDate.toISOString().slice(0, 10))) {
-    nextDate.setDate(nextDate.getDate() + 1)
-  }
-
-  return nextDate.toISOString().slice(0, 10)
-}
 
 const stubMobileViewport = () => {
   const matchMedia = vi.fn().mockImplementation((query) => ({

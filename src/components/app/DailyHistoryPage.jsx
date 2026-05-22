@@ -2,73 +2,23 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Check, Clock3, Flame, Footprints, PencilLine, Plus, Scale, Trash2, X } from 'lucide-react'
 
+import { AppSurface } from '@/components/app/AppSurface'
 import { Button } from '@/components/ui/button'
-import { todayDate } from '@/lib/db'
+import {
+  formatFullDateLabel,
+  formatMonthLabel,
+  formatShortDateLabel,
+} from '@/lib/date-utils'
 
+import { SectionHeading } from './SectionHeading'
 import { DailyLogPanel } from './DailyLogPanel'
+import {
+  formatExerciseSummary,
+  formatHistoryValue,
+  getNextAvailableDate,
+  hasExercise,
+} from './DailyHistoryPage.helpers'
 import { EmptyStatePanel } from './EmptyStatePanel'
-
-const formatValue = (value, suffix) => {
-  if (!value) {
-    return `--${suffix ? ` ${suffix}` : ''}`
-  }
-
-  return `${value}${suffix ? ` ${suffix}` : ''}`
-}
-
-const formatDateLabel = (date) =>
-  new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(`${date}T00:00:00`))
-
-const formatMonthLabel = (monthKey) =>
-  new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(`${monthKey}-01T00:00:00`))
-
-const formatShortDateLabel = (date) =>
-  new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(`${date}T00:00:00`))
-
-const formatExerciseSummary = (entry) => {
-  const exerciseType = entry.exerciseType?.trim()
-  const exerciseMinutes = entry.exerciseMinutes?.trim()
-
-  if (!exerciseType && !exerciseMinutes) {
-    return 'No exercise saved.'
-  }
-
-  if (exerciseType && exerciseMinutes) {
-    return `${exerciseType} • ${exerciseMinutes} min`
-  }
-
-  if (exerciseType) {
-    return exerciseType
-  }
-
-  return `${exerciseMinutes} min`
-}
-
-const hasExercise = (entry) =>
-  Boolean(entry.exerciseType?.trim() || entry.exerciseMinutes?.trim())
-
-const getNextAvailableDate = (entries) => {
-  const occupiedDates = new Set(entries.map((entry) => entry.date))
-  const nextDate = new Date(`${todayDate()}T00:00:00`)
-
-  while (occupiedDates.has(nextDate.toISOString().slice(0, 10))) {
-    nextDate.setDate(nextDate.getDate() + 1)
-  }
-
-  return nextDate.toISOString().slice(0, 10)
-}
 
 function DailyHistoryPage({
   entries,
@@ -222,17 +172,10 @@ function DailyHistoryPage({
         />
       </aside>
 
-      <section className="order-last rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur xl:order-first">
+      <AppSurface className="order-last p-6 xl:order-first">
         <div className="border-b border-border/80 pb-5">
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                Daily history
-              </p>
-              <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-                Daily Timeline
-              </h2>
-            </div>
+            <SectionHeading eyebrow="Daily history" title="Daily Timeline" />
             <div className="flex shrink-0 items-center gap-3">
               <Button type="button" variant="outline" size="sm" onClick={handleCreateEntry}>
                 New entry
@@ -300,7 +243,7 @@ function DailyHistoryPage({
                         <div className="flex items-center gap-3">
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium leading-snug text-foreground">
-                              {formatDateLabel(entry.date)}
+                              {formatFullDateLabel(entry.date)}
                             </p>
                             {hasExercise(entry) ? (
                               <p className="mt-0.5 text-xs text-muted-foreground">
@@ -368,17 +311,23 @@ function DailyHistoryPage({
                         <div className="mt-2 flex items-center gap-3 text-xs sm:hidden">
                           <span className="flex items-center gap-1">
                             <Scale className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">{formatValue(entry.weight, 'kg')}</span>
+                            <span className="font-medium text-foreground">
+                              {formatHistoryValue(entry.weight, 'kg')}
+                            </span>
                           </span>
                           <span className="text-border/60">·</span>
                           <span className="flex items-center gap-1">
                             <Flame className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">{formatValue(entry.calories, 'kcal')}</span>
+                            <span className="font-medium text-foreground">
+                              {formatHistoryValue(entry.calories, 'kcal')}
+                            </span>
                           </span>
                           <span className="text-border/60">·</span>
                           <span className="flex items-center gap-1">
                             <Footprints className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">{formatValue(entry.steps, 'steps')}</span>
+                            <span className="font-medium text-foreground">
+                              {formatHistoryValue(entry.steps, 'steps')}
+                            </span>
                           </span>
                         </div>
 
@@ -389,21 +338,27 @@ function DailyHistoryPage({
                               <Scale className="size-3.5" />
                               Weight
                             </p>
-                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.weight, 'kg')}</p>
+                            <p className="mt-1 font-medium text-foreground">
+                              {formatHistoryValue(entry.weight, 'kg')}
+                            </p>
                           </div>
                           <div>
                             <p className="flex items-center gap-1.5 text-muted-foreground">
                               <Flame className="size-3.5" />
                               Calories
                             </p>
-                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.calories, 'kcal')}</p>
+                            <p className="mt-1 font-medium text-foreground">
+                              {formatHistoryValue(entry.calories, 'kcal')}
+                            </p>
                           </div>
                           <div>
                             <p className="flex items-center gap-1.5 text-muted-foreground">
                               <Footprints className="size-3.5" />
                               Steps
                             </p>
-                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.steps, 'steps')}</p>
+                            <p className="mt-1 font-medium text-foreground">
+                              {formatHistoryValue(entry.steps, 'steps')}
+                            </p>
                           </div>
                         </div>
 
@@ -426,7 +381,7 @@ function DailyHistoryPage({
             No saved history yet. Create your first daily entry from the editor above.
           </EmptyStatePanel>
         )}
-      </section>
+      </AppSurface>
 
       {!isEditorVisible ? (
         <div className="fixed inset-x-4 bottom-4 z-20 xl:hidden">

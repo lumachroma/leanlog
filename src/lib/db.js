@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 
+import { toDateAtMidnight } from '@/lib/date-utils'
 import { average, toNumber as parseNumber } from '@/lib/number-utils'
 
 export const SETTINGS_RECORD_ID = 'profile'
@@ -38,8 +39,6 @@ export const createEmptyEntryDraft = (date = todayDate()) => ({
 })
 
 const hasText = (value) => String(value ?? '').trim().length > 0
-
-const toDateAtMidnight = (date) => new Date(`${date}T00:00:00`)
 
 const addDays = (date, days) => {
   const nextDate = new Date(toDateAtMidnight(date))

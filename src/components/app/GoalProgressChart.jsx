@@ -1,3 +1,4 @@
+import { AppSurface } from '@/components/app/AppSurface'
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { ViewportAnimationGroup } from '@/components/app/ViewportAnimationGroup'
@@ -23,7 +24,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
   const progressPercentText = formatPercent(progressPercent)
 
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/90 p-5 shadow-sm backdrop-blur sm:p-6">
+    <AppSurface className="p-5 sm:p-6">
       <div className="flex flex-col gap-3 border-b border-border/80 pb-4 sm:gap-4 sm:pb-5 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading
           eyebrow="Section 4"
@@ -90,7 +91,7 @@ function GoalProgressChart({ startWeight, goalWeight, currentWeight, progressPer
           {GOAL_PROGRESS_EMPTY_STATE_COPY}
         </EmptyStatePanel>
       )}
-    </section>
+    </AppSurface>
   )
 }
 

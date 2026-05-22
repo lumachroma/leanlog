@@ -1,5 +1,8 @@
 import { SlidersHorizontal } from 'lucide-react'
 
+import { AppSurface } from '@/components/app/AppSurface'
+import { SectionHeading } from '@/components/app/SectionHeading'
+
 import { SettingsPanel } from './SettingsPanel'
 
 function SettingsPage({
@@ -14,20 +17,13 @@ function SettingsPage({
   return (
     <main className="flex flex-1 pb-8 pt-4 sm:pt-6 xl:py-10">
       <section className="grid w-full gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur">
+        <AppSurface as="div" className="p-6">
           <div className="flex items-start justify-between gap-4 border-b border-border/80 pb-5">
-            <div>
-              <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                Settings
-              </p>
-              <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-                Personal Targets
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Manage your weight, calorie, and step targets to keep your daily
-                progress grounded and consistent.
-              </p>
-            </div>
+            <SectionHeading
+              eyebrow="Settings"
+              title="Personal Targets"
+              description="Manage your weight, calorie, and step targets to keep your daily progress grounded and consistent."
+            />
             <SlidersHorizontal className="mt-1 size-4 text-muted-foreground" />
           </div>
 
@@ -57,7 +53,7 @@ function SettingsPage({
               </p>
             </article>
           </div>
-        </div>
+        </AppSurface>
 
         <aside>
           <SettingsPanel

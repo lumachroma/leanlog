@@ -2,6 +2,8 @@ import { useRef, useState } from 'react'
 
 import { Settings2 } from 'lucide-react'
 
+import { AppSurface } from '@/components/app/AppSurface'
+import { SectionHeading } from '@/components/app/SectionHeading'
 import { Button } from '@/components/ui/button'
 import {
   createDailyLogCsvTemplate,
@@ -90,10 +92,7 @@ function SettingsPanel({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-[2rem] border border-border/80 bg-background/90 p-6 shadow-sm backdrop-blur"
-    >
+    <AppSurface as="form" onSubmit={handleSubmit} className="p-6">
       <input
         ref={fileInputRef}
         type="file"
@@ -106,18 +105,11 @@ function SettingsPanel({
       />
 
       <div className="flex items-start justify-between gap-3 border-b border-border/80 pb-5">
-        <div>
-          <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
-            Settings
-          </p>
-          <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">
-            Tracking Defaults
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            These starting values power your dashboard, summaries, and future
-            progress calculations.
-          </p>
-        </div>
+        <SectionHeading
+          eyebrow="Settings"
+          title="Tracking Defaults"
+          description="These starting values power your dashboard, summaries, and future progress calculations."
+        />
         <Settings2 className="mt-1 size-4 text-muted-foreground" />
       </div>
 
@@ -266,7 +258,7 @@ function SettingsPanel({
           </div>
         </div>
       </section>
-    </form>
+    </AppSurface>
   )
 }
 

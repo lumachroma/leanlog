@@ -1,3 +1,5 @@
+import { toDateAtMidnight } from '@/lib/date-utils'
+
 export const CONSISTENCY_DAY_WINDOW = 30
 
 const CLOSE_ENOUGH_RATIO = 0.08
@@ -8,7 +10,7 @@ const toDateKey = (date) => {
 }
 
 const buildDayWindow = (endDate) => {
-  const end = new Date(`${endDate}T00:00:00`)
+  const end = toDateAtMidnight(endDate)
 
   return Array.from({ length: CONSISTENCY_DAY_WINDOW }, (_, index) => {
     const nextDate = new Date(end)
