@@ -123,15 +123,15 @@ function AboutPage({ onPageChange }) {
             <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
               About LeanLog
             </p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance sm:text-5xl xl:text-6xl">
+            <h1 className="mt-3 text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance sm:text-5xl xl:max-w-3xl xl:text-6xl">
               A personal weight-loss operating system built for real life.
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base xl:max-w-2xl">
               LeanLog is a calm weight-loss tracker focused on consistency,
               forgiving trends, and long-term progress without pressure or
               accounting-software noise.
             </p>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground/90 sm:text-base">
+            <p className="mt-3 text-sm leading-7 text-muted-foreground/90 sm:text-base xl:max-w-2xl">
               Think of it as a startup-style command center for personal fat
               loss: fast to update, easy to read, and designed to turn messy
               daily data into a cleaner signal you can actually use.
