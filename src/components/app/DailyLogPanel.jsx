@@ -57,7 +57,7 @@ function DailyLogPanel({
         <Field label="Date">
           <input
             type="date"
-            className={inputClassName}
+            className={`${inputClassName} appearance-none`}
             value={selectedDate}
             onChange={(event) => setSelectedDate(event.target.value)}
           />
