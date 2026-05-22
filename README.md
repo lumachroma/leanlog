@@ -1,4 +1,4 @@
-# Leanlog
+# LeanLog
 
 [![Deploy GitHub Pages](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/lumachroma/leanlog/actions/workflows/deploy-pages.yml)
 
@@ -8,7 +8,7 @@ Fast daily logging, stable trend tracking, and lightweight progress reviews desi
 
 ## Technical Description
 
-Leanlog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, CSV backup/restore for daily logs, and installable PWA support.
+LeanLog is a personal, local-first weight-loss operating system built for real life. It is designed for fast daily logging, lightweight progress review, and sustainable long-term fat-loss work without turning into compliance-heavy software. Iteration 1 focuses on the basics only: daily weight, calories, steps, exercise details, a structured four-section dashboard, a Recharts-based dual-line weight trend chart, weekly and monthly averages, goal settings, CSV backup/restore for daily logs, and installable PWA support.
 
 The app is designed to stay minimal. There is no backend, no authentication, and no cloud dependency. Data is stored locally in the browser with IndexedDB.
 
@@ -100,7 +100,7 @@ Runs Vitest in watch mode.
 
 ## GitHub Pages Deployment
 
-Leanlog is configured to deploy as a GitHub Pages project site from this normal repo named `leanlog`.
+LeanLog is configured to deploy as a GitHub Pages project site from this normal repo named `leanlog`.
 
 - Workflow: [.github/workflows/deploy-pages.yml](/Users/nazrulhisham/Projects/learn/leanlog/.github/workflows/deploy-pages.yml)
 - Published URL: https://lumachroma.github.io/leanlog/
@@ -253,7 +253,7 @@ The marker position is clamped to the valid range of the bar so edge cases do no
 
 ## Data Persistence
 
-Leanlog stores data locally in the browser using IndexedDB through Dexie.
+LeanLog stores data locally in the browser using IndexedDB through Dexie.
 
 - The app can be installed as a PWA from supported browsers
 - The app shell is cached for faster repeat loads and basic offline availability
@@ -264,11 +264,11 @@ Leanlog stores data locally in the browser using IndexedDB through Dexie.
 - Navigation state is also persisted locally so the app can reopen on the last active page
 - Daily logs can be exported from Settings as CSV and imported back as a date-merged backup flow
 
-If you clear site data in the browser, Leanlog data will be removed.
+If you clear site data in the browser, LeanLog data will be removed.
 
 ## Daily Log Data Structure
 
-The daily log is the core record shape used by the app for both the in-memory entry draft and the persisted `entries` table. Leanlog intentionally keeps user-entered values lightweight and form-friendly: most editable fields are stored as strings, then parsed into numbers only when metrics and charts are calculated.
+The daily log is the core record shape used by the app for both the in-memory entry draft and the persisted `entries` table. LeanLog intentionally keeps user-entered values lightweight and form-friendly: most editable fields are stored as strings, then parsed into numbers only when metrics and charts are calculated.
 
 Daily log lifecycle rules:
 
@@ -318,7 +318,7 @@ entries: '&date, monthKey, updatedAt'
 
 ### `settings` Table
 
-Leanlog stores one settings document under the fixed id `profile`. The user-editable values live under a nested `values` object.
+LeanLog stores one settings document under the fixed id `profile`. The user-editable values live under a nested `values` object.
 
 | Field | Stored Type | Example | Notes |
 | --- | --- | --- | --- |
@@ -409,7 +409,7 @@ erDiagram
 
 ## Persistence Behavior Summary
 
-- On load, Leanlog reads the single settings record and all entry records from IndexedDB
+- On load, LeanLog reads the single settings record and all entry records from IndexedDB
 - On settings save, the `settings` record is replaced with a fresh `updatedAt` timestamp
 - On daily entry save or delete, all entries are recalculated so `weight7dma`, `monthKey`, and `updatedAt` stay consistent
 - The UI keeps a Zustand `entryDraft` in memory, but only normalized entry records are written into IndexedDB

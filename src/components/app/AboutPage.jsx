@@ -33,7 +33,7 @@ const ABOUT_DASHBOARD_GUIDES = [
     eyebrow: 'KPI cards',
     title: 'Your body, summarized like a clean operator dashboard.',
     description:
-      'The top cards are built for the 10-second check-in. Instead of making you decode raw entries, Leanlog turns your latest weight trend, 7-day moving average, average calories, average steps, and goal progress into a quick plain-English snapshot.',
+      'The top cards are built for the 10-second check-in. Instead of making you decode raw entries, LeanLog turns your latest weight trend, 7-day moving average, average calories, average steps, and goal progress into a quick plain-English snapshot.',
     points: [
       'Weight Trend helps you see direction without overreacting to one random day.',
       '7-Day Moving Average smooths the noise so the real story is easier to trust.',
@@ -45,7 +45,7 @@ const ABOUT_DASHBOARD_GUIDES = [
     eyebrow: 'Section 2',
     title: 'Weight Trend turns noisy weigh-ins into a calmer signal.',
     description:
-      'Daily weight naturally jumps around. Leanlog keeps those real weigh-ins visible, then layers in a smoother 7-day line so you can spot the trend without letting short-term fluctuation hijack your mood.',
+      'Daily weight naturally jumps around. LeanLog keeps those real weigh-ins visible, then layers in a smoother 7-day line so you can spot the trend without letting short-term fluctuation hijack your mood.',
     points: [
       'The thin daily line shows what actually happened.',
       'The stronger 7DMA line shows the direction that matters more over time.',
@@ -57,7 +57,7 @@ const ABOUT_DASHBOARD_GUIDES = [
     eyebrow: 'Section 3',
     title: 'Daily Consistency shows how often you are actually hitting the plan.',
     description:
-      'Instead of boiling everything down to one average, Leanlog gives calories and steps a rolling 30-day adherence view. You can instantly see which days were on target, close, off, logged without a target, or missing entirely.',
+      'Instead of boiling everything down to one average, LeanLog gives calories and steps a rolling 30-day adherence view. You can instantly see which days were on target, close, off, logged without a target, or missing entirely.',
     points: [
       'Hit rate tells you how often the plan is working in real life.',
       'Current and best streaks make momentum visible without turning the app into a game.',
@@ -121,13 +121,13 @@ function AboutPage({ onPageChange }) {
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[2rem] border border-border/80 bg-background/92 p-6 shadow-sm backdrop-blur sm:p-8">
             <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              About Leanlog
+              About LeanLog
             </p>
             <h1 className="mt-3 max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance sm:text-5xl xl:text-6xl">
               A personal weight-loss operating system built for real life.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Leanlog is a calm weight-loss tracker focused on consistency,
+              LeanLog is a calm weight-loss tracker focused on consistency,
               forgiving trends, and long-term progress without pressure or
               accounting-software noise.
             </p>

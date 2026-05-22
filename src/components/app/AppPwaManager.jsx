@@ -21,7 +21,7 @@ function PwaUpdateBanner({ onDismiss, onRefresh }) {
       <div>
         <p className="text-sm font-medium text-foreground">App update ready</p>
         <p className="mt-1 text-sm leading-6 text-muted-foreground">
-          A newer version of Leanlog is available. Refresh to apply the update.
+          A newer version of LeanLog is available. Refresh to apply the update.
         </p>
       </div>
       <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ function PwaOfflineReadyToast({ onDismiss }) {
         <div>
           <p className="text-sm font-medium text-foreground">Offline ready</p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            Leanlog is cached and ready for faster repeat loads and basic offline use.
+            LeanLog is cached and ready for faster repeat loads and basic offline use.
           </p>
         </div>
         <Button type="button" variant="ghost" size="sm" onClick={onDismiss}>

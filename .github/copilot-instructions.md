@@ -1,4 +1,4 @@
-# Leanlog Copilot Instructions
+# LeanLog Copilot Instructions
 
 ## Product Intent
 

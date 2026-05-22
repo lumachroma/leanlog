@@ -96,12 +96,12 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(screen.getByRole('img', { name: /leanlog logo/i })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /^LeanLog logo$/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
-    expect(screen.getByText(/^leanlog$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^LeanLog$/)).toBeInTheDocument()
     expect(screen.getByText(/calm local-first weight-loss tracking/i)).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg calories/i)).toBeInTheDocument()
@@ -299,7 +299,7 @@ describe('App', () => {
 
     expect(screen.getByText(/offline ready/i)).toBeInTheDocument()
     expect(
-      screen.getByText(/leanlog is cached and ready for faster repeat loads and basic offline use/i)
+      screen.getByText(/LeanLog is cached and ready for faster repeat loads and basic offline use/i)
     ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /dismiss/i }))

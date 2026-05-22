@@ -19,8 +19,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo_transparent.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Leanlog',
-        short_name: 'Leanlog',
+        name: 'LeanLog',
+        short_name: 'LeanLog',
         description:
           'A calm, local-first weight-loss tracker focused on forgiving trends, consistent logging, and long-term progress.',
         theme_color: '#f7f7f5',

@@ -83,13 +83,13 @@ function AppHeader({ activePage, onPageChange }) {
               >
                 <img
                   src={logoSrc}
-                  alt="Leanlog logo"
+                  alt="LeanLog logo"
                   className="h-10 w-10 sm:h-12 sm:w-12"
                 />
               </button>
               <div className="min-w-0">
                 <p className="text-base font-medium tracking-[-0.04em] text-foreground sm:text-lg">
-                  Leanlog
+                  LeanLog
                 </p>
                 <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
                   Calm local-first weight-loss tracking.
