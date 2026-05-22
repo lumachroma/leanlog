@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Clock3, PencilLine, Plus, Trash2 } from 'lucide-react'
+import { Check, Clock3, Flame, Footprints, PencilLine, Plus, Scale, Trash2, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { todayDate } from '@/lib/db'
@@ -289,104 +289,125 @@ function DailyHistoryPage({
                     return (
                       <article
                         key={entry.date}
-                        className={`rounded-[1.5rem] border px-4 py-3 transition sm:p-4 ${
+                        className={`rounded-2xl border px-4 py-3 transition ${
                           isSelected
                             ? 'border-foreground/15 bg-muted/50 shadow-sm'
                             : 'border-border/80 bg-muted/30'
                         }`}
                       >
-                        <div className="space-y-3">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-foreground">
-                                {formatDateLabel(entry.date)}
-                              </p>
-                              <p className="mt-1 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium leading-snug text-foreground">
+                              {formatDateLabel(entry.date)}
+                            </p>
+                            {hasExercise(entry) ? (
+                              <p className="mt-0.5 text-xs text-muted-foreground">
                                 {formatExerciseSummary(entry)}
                               </p>
-                            </div>
+                            ) : null}
+                          </div>
 
-                            <div className="flex shrink-0 gap-2">
-                              <Button
-                                type="button"
-                                variant={isSelected ? 'default' : 'outline'}
-                                size="sm"
-                                className="gap-2"
-                                data-entry-date={entry.date}
-                                onClick={handleSelectEntryClick}
-                              >
-                                <PencilLine className="size-4" />
-                                Edit
-                              </Button>
-                              {isPendingDelete ? (
-                                <>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleDeleteCancel}
-                                    disabled={isSavingEntry}
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    className="gap-2"
-                                    onClick={() => void handleDeleteConfirm(entry.date)}
-                                    disabled={isSavingEntry}
-                                  >
-                                    <Trash2 className="size-4" />
-                                    Confirm delete
-                                  </Button>
-                                </>
-                              ) : (
+                          <div className="flex shrink-0 items-center gap-1.5">
+                            {isPendingDelete ? (
+                              <>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="size-8 rounded-full"
+                                  title="Cancel"
+                                  onClick={handleDeleteCancel}
+                                  disabled={isSavingEntry}
+                                >
+                                  <X className="size-3.5" />
+                                </Button>
                                 <Button
                                   type="button"
                                   variant="destructive"
-                                  size="sm"
-                                  className="gap-2"
+                                  size="icon"
+                                  className="size-8 rounded-full"
+                                  title="Confirm delete"
+                                  onClick={() => void handleDeleteConfirm(entry.date)}
+                                  disabled={isSavingEntry}
+                                >
+                                  <Check className="size-3.5" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  type="button"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  size="icon"
+                                  className="size-8 rounded-full"
+                                  title="Edit entry"
+                                  data-entry-date={entry.date}
+                                  onClick={handleSelectEntryClick}
+                                >
+                                  <PencilLine className="size-3.5" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="size-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
+                                  title="Delete entry"
                                   onClick={() => handleDeleteRequest(entry.date)}
                                   disabled={isSavingEntry}
                                 >
-                                  <Trash2 className="size-4" />
-                                  Delete
+                                  <Trash2 className="size-3.5" />
                                 </Button>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-3 gap-2 rounded-[1.25rem] bg-background/70 p-3 text-sm">
-                            <div className="min-w-0">
-                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
-                                Weight
-                              </p>
-                              <p className="mt-1 truncate font-medium text-foreground">
-                                {formatValue(entry.weight, 'kg')}
-                              </p>
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
-                                Calories
-                              </p>
-                              <p className="mt-1 truncate font-medium text-foreground">
-                                {formatValue(entry.calories, 'kcal')}
-                              </p>
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">
-                                Steps
-                              </p>
-                              <p className="mt-1 truncate font-medium text-foreground">
-                                {formatValue(entry.steps, '')}
-                              </p>
-                            </div>
+                              </>
+                            )}
                           </div>
                         </div>
+
+                        {/* mobile: compact inline row */}
+                        <div className="mt-2 flex items-center gap-3 text-xs sm:hidden">
+                          <span className="flex items-center gap-1">
+                            <Scale className="size-3 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{formatValue(entry.weight, 'kg')}</span>
+                          </span>
+                          <span className="text-border/60">·</span>
+                          <span className="flex items-center gap-1">
+                            <Flame className="size-3 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{formatValue(entry.calories, 'kcal')}</span>
+                          </span>
+                          <span className="text-border/60">·</span>
+                          <span className="flex items-center gap-1">
+                            <Footprints className="size-3 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{formatValue(entry.steps, 'steps')}</span>
+                          </span>
+                        </div>
+
+                        {/* desktop: stacked label + value grid, matching weekly averages style */}
+                        <div className="mt-3 hidden grid-cols-3 gap-3 text-sm sm:grid">
+                          <div>
+                            <p className="flex items-center gap-1.5 text-muted-foreground">
+                              <Scale className="size-3.5" />
+                              Weight
+                            </p>
+                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.weight, 'kg')}</p>
+                          </div>
+                          <div>
+                            <p className="flex items-center gap-1.5 text-muted-foreground">
+                              <Flame className="size-3.5" />
+                              Calories
+                            </p>
+                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.calories, 'kcal')}</p>
+                          </div>
+                          <div>
+                            <p className="flex items-center gap-1.5 text-muted-foreground">
+                              <Footprints className="size-3.5" />
+                              Steps
+                            </p>
+                            <p className="mt-1 font-medium text-foreground">{formatValue(entry.steps, 'steps')}</p>
+                          </div>
+                        </div>
+
                         {isPendingDelete ? (
-                          <p className="mt-4 text-xs leading-6 text-destructive">
-                            Delete this saved day permanently from local history?
+                          <p className="mt-2 text-xs leading-5 text-destructive">
+                            Permanently delete this entry? Tap ✓ to confirm.
                           </p>
                         ) : null}
                       </article>
