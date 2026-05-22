@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react'
-
 import {
   ChartColumn,
   History,
@@ -12,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 function AppHeader({ activePage, onPageChange }) {
-  const [isNavScrolled, setIsNavScrolled] = useState(false)
   const averagesActive =
     activePage === 'weekly-averages' || activePage === 'monthly-averages'
   const dashboardActive = activePage === 'dashboard'
@@ -49,19 +46,6 @@ function AppHeader({ activePage, onPageChange }) {
       Icon: SlidersHorizontal,
     },
   ]
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsNavScrolled(window.scrollY > 20)
-    }
-
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
 
   return (
     <>
@@ -105,14 +89,9 @@ function AppHeader({ activePage, onPageChange }) {
 
       <nav
         aria-label="Primary"
-        className={cn(
-          'sticky top-2 z-20 mt-1.5 rounded-[1.5rem] py-1 transition-[background-color,box-shadow,transform] duration-200 sm:static sm:mt-5 sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-0',
-          isNavScrolled
-            ? 'bg-[linear-gradient(180deg,rgba(247,247,245,0.98)_0%,rgba(247,247,245,0.92)_100%)] shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur'
-            : 'bg-[linear-gradient(180deg,rgba(247,247,245,0.94)_0%,rgba(247,247,245,0.8)_100%)] backdrop-blur'
-        )}
+        className="sticky top-2 z-20 mt-1.5 py-1 sm:static sm:mt-5 sm:py-0"
       >
-        <div className="grid w-full min-w-0 grid-cols-5 gap-0.5 rounded-[1.3rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,248,246,0.94)_100%)] p-1 shadow-[0_10px_24px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.75)] sm:flex sm:gap-1 sm:rounded-[1.5rem] sm:p-1.5 sm:items-center">
+        <div className="grid w-full min-w-0 grid-cols-5 gap-0.5 rounded-[1.3rem] border border-border/80 bg-background/90 p-1 shadow-sm backdrop-blur sm:flex sm:gap-1 sm:rounded-[1.5rem] sm:p-1.5 sm:items-center">
           {navItems.map(({ label, page, active, Icon }) => (
             <Button
               key={page}
@@ -124,7 +103,7 @@ function AppHeader({ activePage, onPageChange }) {
               className={cn(
                 'h-auto min-h-12 w-full min-w-0 shrink rounded-[0.9rem] px-0.5 py-1.5 sm:flex-1 sm:min-h-10 sm:rounded-full sm:px-4 sm:py-0',
                 active
-                  ? 'shadow-[0_8px_18px_rgba(15,23,42,0.12)]'
+                  ? ''
                   : 'text-foreground/80 hover:text-foreground'
               )}
             >
