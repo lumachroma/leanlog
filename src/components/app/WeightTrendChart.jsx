@@ -1,47 +1,31 @@
-import { useEffect, useState } from 'react'
-
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import { Suspense, lazy, useEffect, useState } from 'react'
 
 import { AppSurface } from '@/components/app/AppSurface'
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { ViewportAnimationGroup } from '@/components/app/ViewportAnimationGroup'
-import { formatWeight, weightFormatter } from '@/lib/display-formatters'
+import { formatWeight } from '@/lib/display-formatters'
 import { getWeightTrendChartDetails } from '@/lib/weight-trend-metrics'
 
 import {
-  formatWeightTrendDate,
   getWeightTrendAxisConfig,
   getWeightTrendChartHeight,
   WEIGHT_TREND_EMPTY_STATE_COPY,
 } from './WeightTrendChart.helpers'
 
-function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) {
-    return null
-  }
+const WeightTrendChartSurface = lazy(() =>
+  import('./WeightTrendChartSurface').then((module) => ({
+    default: module.WeightTrendChartSurface,
+  }))
+)
 
-  const dailyWeight = payload.find((item) => item.dataKey === 'weight')?.value ?? null
-  const movingAverageWeight =
-    payload.find((item) => item.dataKey === 'weight7dma')?.value ?? null
-
+function WeightTrendChartSurfaceFallback({ chartHeight }) {
   return (
-    <div className="rounded-2xl border border-border/80 bg-background/95 px-4 py-3 shadow-sm backdrop-blur">
-      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        {formatWeightTrendDate(label)}
-      </p>
-      <div className="mt-2 space-y-1.5 text-sm">
-        <p className="text-foreground/70">Daily: <span className="font-medium text-foreground">{formatWeight(dailyWeight)}</span></p>
-        <p className="text-foreground/70">7DMA: <span className="font-medium text-foreground">{formatWeight(movingAverageWeight)}</span></p>
-      </div>
+    <div
+      className="flex w-full items-center justify-center text-sm text-muted-foreground"
+      style={{ minHeight: `${chartHeight}px` }}
+    >
+      Loading chart...
     </div>
   )
 }
@@ -134,54 +118,17 @@ function WeightTrendChart({
             </div>
 
             <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:mt-5 sm:p-4">
-              <div
-                key={animationCycle}
-                className="w-full"
-                role="img"
-                aria-label="Weight trend chart with daily weight and seven day moving average"
-              >
-                <ResponsiveContainer width="100%" height={chartHeight} minWidth={0}>
-                  <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 4 }}>
-                    <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      axisLine={false}
-                      tickLine={false}
-                      interval="preserveStartEnd"
-                      minTickGap={minTickGap}
-                      tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
-                      tickFormatter={formatWeightTrendDate}
-                    />
-                    <YAxis
-                      domain={[domain.min, domain.max]}
-                      axisLine={false}
-                      tickLine={false}
-                      width={yAxisWidth}
-                      tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
-                      tickFormatter={(value) => weightFormatter.format(value)}
-                    />
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(15, 23, 42, 0.12)', strokeWidth: 1 }} />
-                    <Line
-                      type="monotone"
-                      dataKey="weight"
-                      connectNulls={false}
-                      stroke="rgba(15, 23, 42, 0.35)"
-                      strokeWidth={2}
-                      dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: 'rgba(15, 23, 42, 0.45)' }}
-                      activeDot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="weight7dma"
-                      connectNulls={true}
-                      stroke="rgb(15, 23, 42)"
-                      strokeWidth={4}
-                      dot={{ r: 2.5, strokeWidth: 0, fill: 'rgb(15, 23, 42)' }}
-                      activeDot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <Suspense fallback={<WeightTrendChartSurfaceFallback chartHeight={chartHeight} />}>
+                <WeightTrendChartSurface
+                  animationCycle={animationCycle}
+                  chartHeight={chartHeight}
+                  domain={domain}
+                  minTickGap={minTickGap}
+                  points={points}
+                  tickFontSize={tickFontSize}
+                  yAxisWidth={yAxisWidth}
+                />
+              </Suspense>
             </div>
           </>
         )}

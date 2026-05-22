@@ -33,16 +33,22 @@ vi.mock('recharts', () => {
 
 import { WeightTrendChart } from './WeightTrendChart'
 
+const LAZY_CHART_TIMEOUT_MS = 4000
+
 describe('WeightTrendChart', () => {
-  it('recreates the chart surface when it re-enters the viewport', () => {
+  it('recreates the chart surface when it re-enters the viewport', async () => {
     const intersectionObserver = stubIntersectionObserver()
 
     render(<WeightTrendChart points={createSampleChartSeries().weightTrend} />)
 
-    const chartSurface = screen.getByRole('img', {
-      name: /weight trend chart with daily weight and seven day moving average/i,
-    })
-    const lineChart = screen.getByTestId('line-chart')
+    const chartSurface = await screen.findByRole(
+      'img',
+      {
+        name: /weight trend chart with daily weight and seven day moving average/i,
+      },
+      { timeout: LAZY_CHART_TIMEOUT_MS }
+    )
+    const lineChart = await screen.findByTestId('line-chart', {}, { timeout: LAZY_CHART_TIMEOUT_MS })
     const initialMountId = lineChart.getAttribute('data-mount-id')
 
     expect(screen.getByText('Latest Daily')).toBeInTheDocument()
@@ -57,10 +63,18 @@ describe('WeightTrendChart', () => {
       intersectionObserver.trigger({ isIntersecting: true, intersectionRatio: 0.7 })
     })
 
-    const nextChartSurface = screen.getByRole('img', {
-      name: /weight trend chart with daily weight and seven day moving average/i,
-    })
-    const nextLineChart = screen.getByTestId('line-chart')
+    const nextChartSurface = await screen.findByRole(
+      'img',
+      {
+        name: /weight trend chart with daily weight and seven day moving average/i,
+      },
+      { timeout: LAZY_CHART_TIMEOUT_MS }
+    )
+    const nextLineChart = await screen.findByTestId(
+      'line-chart',
+      {},
+      { timeout: LAZY_CHART_TIMEOUT_MS }
+    )
 
     expect(nextChartSurface).not.toBe(chartSurface)
     expect(nextLineChart).not.toBe(lineChart)

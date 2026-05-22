@@ -1,15 +1,37 @@
+import { Suspense, lazy } from 'react'
+
 import { AppSurface } from '@/components/app/AppSurface'
+import { AppSectionLoadingState } from '@/components/app/AppSectionLoadingState'
 import { SectionHeading } from '@/components/app/SectionHeading'
 import { Button } from '@/components/ui/button'
 import { getDashboardSectionDetails } from '@/lib/dashboard-section-metrics'
 
-import { ConsistencyTrackingChart } from './ConsistencyTrackingChart'
 import {
   DASHBOARD_SETUP_CALLOUT,
   getDashboardSnapshotCards,
 } from './DashboardSection.helpers'
-import { GoalProgressChart } from './GoalProgressChart'
-import { WeightTrendChart } from './WeightTrendChart'
+
+const WeightTrendChart = lazy(() =>
+  import('./WeightTrendChart').then((module) => ({
+    default: module.WeightTrendChart,
+  }))
+)
+
+const ConsistencyTrackingChart = lazy(() =>
+  import('./ConsistencyTrackingChart').then((module) => ({
+    default: module.ConsistencyTrackingChart,
+  }))
+)
+
+const GoalProgressChart = lazy(() =>
+  import('./GoalProgressChart').then((module) => ({
+    default: module.GoalProgressChart,
+  }))
+)
+
+function DashboardLazySection({ message, children }) {
+  return <Suspense fallback={<AppSectionLoadingState message={message} />}>{children}</Suspense>
+}
 
 function MetricCard({ icon: Icon, label, value, detail }) {
   return (
@@ -92,11 +114,17 @@ function DashboardSection({
         </div>
       </AppSurface>
 
-      <WeightTrendChart {...sectionDetails.weightTrendChart} />
+      <DashboardLazySection message="Loading weight trend...">
+        <WeightTrendChart {...sectionDetails.weightTrendChart} />
+      </DashboardLazySection>
 
-      <ConsistencyTrackingChart {...sectionDetails.consistencyChart} />
+      <DashboardLazySection message="Loading consistency tracking...">
+        <ConsistencyTrackingChart {...sectionDetails.consistencyChart} />
+      </DashboardLazySection>
 
-      <GoalProgressChart {...sectionDetails.goalProgressChart} />
+      <DashboardLazySection message="Loading goal progress...">
+        <GoalProgressChart {...sectionDetails.goalProgressChart} />
+      </DashboardLazySection>
     </section>
   )
 }
