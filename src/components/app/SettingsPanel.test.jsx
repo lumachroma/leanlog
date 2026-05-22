@@ -98,6 +98,45 @@ describe('SettingsPanel', () => {
     expect(await screen.findByText(/row 2 has an invalid date/i)).toBeInTheDocument()
   })
 
+  it('rejects non-csv uploads before import starts', async () => {
+    const user = userEvent.setup({ applyAccept: false })
+    const props = createProps()
+
+    render(<SettingsPanel {...props} />)
+
+    const textFile = new File(['not,csv'], 'leanlog.txt', {
+      type: 'text/plain',
+    })
+
+    await user.upload(screen.getByLabelText(/import daily logs csv/i), textFile)
+
+    expect(props.importEntriesFromCsv).not.toHaveBeenCalled()
+    expect(
+      await screen.findByText(/choose a csv file before importing daily logs/i)
+    ).toBeInTheDocument()
+  })
+
+  it('rejects oversized csv uploads before reading them', async () => {
+    const user = userEvent.setup()
+    const props = createProps()
+
+    render(<SettingsPanel {...props} />)
+
+    const csvFile = new File(['date,weight\n2026-05-14,80'], 'leanlog.csv', {
+      type: 'text/csv',
+    })
+
+    Object.defineProperty(csvFile, 'size', {
+      configurable: true,
+      value: 1024 * 1024 + 1,
+    })
+
+    await user.upload(screen.getByLabelText(/import daily logs csv/i), csvFile)
+
+    expect(props.importEntriesFromCsv).not.toHaveBeenCalled()
+    expect(await screen.findByText(/csv files must be 1 mb or smaller/i)).toBeInTheDocument()
+  })
+
   it('downloads a csv template from the settings panel', async () => {
     const user = userEvent.setup()
     const createObjectUrl = vi.fn(() => 'blob:template')

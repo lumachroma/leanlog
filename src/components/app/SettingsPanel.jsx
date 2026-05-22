@@ -15,6 +15,31 @@ import { Field } from './Field'
 const inputClassName =
   'mt-1.5 w-full rounded-[1.15rem] border border-border/80 bg-background/90 px-3.5 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
 const settingsGridLabelClassName = 'flex min-h-10 items-end sm:min-h-0'
+const DAILY_LOG_CSV_IMPORT_MAX_BYTES = 1024 * 1024
+const CSV_MIME_TYPES = new Set(['text/csv', 'application/csv', 'application/vnd.ms-excel'])
+
+const createImportFeedback = (tone, message) => ({ tone, message })
+
+const getImportFileError = (file) => {
+  const fileName = String(file?.name ?? '').toLowerCase()
+  const fileType = String(file?.type ?? '').toLowerCase()
+  const hasCsvExtension = fileName.endsWith('.csv')
+  const hasCsvMimeType = CSV_MIME_TYPES.has(fileType)
+
+  if (!hasCsvExtension && !hasCsvMimeType) {
+    return 'Choose a CSV file before importing daily logs.'
+  }
+
+  if (file.size === 0) {
+    return 'The selected CSV file is empty.'
+  }
+
+  if (file.size > DAILY_LOG_CSV_IMPORT_MAX_BYTES) {
+    return 'CSV files must be 1 MB or smaller.'
+  }
+
+  return null
+}
 
 function SettingsPanel({
   entries,
@@ -64,28 +89,40 @@ function SettingsPanel({
       return
     }
 
-    const csvText = await file.text()
+    const fileError = getImportFileError(file)
+
+    if (fileError) {
+      setImportFeedback(createImportFeedback('error', fileError))
+      event.target.value = ''
+      return
+    }
+
     setImportFeedback(null)
 
-    const result = await importEntriesFromCsv(csvText)
+    try {
+      const csvText = await file.text()
+      const result = await importEntriesFromCsv(csvText)
 
-    if (result?.errorMessage) {
-      setImportFeedback({
-        tone: 'error',
-        message: result.errorMessage,
-      })
-    } else if (result?.importedCount) {
-      setImportFeedback({
-        tone: 'success',
-        message: `Imported ${result.importedCount} daily ${
-          result.importedCount === 1 ? 'log' : 'logs'
-        } from CSV.`,
-      })
-    } else {
-      setImportFeedback({
-        tone: 'neutral',
-        message: 'No importable daily logs were found in that CSV.',
-      })
+      if (result?.errorMessage) {
+        setImportFeedback(createImportFeedback('error', result.errorMessage))
+      } else if (result?.importedCount) {
+        setImportFeedback(
+          createImportFeedback(
+            'success',
+            `Imported ${result.importedCount} daily ${
+              result.importedCount === 1 ? 'log' : 'logs'
+            } from CSV.`
+          )
+        )
+      } else {
+        setImportFeedback(
+          createImportFeedback('neutral', 'No importable daily logs were found in that CSV.')
+        )
+      }
+    } catch {
+      setImportFeedback(
+        createImportFeedback('error', 'Unable to read that CSV file right now.')
+      )
     }
 
     event.target.value = ''
