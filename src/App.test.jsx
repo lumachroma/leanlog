@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -17,7 +17,25 @@ vi.mock('virtual:pwa-register', () => ({
   registerSW: (options) => mockRegisterSW(options),
 }))
 
+vi.mock('@/components/app/DashboardSection', async () => {
+  const { DashboardSectionTestDouble } = await import('@/test/dashboard-section-test-double')
+
+  return {
+    DashboardSection: DashboardSectionTestDouble,
+  }
+})
+
 import App from './App'
+
+async function waitForDashboardPanelsToLoad() {
+  const loadingState = screen.queryByText(/loading dashboard panels/i)
+
+  if (!loadingState) {
+    return
+  }
+
+  await waitForElementToBeRemoved(loadingState)
+}
 
 function mockMatchMedia(matcher) {
   Object.defineProperty(window, 'matchMedia', {
@@ -96,6 +114,8 @@ describe('App', () => {
 
     render(<App />)
 
+    await waitForDashboardPanelsToLoad()
+
     expect(screen.getByRole('img', { name: /^LeanLog logo$/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
       'aria-pressed',
@@ -161,6 +181,8 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /go to dashboard/i }))
 
+    await waitForDashboardPanelsToLoad()
+
     expect(await screen.findByText(/today's snapshot/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
       'aria-pressed',
@@ -173,7 +195,7 @@ describe('App', () => {
 
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: /settings/i }))
+    await user.click(screen.getByRole('button', { name: /^settings$/i }))
 
     expect(screen.getByText(/personal targets/i)).toBeInTheDocument()
     expect(screen.getByText(/tracking defaults/i)).toBeInTheDocument()
@@ -236,6 +258,8 @@ describe('App', () => {
     })
 
     render(<App />)
+
+    await waitForDashboardPanelsToLoad()
 
     expect(
       await screen.findByText(/add your targets to make the dashboard more useful/i)

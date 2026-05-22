@@ -1,4 +1,5 @@
 import { SectionHeading } from '@/components/app/SectionHeading'
+import { ViewportAnimationGroup } from '@/components/app/ViewportAnimationGroup'
 import {
   CONSISTENCY_DAY_WINDOW,
   getConsistencyMetricDetails,
@@ -11,6 +12,8 @@ import {
   getConsistencyStateLabel,
   getConsistencySummaryText,
 } from './ConsistencyTrackingChart.helpers'
+
+const CONSISTENCY_CELL_STAGGER_MS = 24
 
 function SummaryMetric({ label, value }) {
   return (
@@ -26,6 +29,7 @@ function SummaryMetric({ label, value }) {
 }
 
 function ConsistencyMetric({
+  animationCycle,
   label,
   average,
   target,
@@ -70,17 +74,19 @@ function ConsistencyMetric({
       </div>
 
       <div
+        key={`${label}-${animationCycle}`}
         className="mt-4 grid gap-1"
         style={{
           gridTemplateColumns: `repeat(${CONSISTENCY_DAY_WINDOW}, minmax(0, 1fr))`,
         }}
       >
-        {days.map((day) => (
+        {days.map((day, index) => (
           <div
             key={`${label}-${day.date}`}
-            className={`aspect-square rounded-[4px] ${getConsistencyStateClassName(day.state)}`}
+            className={`chart-reveal aspect-square rounded-[4px] ${getConsistencyStateClassName(day.state)}`}
             aria-label={`${label} on ${formatConsistencyDateLabel(day.date)}: ${getConsistencyStateLabel(day.state)}${day.value !== null ? ` (${formatAverage(day.value, suffix)})` : ''}`}
             title={`${formatConsistencyDateLabel(day.date)} • ${getConsistencyStateLabel(day.state)}${day.value !== null ? ` • ${formatAverage(day.value, suffix)}` : ''}`}
+            style={{ '--chart-enter-delay': `${index * CONSISTENCY_CELL_STAGGER_MS}ms` }}
           />
         ))}
       </div>
@@ -168,26 +174,32 @@ function ConsistencyTrackingChart({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:mt-6 lg:grid-cols-2">
-        <ConsistencyMetric
-          label="Calories"
-          average={calorieAverage}
-          target={calorieTarget}
-          suffix="kcal"
-          delta={calorieDelta}
-          prefersLower={true}
-          points={caloriePoints}
-        />
-        <ConsistencyMetric
-          label="Steps"
-          average={stepAverage}
-          target={stepTarget}
-          suffix="steps"
-          delta={stepDelta}
-          prefersLower={false}
-          points={stepPoints}
-        />
-      </div>
+      <ViewportAnimationGroup className="mt-4 grid gap-4 sm:mt-6 lg:grid-cols-2">
+        {(animationCycle) => (
+          <>
+            <ConsistencyMetric
+              animationCycle={animationCycle}
+              label="Calories"
+              average={calorieAverage}
+              target={calorieTarget}
+              suffix="kcal"
+              delta={calorieDelta}
+              prefersLower={true}
+              points={caloriePoints}
+            />
+            <ConsistencyMetric
+              animationCycle={animationCycle}
+              label="Steps"
+              average={stepAverage}
+              target={stepTarget}
+              suffix="steps"
+              delta={stepDelta}
+              prefersLower={false}
+              points={stepPoints}
+            />
+          </>
+        )}
+      </ViewportAnimationGroup>
     </section>
   )
 }

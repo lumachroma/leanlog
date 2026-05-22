@@ -4,17 +4,13 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { createSampleAppViewModel } from '@/test/leanlog-test-fixtures'
 
-vi.mock('@/components/app/DashboardSection', () => ({
-  DashboardSection: ({ onOpenSettings, targetsConfigured }) => (
-    <div>
-      <p>Dashboard section</p>
-      <p>{targetsConfigured ? 'Targets configured' : 'Targets missing'}</p>
-      <button type="button" onClick={onOpenSettings}>
-        Open dashboard settings
-      </button>
-    </div>
-  ),
-}))
+vi.mock('@/components/app/DashboardSection', async () => {
+  const { DashboardSectionTestDouble } = await import('@/test/dashboard-section-test-double')
+
+  return {
+    DashboardSection: DashboardSectionTestDouble,
+  }
+})
 
 import { AppContent } from './AppContent'
 

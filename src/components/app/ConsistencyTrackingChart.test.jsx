@@ -1,7 +1,8 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createSampleChartSeries } from '@/test/fixtures/derived-fixtures'
+import { stubIntersectionObserver } from '@/test/viewport-animation-test-utils'
 
 import { ConsistencyTrackingChart } from './ConsistencyTrackingChart'
 
@@ -16,6 +17,7 @@ describe('ConsistencyTrackingChart', () => {
   })
 
   it('renders 30-day consistency summaries from daily chart series', () => {
+    const intersectionObserver = stubIntersectionObserver()
     const chartSeries = createSampleChartSeries()
 
     render(
@@ -40,6 +42,26 @@ describe('ConsistencyTrackingChart', () => {
     expect(within(caloriesCard).getByText('100%')).toBeInTheDocument()
     expect(within(caloriesCard).getByText('2 of 2 logged days hit target.')).toBeInTheDocument()
     expect(within(stepsCard).getByText('50%')).toBeInTheDocument()
+    const calorieCells = within(caloriesCard).getAllByLabelText(/calories on/i)
+
+    expect(calorieCells[0]).toHaveClass('chart-reveal')
+    expect(calorieCells[0]).toHaveStyle('--chart-enter-delay: 0ms')
+    expect(calorieCells[1]).toHaveStyle('--chart-enter-delay: 24ms')
+
+    const firstCellBeforeReentry = calorieCells[0]
+
+    act(() => {
+      intersectionObserver.trigger(false)
+    })
+
+    act(() => {
+      intersectionObserver.trigger(true)
+    })
+
+    expect(within(caloriesCard).getAllByLabelText(/calories on/i)[0]).not.toBe(
+      firstCellBeforeReentry
+    )
+
     expect(
       within(stepsCard).getByText('1 of 2 logged days hit target, with 1 day close.')
     ).toBeInTheDocument()

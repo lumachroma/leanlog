@@ -12,6 +12,7 @@ import {
 
 import { EmptyStatePanel } from '@/components/app/EmptyStatePanel'
 import { SectionHeading } from '@/components/app/SectionHeading'
+import { ViewportAnimationGroup } from '@/components/app/ViewportAnimationGroup'
 import { formatWeight, weightFormatter } from '@/lib/display-formatters'
 import { getWeightTrendChartDetails } from '@/lib/weight-trend-metrics'
 
@@ -114,68 +115,76 @@ function WeightTrendChart({
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.75rem] border border-border/80 bg-muted/20 p-4 sm:mt-6 sm:p-5">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:gap-4">
-          <div className="inline-flex items-center gap-2">
-            <span className="h-px w-6 bg-foreground/35 sm:w-8" />
-            Daily weight
-          </div>
-          <div className="inline-flex items-center gap-2">
-            <span className="h-0.5 w-6 bg-foreground sm:w-8" />
-            7DMA weight
-          </div>
-        </div>
+      <ViewportAnimationGroup
+        disabled={points.length === 0}
+        className="mt-4 rounded-[1.75rem] border border-border/80 bg-muted/20 p-4 sm:mt-6 sm:p-5"
+      >
+        {(animationCycle) => (
+          <>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:gap-4">
+              <div className="inline-flex items-center gap-2">
+                <span className="h-px w-6 bg-foreground/35 sm:w-8" />
+                Daily weight
+              </div>
+              <div className="inline-flex items-center gap-2">
+                <span className="h-0.5 w-6 bg-foreground sm:w-8" />
+                7DMA weight
+              </div>
+            </div>
 
-        <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:mt-5 sm:p-4">
-          <div
-            className="w-full"
-            role="img"
-            aria-label="Weight trend chart with daily weight and seven day moving average"
-          >
-            <ResponsiveContainer width="100%" height={chartHeight} minWidth={0}>
-              <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 4 }}>
-                <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  minTickGap={minTickGap}
-                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
-                  tickFormatter={formatWeightTrendDate}
-                />
-                <YAxis
-                  domain={[domain.min, domain.max]}
-                  axisLine={false}
-                  tickLine={false}
-                  width={yAxisWidth}
-                  tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
-                  tickFormatter={(value) => weightFormatter.format(value)}
-                />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(15, 23, 42, 0.12)', strokeWidth: 1 }} />
-                <Line
-                  type="monotone"
-                  dataKey="weight"
-                  connectNulls={false}
-                  stroke="rgba(15, 23, 42, 0.35)"
-                  strokeWidth={2}
-                  dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: 'rgba(15, 23, 42, 0.45)' }}
-                  activeDot={{ r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="weight7dma"
-                  connectNulls={true}
-                  stroke="rgb(15, 23, 42)"
-                  strokeWidth={4}
-                  dot={{ r: 2.5, strokeWidth: 0, fill: 'rgb(15, 23, 42)' }}
-                  activeDot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+            <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/80 p-3 sm:mt-5 sm:p-4">
+              <div
+                key={animationCycle}
+                className="w-full"
+                role="img"
+                aria-label="Weight trend chart with daily weight and seven day moving average"
+              >
+                <ResponsiveContainer width="100%" height={chartHeight} minWidth={0}>
+                  <LineChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 4 }}>
+                    <CartesianGrid stroke="rgba(148, 163, 184, 0.28)" strokeDasharray="6 8" vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      interval="preserveStartEnd"
+                      minTickGap={minTickGap}
+                      tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
+                      tickFormatter={formatWeightTrendDate}
+                    />
+                    <YAxis
+                      domain={[domain.min, domain.max]}
+                      axisLine={false}
+                      tickLine={false}
+                      width={yAxisWidth}
+                      tick={{ fill: 'rgba(100, 116, 139, 0.92)', fontSize: tickFontSize }}
+                      tickFormatter={(value) => weightFormatter.format(value)}
+                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(15, 23, 42, 0.12)', strokeWidth: 1 }} />
+                    <Line
+                      type="monotone"
+                      dataKey="weight"
+                      connectNulls={false}
+                      stroke="rgba(15, 23, 42, 0.35)"
+                      strokeWidth={2}
+                      dot={{ r: 3, strokeWidth: 2, fill: '#ffffff', stroke: 'rgba(15, 23, 42, 0.45)' }}
+                      activeDot={{ r: 4 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="weight7dma"
+                      connectNulls={true}
+                      stroke="rgb(15, 23, 42)"
+                      strokeWidth={4}
+                      dot={{ r: 2.5, strokeWidth: 0, fill: 'rgb(15, 23, 42)' }}
+                      activeDot={{ r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </>
+        )}
+      </ViewportAnimationGroup>
     </section>
   )
 }
