@@ -1,68 +1,50 @@
 # LeanLog Copilot Instructions
 
-## Product Intent
+## Product
 
-- Build a calm, minimal, fast, visual, rewarding personal weight-loss operating system.
-- Sustainable, scalable, psychologically lightweight, and powerful enough for serious transformation. Exactly what a long-term fat-loss system needs.
-- Avoid accounting-software complexity.
-- Keep the aesthetic close to minimal Apple Health + Notion.
+- LeanLog is a calm, local-first weight-loss tracker for real life.
+- The current app ships five primary surfaces: Dashboard, History, Averages, About, and Settings.
+- Daily logs track weight, calories, steps, exercise type, and exercise minutes.
+- The dashboard stays focused on four sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal.
+- Keep the product psychologically light, forgiving of missed days, and free of accounting-software complexity.
 
-## Iteration 1 Scope
+## Scope Boundaries
 
-- Track only daily weight, calories, steps, and exercise.
-- Show a focused dashboard with four sections: Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal.
-- Use a dual-line weight trend chart for daily weight and 7-day moving average.
-- Visualize calorie and step consistency against targets without turning the product into accounting software.
-- Include dedicated weekly and monthly average pages for longer-view summaries.
-- Include a settings flow for start weight, goal weight, daily calorie target, daily step target, and CSV import/export for daily logs.
-- Prioritize local-first behavior with IndexedDB.
-
-## Iteration 2 Boundary
-
-- Keep the current data model compatible with future Dexie Cloud sync, Capacitor, and broader test coverage.
-- Do not add iteration 2 dependencies or UI complexity unless explicitly requested.
+- Stay within the current local-first browser app unless the user asks for more.
+- Do not add auth, cloud sync, social features, gamification, or extra health metrics by default.
+- Keep the current data model compatible with later sync or mobile packaging, but do not add those dependencies now.
 
 ## Stack And Conventions
 
 - Use React with Vite in JavaScript only. Do not introduce TypeScript.
-- Use Tailwind CSS v4 for styling.
-- Use shadcn/ui components and preserve the existing styling direction.
-- Use Zustand for app state and Dexie for local persistence.
-- Use Recharts for chart rendering.
-- Use the `@` import alias for `src` paths.
+- Use Tailwind CSS v4 and preserve the existing shadcn/ui styling direction.
+- Use Zustand for app state, Dexie for IndexedDB persistence, and Recharts for charts.
+- Use the `@` alias for imports from `src`.
+- Keep the PWA setup working with `vite-plugin-pwa` and the GitHub Pages base-path handling in `vite.config.js`.
 
 ## Current Architecture
 
-- Dexie schema lives in `src/lib/db.js`.
-- Zustand store lives in `src/store/useAppStore.js`.
-- App view-model logic lives in `src/hooks/useAppViewModel.js`.
-- Daily-log CSV import/export helpers live in `src/lib/daily-log-csv.js`.
-- Shared dashboard calculations and chart-ready selectors live in `src/lib/metrics.js`.
-- Dashboard-specific derived models live in focused lib modules such as `src/lib/dashboard-section-metrics.js`, `src/lib/weight-trend-metrics.js`, `src/lib/consistency-metrics.js`, and `src/lib/goal-progress-metrics.js`.
-- Dashboard section composition lives in `src/components/app/DashboardSection.jsx` and should stay mostly render-only.
-- Recharts-based dashboard chart rendering lives in `src/components/app/WeightTrendChart.jsx`, with display-only helpers in `src/components/app/WeightTrendChart.helpers.js`.
-- Dashboard consistency visuals live in `src/components/app/ConsistencyTrackingChart.jsx`, with display-only helpers in `src/components/app/ConsistencyTrackingChart.helpers.js`.
-- Dashboard goal progress visuals live in `src/components/app/GoalProgressChart.jsx`, with display-only helpers in `src/components/app/GoalProgressChart.helpers.js`.
-- Dashboard snapshot card copy, icon selection, and setup-callout display mapping live in `src/components/app/DashboardSection.helpers.js`.
-- App composition is split into focused components under `src/components/app`.
-- Shared test fixtures live in focused modules under `src/test/fixtures`, with `src/test/leanlog-test-fixtures.js` kept as the stable barrel import path for tests.
+- Persistence and entry normalization live in `src/lib/db.js`.
+- App state and selectors live in `src/store/useAppStore.js` and `src/store/app-store-slices.js`.
+- App view-model assembly lives in `src/hooks/useAppViewModel.js` and `src/hooks/app-view-model-sections.js`.
+- App shell navigation state lives in `src/hooks/useAppShellState.js`.
+- `src/components/app/AppContent.jsx` lazy-loads the Dashboard, History, Weekly Averages, Monthly Averages, About, and Settings pages.
+- Shared dashboard calculations live in `src/lib/metrics.js` plus focused derivation modules in `src/lib/dashboard-section-metrics.js`, `src/lib/weight-trend-metrics.js`, `src/lib/consistency-metrics.js`, and `src/lib/goal-progress-metrics.js`.
+- Dashboard rendering components should stay thin: renderers in `src/components/app/*.jsx`, display-only mapping helpers in the matching `*.helpers.js` files.
+- Average summaries are built on `src/components/app/AverageSummaryPage.jsx` and surfaced through weekly and monthly page wrappers.
+- CSV import and export helpers live in `src/lib/daily-log-csv.js`.
+- Shared test fixtures belong in focused files under `src/test/fixtures` and should continue to be re-exported through `src/test/leanlog-test-fixtures.js`.
 
 ## Implementation Guidance
 
 - Prefer small, local refactors over broad rewrites.
-- Preserve the narrow product scope. Do not add extra health metrics, social features, gamification systems, auth, or analytics unless asked.
-- Keep forms and dashboard behavior local-first and fast.
-- For dashboard UI, keep pure derivation in focused `src/lib/*-metrics.js` modules, keep display-only label/copy/class/icon mappings in colocated component helper files, and keep React components thin renderers over that derived model.
-- Treat missing logs as normal. Every formula, derived metric, summary, and chart input must tolerate blanks without breaking, throwing errors, or punishing the user for skipped days.
-- Favor psychologically lightweight flows: forgiving defaults, low-friction logging, and summaries that continue working even when the user misses entries.
-- Preserve the sectioned dashboard structure unless a broader product change is explicitly requested.
-- Favor simple data shapes that can evolve without breaking Dexie persistence.
-- Preserve CSV import/export as a simple backup flow: imports should merge by date, ignore derived fields, and recalculate persisted summaries like `weight7dma`.
-- When adding UI, preserve the existing spacing, tone, and minimal visual language.
-- When extending shared test data, add or adjust focused fixture modules under `src/test/fixtures` and re-export through `src/test/leanlog-test-fixtures.js` instead of growing a single grab-bag file.
-- Prefer focused lib tests for pure dashboard derivation modules and keep component tests centered on rendering and composition boundaries.
+- Keep React components thin and move derivation into focused lib modules when logic grows.
+- Treat missing logs as normal. Charts, summaries, and derived metrics must tolerate blanks without throwing or shaming the user.
+- Preserve the current dashboard structure unless a broader product change is explicitly requested.
+- Preserve CSV import as a date-merge flow and recalculate derived fields such as `weight7dma` after imports or entry edits.
+- Preserve local-first performance, responsive layouts, and the existing minimal visual language.
+- When extending tests, favor focused lib tests for derivation logic and focused component tests for rendering and composition boundaries.
 
 ## Validation
 
 - Run `npm test`, `npm run lint`, and `npm run build` after meaningful changes when feasible.
-- Keep tests focused on view-model logic, form flows, app composition boundaries, and reuse the shared fixture barrel where practical.
