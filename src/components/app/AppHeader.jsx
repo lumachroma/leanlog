@@ -34,16 +34,16 @@ function AppHeader({ activePage, onPageChange }) {
       Icon: ChartColumn,
     },
     {
-      label: 'About',
-      page: 'about',
-      active: activePage === 'about',
-      Icon: Info,
-    },
-    {
       label: 'Settings',
       page: 'settings',
       active: activePage === 'settings',
       Icon: SlidersHorizontal,
+    },
+    {
+      label: 'About',
+      page: 'about',
+      active: activePage === 'about',
+      Icon: Info,
     },
   ]
 
