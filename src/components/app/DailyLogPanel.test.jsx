@@ -19,8 +19,6 @@ describe('DailyLogPanel', () => {
         selectedDate="2026-05-14"
         entryDraft={createBlankEntryDraft()}
         isSavingEntry={false}
-        activeDays={3}
-        exerciseDays={2}
         setSelectedDate={setSelectedDate}
         updateEntryDraftField={updateEntryDraftField}
         saveEntry={saveEntry}
@@ -55,8 +53,6 @@ describe('DailyLogPanel', () => {
         selectedDate="2026-05-14"
         entryDraft={createBlankEntryDraft({ exerciseType: 'Walking' })}
         isSavingEntry={false}
-        activeDays={0}
-        exerciseDays={0}
         setSelectedDate={vi.fn()}
         updateEntryDraftField={updateEntryDraftField}
         saveEntry={vi.fn()}
@@ -74,8 +70,6 @@ describe('DailyLogPanel', () => {
         selectedDate="2026-05-14"
         entryDraft={createBlankEntryDraft()}
         isSavingEntry={true}
-        activeDays={0}
-        exerciseDays={0}
         setSelectedDate={vi.fn()}
         updateEntryDraftField={vi.fn()}
         saveEntry={vi.fn()}
@@ -83,6 +77,27 @@ describe('DailyLogPanel', () => {
     )
 
     expect(screen.getByRole('button', { name: /saving/i })).toBeDisabled()
+  })
+
+  it('routes close actions through the drawer close control', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    render(
+      <DailyLogPanel
+        selectedDate="2026-05-14"
+        entryDraft={createBlankEntryDraft()}
+        isSavingEntry={false}
+        onClose={onClose}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /close daily log/i }))
+
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 
   it('offers a one-tap shortcut for today', async () => {
@@ -94,8 +109,6 @@ describe('DailyLogPanel', () => {
         selectedDate="2026-05-14"
         entryDraft={createBlankEntryDraft()}
         isSavingEntry={false}
-        activeDays={0}
-        exerciseDays={0}
         setSelectedDate={setSelectedDate}
         updateEntryDraftField={vi.fn()}
         saveEntry={vi.fn()}

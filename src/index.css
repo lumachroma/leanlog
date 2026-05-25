@@ -130,6 +130,15 @@
 }
 
 @layer components {
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
   .chart-reveal {
     opacity: 0;
     animation: chart-reveal 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;

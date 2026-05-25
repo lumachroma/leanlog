@@ -1,16 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Check, Clock3, Flame, Footprints, PencilLine, Plus, Scale, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  Flame,
+  Footprints,
+  PencilLine,
+  Plus,
+  Scale,
+  Trash2,
+  X,
+} from 'lucide-react'
 
 import { AppSurface } from '@/components/app/AppSurface'
 import { Button } from '@/components/ui/button'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+} from '@/components/ui/drawer'
+import { createEmptyEntryDraft } from '@/lib/db'
 import {
   formatFullDateLabel,
   formatMonthLabel,
   formatShortDateLabel,
 } from '@/lib/date-utils'
 
-import { SectionHeading } from './SectionHeading'
 import { DailyLogPanel } from './DailyLogPanel'
 import {
   formatExerciseSummary,
@@ -19,6 +33,51 @@ import {
   hasExercise,
 } from './DailyHistoryPage.helpers'
 import { EmptyStatePanel } from './EmptyStatePanel'
+import { SectionHeading } from './SectionHeading'
+
+const EDITABLE_DRAFT_FIELDS = [
+  'weight',
+  'calories',
+  'steps',
+  'exerciseType',
+  'exerciseMinutes',
+]
+
+const normalizeDraftValue = (value) => String(value ?? '').trim()
+
+const createPendingAction = (type, payload = {}) => ({ type, ...payload })
+const STICKY_DRAWER_HISTORY_OVERFLOW = 160
+const hasOverflowingHistory = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return false
+  }
+
+  const viewportHeight = window.innerHeight || 0
+  const documentHeight = document.documentElement?.scrollHeight || 0
+
+  return documentHeight > viewportHeight + STICKY_DRAWER_HISTORY_OVERFLOW
+}
+
+const HISTORY_METRICS = [
+  {
+    key: 'weight',
+    label: 'Weight',
+    Icon: Scale,
+    suffix: 'kg',
+  },
+  {
+    key: 'calories',
+    label: 'Calories',
+    Icon: Flame,
+    suffix: 'kcal',
+  },
+  {
+    key: 'steps',
+    label: 'Steps',
+    Icon: Footprints,
+    suffix: 'steps',
+  },
+]
 
 function DailyHistoryPage({
   entries,
@@ -32,8 +91,11 @@ function DailyHistoryPage({
 }) {
   const [pendingDeleteDate, setPendingDeleteDate] = useState(null)
   const [activeMonthKey, setActiveMonthKey] = useState('all')
-  const [isEditorVisible, setIsEditorVisible] = useState(true)
-  const editorPanelRef = useRef(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [pendingAction, setPendingAction] = useState(null)
+  const [hasLongHistory, setHasLongHistory] = useState(false)
+  const [isLauncherVisible, setIsLauncherVisible] = useState(true)
+  const launcherSectionRef = useRef(null)
 
   const availableMonthKeys = useMemo(
     () => [...new Set(entries.map((entry) => entry.date.slice(0, 7)))],
@@ -59,78 +121,161 @@ function DailyHistoryPage({
 
     return [...groups.entries()]
   }, [visibleEntries])
-  const isEditingExistingEntry = entries.some((entry) => entry.date === selectedDate)
+  const selectedEntry = useMemo(
+    () => entries.find((entry) => entry.date === selectedDate) ?? null,
+    [entries, selectedDate]
+  )
+  const isEditingExistingEntry = Boolean(selectedEntry)
+  const activeDays = entries.length
+  const exerciseDays = entries.filter(hasExercise).length
+  const exerciseHistorySummary = `${exerciseDays} exercise ${exerciseDays === 1 ? 'day' : 'days'} across ${activeDays} logged ${activeDays === 1 ? 'day' : 'days'}.`
+  const selectedBaselineEntry = selectedEntry ?? createEmptyEntryDraft(selectedDate)
+  const isDraftDirty = EDITABLE_DRAFT_FIELDS.some(
+    (field) =>
+      normalizeDraftValue(entryDraft[field]) !==
+      normalizeDraftValue(selectedBaselineEntry[field])
+  )
+  const drawerStatusLabel = isSavingEntry
+    ? 'Saving'
+    : isDraftDirty
+      ? 'Unsaved changes'
+      : isEditingExistingEntry
+        ? 'Saved day'
+        : 'New day'
+  const drawerStatusTone = isSavingEntry
+    ? 'saving'
+    : isDraftDirty
+      ? 'attention'
+      : 'muted'
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    const handleResize = () => {
+      setHasLongHistory(hasOverflowingHistory())
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      const frameId = window.requestAnimationFrame(() => {
+        setHasLongHistory(hasOverflowingHistory())
+      })
+
+      return () => {
+        if (typeof window.cancelAnimationFrame === 'function') {
+          window.cancelAnimationFrame(frameId)
+        }
+      }
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setHasLongHistory(hasOverflowingHistory())
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [entries, visibleMonthKey, pendingDeleteDate])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.IntersectionObserver !== 'function') {
       return undefined
     }
 
-    const editorPanel = editorPanelRef.current
+    const launcherSection = launcherSectionRef.current
 
-    if (!editorPanel) {
+    if (!launcherSection) {
       return undefined
     }
 
     const observer = new window.IntersectionObserver(
       ([entry]) => {
-        setIsEditorVisible(entry?.isIntersecting ?? true)
+        setIsLauncherVisible(entry?.isIntersecting ?? true)
       },
       { threshold: 0.2 }
     )
 
-    observer.observe(editorPanel)
+    observer.observe(launcherSection)
 
     return () => {
       observer.disconnect()
     }
   }, [])
 
-  const revealEditorPanel = () => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return
-    }
+  const clearPendingAction = () => {
+    setPendingAction(null)
+  }
 
-    if (window.matchMedia('(min-width: 1280px)').matches) {
-      return
-    }
-
-    const reveal = () => {
-      const editorPanel = editorPanelRef.current
-
-      if (!editorPanel) {
+  const performPendingAction = (action) => {
+    switch (action?.type) {
+      case 'close':
+        setIsDrawerOpen(false)
         return
-      }
+      case 'create':
+        setSelectedDate(nextEntryDate)
+        setIsDrawerOpen(true)
+        return
+      case 'select-date':
+        if (!action.date) {
+          setIsDrawerOpen(true)
+          return
+        }
 
-      if (typeof editorPanel.scrollIntoView === 'function') {
-        editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-
-      if (typeof editorPanel.focus === 'function') {
-        editorPanel.focus()
-      }
+        setSelectedDate(action.date)
+        setIsDrawerOpen(true)
+        return
+      default:
     }
+  }
 
-    if (typeof window.requestAnimationFrame === 'function') {
-      window.requestAnimationFrame(reveal)
+  const requestProtectedAction = (action) => {
+    if (isSavingEntry) {
       return
     }
 
-    reveal()
+    if (isDraftDirty) {
+      setPendingAction(action)
+      setIsDrawerOpen(true)
+      return
+    }
+
+    clearPendingAction()
+    performPendingAction(action)
+  }
+
+  const requestDrawerClose = () => {
+    requestProtectedAction(createPendingAction('close'))
+  }
+
+  const handleDrawerOpenChange = (nextOpen) => {
+    if (nextOpen) {
+      clearPendingAction()
+      setIsDrawerOpen(true)
+      return
+    }
+
+    requestDrawerClose()
   }
 
   const handleCreateEntry = () => {
-    setSelectedDate(nextEntryDate)
-    revealEditorPanel()
+    requestProtectedAction(createPendingAction('create'))
   }
 
   const handleSelectEntry = (date) => {
-    setSelectedDate(date)
-    revealEditorPanel()
-  }
-
-  const handleSelectEntryClick = (event) => {
-    handleSelectEntry(event.currentTarget.dataset.entryDate)
+    requestProtectedAction(createPendingAction('select-date', { date }))
   }
 
   const handleDeleteRequest = (date) => {
@@ -146,46 +291,46 @@ function DailyHistoryPage({
     setPendingDeleteDate(null)
   }
 
-  return (
-    <main className="grid flex-1 items-start gap-6 pb-28 pt-4 sm:pb-8 sm:pt-6 xl:grid-cols-[0.9fr_1.1fr] xl:py-10">
-      <aside
-        ref={editorPanelRef}
-        tabIndex={-1}
-        className="order-first outline-none xl:order-last xl:sticky xl:top-6"
-      >
-        <DailyLogPanel
-          selectedDate={selectedDate}
-          entryDraft={entryDraft}
-          isSavingEntry={isSavingEntry}
-          activeDays={entries.length}
-          exerciseDays={entries.filter(hasExercise).length}
-          title={isEditingExistingEntry ? 'Edit Entry' : 'New Entry'}
-          modeLabel={isEditingExistingEntry ? 'Editing saved day' : 'Ready for a new day'}
-          description={
-            isEditingExistingEntry
-              ? 'Update or remove a saved day while keeping your long-term trends and summaries intact.'
-              : 'Capture a new day first, then use the history below to review or fine-tune older entries.'
-          }
-          setSelectedDate={setSelectedDate}
-          updateEntryDraftField={updateEntryDraftField}
-          saveEntry={saveEntry}
-        />
-      </aside>
+  const handleDateChange = (date) => {
+    requestProtectedAction(createPendingAction('select-date', { date }))
+  }
 
-      <AppSurface className="order-last p-6 xl:order-first">
+  const handleUpdateDraftField = (field, value) => {
+    clearPendingAction()
+    updateEntryDraftField(field, value)
+  }
+
+  const handleSaveEntry = async () => {
+    clearPendingAction()
+    await saveEntry()
+  }
+
+  const handleConfirmDiscard = () => {
+    const action = pendingAction
+
+    clearPendingAction()
+    performPendingAction(action)
+  }
+
+  return (
+    <main className="relative flex flex-1 flex-col pb-28 pt-4 sm:pb-32 sm:pt-6 xl:pb-36 xl:pt-10">
+      <AppSurface className="p-6">
         <div className="border-b border-border/80 pb-5">
-          <div className="flex items-start justify-between gap-4">
+          <div ref={launcherSectionRef} className="flex items-start justify-between gap-4">
             <SectionHeading eyebrow="Daily history" title="Daily Timeline" />
             <div className="flex shrink-0 items-center gap-3">
-              <Button type="button" variant="outline" size="sm" onClick={handleCreateEntry}>
+              <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
+                <Plus className="size-4" />
                 New entry
               </Button>
-              <Clock3 className="size-4 text-muted-foreground" />
             </div>
           </div>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">
             Browse, review, and update your saved entries through a clear
             day-by-day history of your progress.
+          </p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {exerciseHistorySummary}
           </p>
         </div>
 
@@ -230,6 +375,14 @@ function DailyHistoryPage({
                   {monthEntries.map((entry) => {
                     const isSelected = entry.date === selectedDate
                     const isPendingDelete = pendingDeleteDate === entry.date
+                    const historyMetrics = HISTORY_METRICS.map(
+                      ({ key, label, Icon, suffix }) => ({
+                        key,
+                        label,
+                        Icon,
+                        value: formatHistoryValue(entry[key], suffix),
+                      })
+                    )
 
                     return (
                       <article
@@ -240,8 +393,12 @@ function DailyHistoryPage({
                             : 'border-border/80 bg-muted/30'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="min-w-0 flex-1">
+                        <div className="flex items-start gap-3">
+                          <button
+                            type="button"
+                            className="min-w-0 flex-1 text-left"
+                            onClick={() => handleSelectEntry(entry.date)}
+                          >
                             <p className="text-sm font-medium leading-snug text-foreground">
                               {formatFullDateLabel(entry.date)}
                             </p>
@@ -250,7 +407,7 @@ function DailyHistoryPage({
                                 {formatExerciseSummary(entry)}
                               </p>
                             ) : null}
-                          </div>
+                          </button>
 
                           <div className="flex shrink-0 items-center gap-1.5">
                             {isPendingDelete ? (
@@ -286,8 +443,7 @@ function DailyHistoryPage({
                                   size="icon"
                                   className="size-8 rounded-full"
                                   title="Edit entry"
-                                  data-entry-date={entry.date}
-                                  onClick={handleSelectEntryClick}
+                                  onClick={() => handleSelectEntry(entry.date)}
                                 >
                                   <PencilLine className="size-3.5" />
                                 </Button>
@@ -295,7 +451,7 @@ function DailyHistoryPage({
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="size-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30"
+                                  className="size-8 rounded-full border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                   title="Delete entry"
                                   onClick={() => handleDeleteRequest(entry.date)}
                                   disabled={isSavingEntry}
@@ -307,59 +463,28 @@ function DailyHistoryPage({
                           </div>
                         </div>
 
-                        {/* mobile: compact inline row */}
                         <div className="mt-2 flex items-center gap-3 text-xs sm:hidden">
-                          <span className="flex items-center gap-1">
-                            <Scale className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
-                              {formatHistoryValue(entry.weight, 'kg')}
-                            </span>
-                          </span>
-                          <span className="text-border/60">·</span>
-                          <span className="flex items-center gap-1">
-                            <Flame className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
-                              {formatHistoryValue(entry.calories, 'kcal')}
-                            </span>
-                          </span>
-                          <span className="text-border/60">·</span>
-                          <span className="flex items-center gap-1">
-                            <Footprints className="size-3 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
-                              {formatHistoryValue(entry.steps, 'steps')}
-                            </span>
-                          </span>
+                          {historyMetrics.map(({ key, Icon, value }, index) => (
+                            <div key={key} className="contents">
+                              {index > 0 ? <span className="text-border/60">·</span> : null}
+                              <span className="flex items-center gap-1">
+                                <Icon className="size-3 text-muted-foreground" />
+                                <span className="font-medium text-foreground">{value}</span>
+                              </span>
+                            </div>
+                          ))}
                         </div>
 
-                        {/* desktop: stacked label + value grid, matching weekly averages style */}
                         <div className="mt-3 hidden grid-cols-3 gap-3 text-sm sm:grid">
-                          <div>
-                            <p className="flex items-center gap-1.5 text-muted-foreground">
-                              <Scale className="size-3.5" />
-                              Weight
-                            </p>
-                            <p className="mt-1 font-medium text-foreground">
-                              {formatHistoryValue(entry.weight, 'kg')}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="flex items-center gap-1.5 text-muted-foreground">
-                              <Flame className="size-3.5" />
-                              Calories
-                            </p>
-                            <p className="mt-1 font-medium text-foreground">
-                              {formatHistoryValue(entry.calories, 'kcal')}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="flex items-center gap-1.5 text-muted-foreground">
-                              <Footprints className="size-3.5" />
-                              Steps
-                            </p>
-                            <p className="mt-1 font-medium text-foreground">
-                              {formatHistoryValue(entry.steps, 'steps')}
-                            </p>
-                          </div>
+                          {historyMetrics.map(({ key, label, Icon, value }) => (
+                            <div key={key}>
+                              <p className="flex items-center gap-1.5 text-muted-foreground">
+                                <Icon className="size-3.5" />
+                                {label}
+                              </p>
+                              <p className="mt-1 font-medium text-foreground">{value}</p>
+                            </div>
+                          ))}
                         </div>
 
                         {isPendingDelete ? (
@@ -378,31 +503,63 @@ function DailyHistoryPage({
           </div>
         ) : (
           <EmptyStatePanel className="mt-6">
-            No saved history yet. Create your first daily entry from the editor above.
+            No saved history yet. Create your first daily entry from the drawer below.
           </EmptyStatePanel>
         )}
       </AppSurface>
 
-      {!isEditorVisible ? (
-        <div className="fixed inset-x-4 bottom-4 z-20 xl:hidden">
-          <div className="rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                  Quick add
-                </p>
-                <p className="mt-1 truncate text-sm font-medium text-foreground">
-                  Next open day: {formatShortDateLabel(nextEntryDate)}
-                </p>
+      <Drawer open={isDrawerOpen} onOpenChange={handleDrawerOpenChange}>
+        {isDrawerOpen ? (
+          <DrawerContent
+            aria-describedby={undefined}
+            className="mx-auto h-[85dvh] w-full max-w-4xl border-0 bg-transparent p-0 shadow-none sm:h-auto sm:max-h-[85dvh]"
+          >
+            <div className="sr-only">
+              <DrawerTitle>Daily log</DrawerTitle>
+            </div>
+            <DailyLogPanel
+              selectedDate={selectedDate}
+              entryDraft={entryDraft}
+              isSavingEntry={isSavingEntry}
+              title={isEditingExistingEntry ? 'Edit daily log' : 'New daily log'}
+              statusLabel={drawerStatusLabel}
+              statusTone={drawerStatusTone}
+              discardPrompt={
+                pendingAction
+                  ? 'Discard your unsaved changes before switching days or closing the drawer?'
+                  : null
+              }
+              onConfirmDiscard={handleConfirmDiscard}
+              onCancelDiscard={clearPendingAction}
+              onClose={requestDrawerClose}
+              setSelectedDate={handleDateChange}
+              updateEntryDraftField={handleUpdateDraftField}
+              saveEntry={handleSaveEntry}
+            />
+          </DrawerContent>
+        ) : null}
+
+        {hasLongHistory && !isLauncherVisible && !isDrawerOpen ? (
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-3 sm:px-4 sm:pb-4">
+            <div className="pointer-events-auto w-full max-w-4xl rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                    Quick Add
+                  </p>
+                  <p className="mt-1 truncate text-sm font-medium text-foreground">
+                    Next open day: {formatShortDateLabel(nextEntryDate)}
+                  </p>
+                </div>
+                <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
+                  <Plus className="size-4" />
+                  Add Entry
+                </Button>
               </div>
-              <Button type="button" size="sm" className="gap-2" onClick={handleCreateEntry}>
-                <Plus className="size-4" />
-                Add entry
-              </Button>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </Drawer>
     </main>
   )
 }
