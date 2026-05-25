@@ -80,7 +80,7 @@ export const createSettingsSlice = (set, get) => ({
   updateSettingsField: createFieldUpdater('settings', set),
 
   saveSettings: async () => {
-    await runStoreAction({
+    return runStoreAction({
       set,
       startState: { isSavingSettings: true, errorMessage: null },
       task: () => saveSettingsSnapshot(get().settings),

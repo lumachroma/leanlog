@@ -8,6 +8,7 @@ import {
   createSampleEntries,
   createSampleEntry,
   createSampleEntryDraft,
+  createSampleSettings,
 } from '@/test/leanlog-test-fixtures'
 
 const mockLoadAppSnapshot = vi.fn()
@@ -83,6 +84,32 @@ describe('useAppStore', () => {
     expect(useAppStore.getState().entryDraft).toEqual(
       createSampleEntry({ weight7dma: 80 })
     )
+  })
+
+  it('returns saved settings on success so the UI can react after saving', async () => {
+    const savedSettings = createSampleSettings({ goalWeight: '70' })
+
+    useAppStore.setState((state) => ({
+      ...state,
+      settings: savedSettings,
+    }))
+
+    mockSaveSettingsSnapshot.mockResolvedValue(savedSettings)
+
+    const result = await useAppStore.getState().saveSettings()
+
+    expect(result).toEqual(savedSettings)
+    expect(useAppStore.getState().settings).toEqual(savedSettings)
+    expect(useAppStore.getState().errorMessage).toBeNull()
+  })
+
+  it('returns null when saving settings fails', async () => {
+    mockSaveSettingsSnapshot.mockRejectedValue(new Error('save failed'))
+
+    const result = await useAppStore.getState().saveSettings()
+
+    expect(result).toBeNull()
+    expect(useAppStore.getState().errorMessage).toBe('Unable to save your settings.')
   })
 
   it('imports csv daily logs and refreshes the selected draft from imported entries', async () => {

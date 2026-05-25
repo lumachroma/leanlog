@@ -1,173 +1,49 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
-  createBlankSettings,
-  createInvalidDailyLogCsv,
-  createSampleEntries,
-  createSingleEntryDailyLogCsv,
+  createSampleSettings,
 } from '@/test/leanlog-test-fixtures'
 
 import { SettingsPanel } from './SettingsPanel'
 
 describe('SettingsPanel', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   const createProps = (overrides = {}) => ({
-    entries: createSampleEntries(),
-    isImportingEntries: false,
-    importEntriesFromCsv: vi.fn(),
-    settings: createBlankSettings(),
-    isSavingSettings: false,
-    updateSettingsField: vi.fn(),
-    saveSettings: vi.fn(),
+    entryCount: 12,
+    onOpenBackupRestore: vi.fn(),
+    onOpenTrackingDefaults: vi.fn(),
+    settings: createSampleSettings(),
     ...overrides,
   })
 
-  it('updates fields and submits the form', async () => {
-    const user = userEvent.setup()
-    const props = createProps()
-
-    render(<SettingsPanel {...props} />)
-
-    fireEvent.change(screen.getByLabelText(/^Goal weight/i), {
-      target: { value: '72.5' },
-    })
-    fireEvent.change(screen.getByLabelText(/^Daily calorie target/i), {
-      target: { value: '2000' },
-    })
-    await user.click(screen.getByRole('button', { name: /save settings/i }))
-
-    expect(props.updateSettingsField).toHaveBeenCalledWith('goalWeight', '72.5')
-    expect(props.updateSettingsField).toHaveBeenCalledWith('dailyCalorieTarget', '2000')
-    expect(props.saveSettings).toHaveBeenCalledTimes(1)
-  })
-
-  it('shows the saving state on submit button', () => {
-    render(<SettingsPanel {...createProps({ isSavingSettings: true })} />)
-
-    expect(screen.getByRole('button', { name: /saving/i })).toBeDisabled()
-  })
-
-  it('imports daily logs from a selected csv file', async () => {
-    const user = userEvent.setup()
-    const props = createProps({
-      importEntriesFromCsv: vi.fn().mockResolvedValue({
-        importedCount: 1,
-        errorMessage: null,
-      }),
-    })
-
-    render(<SettingsPanel {...props} />)
-
-    const csvFile = new File([createSingleEntryDailyLogCsv()], 'leanlog.csv', {
-      type: 'text/csv',
-    })
-
-    await user.upload(screen.getByLabelText(/import daily logs csv/i), csvFile)
-
-    await waitFor(() => {
-      expect(props.importEntriesFromCsv).toHaveBeenCalledWith(
-        expect.stringContaining('date,weight')
-      )
-    })
-
-    expect(screen.getByText(/imported 1 daily log from csv/i)).toBeInTheDocument()
-  })
-
-  it('shows an inline error when csv import fails', async () => {
-    const user = userEvent.setup()
-    const props = createProps({
-      importEntriesFromCsv: vi.fn().mockResolvedValue({
-        importedCount: 0,
-        errorMessage: 'Row 2 has an invalid date.',
-      }),
-    })
-
-    render(<SettingsPanel {...props} />)
-
-    const csvFile = new File([createInvalidDailyLogCsv()], 'leanlog-invalid.csv', {
-      type: 'text/csv',
-    })
-
-    await user.upload(screen.getByLabelText(/import daily logs csv/i), csvFile)
-
-    expect(await screen.findByText(/row 2 has an invalid date/i)).toBeInTheDocument()
-  })
-
-  it('rejects non-csv uploads before import starts', async () => {
-    const user = userEvent.setup({ applyAccept: false })
-    const props = createProps()
-
-    render(<SettingsPanel {...props} />)
-
-    const textFile = new File(['not,csv'], 'leanlog.txt', {
-      type: 'text/plain',
-    })
-
-    await user.upload(screen.getByLabelText(/import daily logs csv/i), textFile)
-
-    expect(props.importEntriesFromCsv).not.toHaveBeenCalled()
-    expect(
-      await screen.findByText(/choose a csv file before importing daily logs/i)
-    ).toBeInTheDocument()
-  })
-
-  it('rejects oversized csv uploads before reading them', async () => {
-    const user = userEvent.setup()
-    const props = createProps()
-
-    render(<SettingsPanel {...props} />)
-
-    const csvFile = new File(['date,weight\n2026-05-14,80'], 'leanlog.csv', {
-      type: 'text/csv',
-    })
-
-    Object.defineProperty(csvFile, 'size', {
-      configurable: true,
-      value: 1024 * 1024 + 1,
-    })
-
-    await user.upload(screen.getByLabelText(/import daily logs csv/i), csvFile)
-
-    expect(props.importEntriesFromCsv).not.toHaveBeenCalled()
-    expect(await screen.findByText(/csv files must be 1 mb or smaller/i)).toBeInTheDocument()
-  })
-
-  it('downloads a csv template from the settings panel', async () => {
-    const user = userEvent.setup()
-    const createObjectUrl = vi.fn(() => 'blob:template')
-    const revokeObjectUrl = vi.fn()
-    const downloadLink = {
-      href: '',
-      download: '',
-      click: vi.fn(),
-    }
-    const originalCreateElement = document.createElement.bind(document)
-
-    vi.stubGlobal('URL', {
-      ...URL,
-      createObjectURL: createObjectUrl,
-      revokeObjectURL: revokeObjectUrl,
-    })
-    vi.spyOn(document, 'createElement').mockImplementation((tagName, options) => {
-      if (tagName === 'a') {
-        return downloadLink
-      }
-
-      return originalCreateElement(tagName, options)
-    })
-
+  it('shows the current settings summary inline', () => {
     render(<SettingsPanel {...createProps()} />)
 
-    await user.click(screen.getByRole('button', { name: /download csv template/i }))
+    expect(screen.getByText(/85 kg to 72 kg/i)).toBeInTheDocument()
+    expect(screen.getByText(/2000 kcal and 8000 steps/i)).toBeInTheDocument()
+    expect(screen.getByText(/12 saved days ready for export or merge-by-date import/i)).toBeInTheDocument()
+  })
 
-    expect(createObjectUrl).toHaveBeenCalledTimes(1)
-    expect(downloadLink.download).toBe('leanlog-daily-logs-template.csv')
-    expect(downloadLink.click).toHaveBeenCalledTimes(1)
-    expect(revokeObjectUrl).toHaveBeenCalledWith('blob:template')
+  it('opens the tracking defaults drawer from the summary card', async () => {
+    const user = userEvent.setup()
+    const props = createProps()
+
+    render(<SettingsPanel {...props} />)
+
+    await user.click(screen.getByRole('button', { name: /edit defaults/i }))
+
+    expect(props.onOpenTrackingDefaults).toHaveBeenCalledTimes(1)
+  })
+
+  it('opens the backup drawer from the summary card', async () => {
+    const user = userEvent.setup()
+    const props = createProps()
+
+    render(<SettingsPanel {...props} />)
+
+    await user.click(screen.getByRole('button', { name: /open data tools/i }))
+
+    expect(props.onOpenBackupRestore).toHaveBeenCalledTimes(1)
   })
 })

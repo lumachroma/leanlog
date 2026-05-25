@@ -172,7 +172,7 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /history/i }))
 
     expect(await screen.findByText(/daily timeline/i)).toBeInTheDocument()
-    expect(await screen.findByText(/^edit entry$/i)).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /new entry/i })).toBeInTheDocument()
     expect(await screen.findByText(/thu, may 14, 2026/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /go to dashboard/i })).toHaveAttribute(
       'aria-pressed',
@@ -198,7 +198,7 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: /^settings$/i }))
 
     expect(await screen.findByText(/personal targets/i)).toBeInTheDocument()
-    expect(await screen.findByText(/tracking defaults/i)).toBeInTheDocument()
+    expect(await screen.findByText(/manage your setup/i)).toBeInTheDocument()
     expect(screen.queryByText(/weekly trends/i)).not.toBeInTheDocument()
   })
 

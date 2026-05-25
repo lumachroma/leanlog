@@ -142,7 +142,6 @@ function AboutPage({ onPageChange }) {
               <span className="rounded-full bg-muted/45 px-3 py-1.5">Local-first</span>
               <span className="rounded-full bg-muted/45 px-3 py-1.5">IndexedDB</span>
               <span className="rounded-full bg-muted/45 px-3 py-1.5">Dashboard-led</span>
-              <span className="rounded-full bg-muted/45 px-3 py-1.5">Iteration 1</span>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
