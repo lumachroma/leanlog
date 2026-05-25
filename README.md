@@ -6,12 +6,14 @@ LeanLog is a calm, local-first weight-loss tracker built for fast daily logging 
 
 There is no backend, no auth, and no cloud dependency. App data lives in the browser with Dexie on top of IndexedDB.
 
+The current mobile experience is intentionally touch-first. Daily log and tracking-default drawers use stepper buttons, preset chips, and compact sliders so routine numeric entry can happen without depending on the on-screen keyboard.
+
 ## Current App
 
 - Dashboard with Today's Snapshot, Weight Trend, Daily Consistency, and Progress Toward Your Goal
-- Daily history page for creating, editing, and deleting logs
+- Daily history page for creating, editing, deleting, and safely discarding logs
 - Weekly and monthly average summaries
-- Settings for start weight, goal weight, daily calorie target, daily step target, and CSV import or export
+- Settings with separate tracking defaults and backup or restore drawers
 - About page describing the product and dashboard logic
 - Installable PWA with cached app shell assets and auto-updating service worker
 
@@ -24,6 +26,14 @@ There is no backend, no auth, and no cloud dependency. App data lives in the bro
 - Exercise minutes
 
 LeanLog also recalculates and persists a derived 7-day moving average for weight after entry changes and CSV imports.
+
+## Interaction Model
+
+- On coarse-pointer devices, numeric entry in the daily log and tracking defaults is keyboard-light by default: the visible numeric field becomes read-only while steppers, preset chips, and sliders remain interactive.
+- Weight, calories, steps, and exercise minutes all use shared touch-first controls so behavior stays consistent between the daily log and tracking defaults.
+- Confirming discard in the daily log restores the draft to its baseline state before closing or switching days.
+	Edit mode restores the persisted entry for the selected day.
+	New mode restores an empty draft for that date.
 
 ## Tech Stack
 
@@ -45,6 +55,8 @@ LeanLog also recalculates and persists a derived 7-day moving average for weight
 - `src/store/useAppStore.js` and `src/store/app-store-slices.js` own app state and actions.
 - `src/hooks/useAppViewModel.js` and `src/hooks/app-view-model-sections.js` shape page-ready view models.
 - `src/components/app/AppContent.jsx` lazy-loads the dashboard, history, averages, settings, and about pages.
+- Shared touch-first numeric behavior lives in `src/components/app/TouchNumberInput.jsx` with shared field config in `src/components/app/touch-number-input-config.js`.
+- History and settings drawers use shared mobile shell patterns through `src/components/ui/drawer.jsx` and `src/components/app/SettingsDrawerFrame.jsx`.
 - Dashboard derivation is split across focused modules in `src/lib/*-metrics.js` and thin renderers in `src/components/app`.
 - CSV import and export live in `src/lib/daily-log-csv.js`.
 
@@ -194,6 +206,7 @@ erDiagram
 - On settings save, the `settings` record is replaced with a fresh `updatedAt` timestamp
 - On daily entry save or delete, all entries are recalculated so `weight7dma`, `monthKey`, and `updatedAt` stay consistent
 - The UI keeps a Zustand `entryDraft` in memory, but only normalized entry records are written into IndexedDB
+- Discarding changes in the daily log restores the in-memory draft to the current baseline before any close or navigation action continues
 - The current page is remembered in localStorage, but it is not part of the IndexedDB schema
 
 ## Testing And Validation
@@ -211,6 +224,8 @@ npm test
 npm run lint
 npm run build
 ```
+
+The latest repo-wide sweep passes all three commands.
 
 ## Development Notes
 
