@@ -2,10 +2,11 @@ import { Drawer as DrawerPrimitive } from 'vaul'
 
 import { cn } from '@/lib/utils'
 
-function Drawer({ shouldScaleBackground = true, ...props }) {
+function Drawer({ shouldScaleBackground = true, fixed = true, ...props }) {
   return (
     <DrawerPrimitive.Root
       data-slot="drawer"
+      fixed={fixed}
       shouldScaleBackground={shouldScaleBackground}
       {...props}
     />
