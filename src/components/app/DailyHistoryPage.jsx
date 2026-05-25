@@ -47,6 +47,38 @@ const normalizeDraftValue = (value) => String(value ?? '').trim()
 
 const createPendingAction = (type, payload = {}) => ({ type, ...payload })
 const STICKY_DRAWER_HISTORY_OVERFLOW = 160
+const FIELD_SELECTOR = 'input, textarea, select, [contenteditable="true"]'
+
+const isFieldFocusedWithinElement = (element) => {
+  if (!element || typeof document === 'undefined') {
+    return false
+  }
+
+  const activeElement = document.activeElement
+
+  if (!(activeElement instanceof Element) || !element.contains(activeElement)) {
+    return false
+  }
+
+  return activeElement.matches(FIELD_SELECTOR)
+}
+
+const deferCloseCheck = (callback) => {
+  if (typeof window === 'undefined') {
+    callback()
+    return
+  }
+
+  if (typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => {
+      callback()
+    })
+    return
+  }
+
+  window.setTimeout(callback, 0)
+}
+
 const hasOverflowingHistory = () => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return false
@@ -96,6 +128,7 @@ function DailyHistoryPage({
   const [hasLongHistory, setHasLongHistory] = useState(false)
   const [isLauncherVisible, setIsLauncherVisible] = useState(true)
   const launcherSectionRef = useRef(null)
+  const dailyLogPanelRef = useRef(null)
 
   const availableMonthKeys = useMemo(
     () => [...new Set(entries.map((entry) => entry.date.slice(0, 7)))],
@@ -267,7 +300,13 @@ function DailyHistoryPage({
       return
     }
 
-    requestDrawerClose()
+    deferCloseCheck(() => {
+      if (isFieldFocusedWithinElement(dailyLogPanelRef.current)) {
+        return
+      }
+
+      requestDrawerClose()
+    })
   }
 
   const handleCreateEntry = () => {
@@ -518,6 +557,7 @@ function DailyHistoryPage({
               <DrawerTitle>Daily log</DrawerTitle>
             </div>
             <DailyLogPanel
+              panelRef={dailyLogPanelRef}
               selectedDate={selectedDate}
               entryDraft={entryDraft}
               isSavingEntry={isSavingEntry}

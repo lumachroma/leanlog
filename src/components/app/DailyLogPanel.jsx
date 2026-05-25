@@ -16,6 +16,7 @@ const statusToneClassNames = {
 }
 
 function DailyLogPanel({
+  panelRef,
   selectedDate,
   entryDraft,
   isSavingEntry,
@@ -48,6 +49,7 @@ function DailyLogPanel({
 
   return (
     <form
+      ref={panelRef}
       onSubmit={handleSubmit}
       className="flex max-h-[85dvh] flex-col overflow-hidden rounded-[1.9rem] border border-border/80 bg-background/95 p-4 shadow-[0_-20px_70px_-34px_rgba(15,23,42,0.5)] backdrop-blur sm:max-h-[75dvh] sm:p-5"
     >
