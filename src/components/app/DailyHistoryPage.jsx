@@ -402,8 +402,10 @@ function DailyHistoryPage({
             Browse, review, and update your saved entries through a clear
             day-by-day history of your progress.
           </p>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {exerciseHistorySummary}
+          <p className="mt-2">
+            <span className="inline-flex max-w-full rounded-full border border-border/70 bg-muted/35 px-2.5 py-1 text-[0.7rem] font-medium leading-5 text-muted-foreground sm:px-3 sm:text-xs">
+              {exerciseHistorySummary}
+            </span>
           </p>
         </div>
 
