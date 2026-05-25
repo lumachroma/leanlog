@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   Check,
+  ChevronDown,
+  ChevronUp,
   Flame,
   Footprints,
   PencilLine,
@@ -48,6 +50,7 @@ const normalizeDraftValue = (value) => String(value ?? '').trim()
 const createPendingAction = (type, payload = {}) => ({ type, ...payload })
 const STICKY_DRAWER_HISTORY_OVERFLOW = 160
 const FIELD_SELECTOR = 'input, textarea, select, [contenteditable="true"]'
+const COLLAPSED_MONTH_FILTER_COUNT = 2
 
 const isFieldFocusedWithinElement = (element) => {
   if (!element || typeof document === 'undefined') {
@@ -139,13 +142,33 @@ function DailyHistoryPage({
   const [pendingAction, setPendingAction] = useState(null)
   const [hasLongHistory, setHasLongHistory] = useState(false)
   const [isLauncherVisible, setIsLauncherVisible] = useState(true)
+  const [areMonthFiltersExpanded, setAreMonthFiltersExpanded] = useState(false)
   const launcherSectionRef = useRef(null)
   const dailyLogPanelRef = useRef(null)
 
   const availableMonthKeys = useMemo(
-    () => [...new Set(entries.map((entry) => entry.date.slice(0, 7)))],
+    () => [...new Set(entries.map((entry) => entry.date.slice(0, 7)))].sort((left, right) =>
+      right.localeCompare(left)
+    ),
     [entries]
   )
+  const collapsedMonthKeys = useMemo(() => {
+    const latestMonthKeys = availableMonthKeys.slice(0, COLLAPSED_MONTH_FILTER_COUNT)
+
+    if (
+      activeMonthKey !== 'all' &&
+      availableMonthKeys.includes(activeMonthKey) &&
+      !latestMonthKeys.includes(activeMonthKey)
+    ) {
+      return [...latestMonthKeys, activeMonthKey]
+    }
+
+    return latestMonthKeys
+  }, [activeMonthKey, availableMonthKeys])
+  const monthKeysToRender =
+    areMonthFiltersExpanded || availableMonthKeys.length <= COLLAPSED_MONTH_FILTER_COUNT
+      ? availableMonthKeys
+      : collapsedMonthKeys
   const nextEntryDate = useMemo(() => getNextAvailableDate(entries), [entries])
   const visibleMonthKey = availableMonthKeys.includes(activeMonthKey)
     ? activeMonthKey
@@ -417,9 +440,9 @@ function DailyHistoryPage({
               variant={visibleMonthKey === 'all' ? 'default' : 'outline'}
               onClick={() => setActiveMonthKey('all')}
             >
-              All months
+              All
             </Button>
-            {availableMonthKeys.map((monthKey) => (
+            {monthKeysToRender.map((monthKey) => (
               <Button
                 key={monthKey}
                 type="button"
@@ -430,6 +453,28 @@ function DailyHistoryPage({
                 {formatMonthLabel(monthKey)}
               </Button>
             ))}
+            {availableMonthKeys.length > COLLAPSED_MONTH_FILTER_COUNT ? (
+              <Button
+                type="button"
+                size="xs"
+                variant="ghost"
+                className="h-8 rounded-full px-2.5 text-xs text-muted-foreground"
+                aria-label={areMonthFiltersExpanded ? 'Collapse month filters' : 'Expand month filters'}
+                onClick={() => setAreMonthFiltersExpanded((currentValue) => !currentValue)}
+              >
+                {areMonthFiltersExpanded ? (
+                  <>
+                    <ChevronUp className="size-3.5" />
+                    Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="size-3.5" />
+                    More
+                  </>
+                )}
+              </Button>
+            ) : null}
           </div>
         ) : null}
 

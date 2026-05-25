@@ -228,7 +228,7 @@ describe('DailyHistoryPage', () => {
       />
     )
 
-    expect(screen.getByRole('button', { name: /all months/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^all$/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^May 2026$/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^April 2026$/i })).toBeInTheDocument()
 
@@ -236,6 +236,51 @@ describe('DailyHistoryPage', () => {
 
     expect(screen.getByText(/apr 14, 2026/i)).toBeInTheDocument()
     expect(screen.queryByText(/thu, may 14, 2026/i)).not.toBeInTheDocument()
+  })
+
+  it('shows the latest two month chips by default and can expand older months', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DailyHistoryPage
+        entries={[
+          createSampleEntry(),
+          createSecondarySampleEntry({ date: '2026-04-14' }),
+          createSecondarySampleEntry({ date: '2026-03-14' }),
+          createSecondarySampleEntry({ date: '2026-02-14' }),
+          createSecondarySampleEntry({ date: '2026-01-14' }),
+        ]}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft()}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: /^May 2026$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^April 2026$/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^March 2026$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^February 2026$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^January 2026$/i })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /expand month filters/i }))
+
+    expect(screen.getByRole('button', { name: /^March 2026$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^February 2026$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^January 2026$/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^February 2026$/i }))
+
+    expect(screen.getByText(/feb 14, 2026/i)).toBeInTheDocument()
+    expect(screen.queryByText(/thu, may 14, 2026/i)).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /collapse month filters/i }))
+
+    expect(screen.getByRole('button', { name: /^February 2026$/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^January 2026$/i })).not.toBeInTheDocument()
   })
 
   it('keeps the drawer collapsed until a new day is explicitly opened', async () => {
