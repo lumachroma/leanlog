@@ -14,7 +14,7 @@ export const weightTouchInputConfig = {
   step: '0.1',
   min: 0,
   max: 250,
-  emptyStepValue: 40,
+  emptyStepValue: 20,
   inputMode: 'decimal',
   presets: createWeightPresetOptions([40, 60, 80, 100]),
   sliderRange: { min: 0, max: 250 },
@@ -31,7 +31,7 @@ export const calorieTouchInputConfig = {
 }
 
 export const stepTouchInputConfig = {
-  step: 500,
+  step: 50,
   min: 0,
   inputMode: 'numeric',
   presets: createPresetOptions([5000, 8000, 10000, 12000], (value) =>
