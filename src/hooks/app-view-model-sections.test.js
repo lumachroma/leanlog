@@ -42,6 +42,7 @@ describe('app view-model sections', () => {
       isSavingEntry: false,
       setSelectedDate: state.setSelectedDate,
       updateEntryDraftField: state.updateEntryDraftField,
+      replaceEntryDraft: state.replaceEntryDraft,
       saveEntry: state.saveEntry,
       deleteEntry: state.deleteEntry,
       importEntriesFromCsv: state.importEntriesFromCsv,

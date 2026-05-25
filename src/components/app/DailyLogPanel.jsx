@@ -1,12 +1,19 @@
-import { Sparkles, X } from 'lucide-react'
+import { useRef } from 'react'
+
+import { CalendarDays, Check, Sparkles, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { EXERCISE_TYPE_OPTIONS, todayDate } from '@/lib/db'
 
 import { Field } from './Field'
+import { TouchNumberInput } from './TouchNumberInput'
+import {
+  calorieTouchInputConfig,
+  exerciseMinuteTouchInputConfig,
+  stepTouchInputConfig,
+  weightTouchInputConfig,
+} from './touch-number-input-config'
 
-const inputClassName =
-  'mt-1.5 w-full rounded-[1rem] border border-border/80 bg-background/90 px-3.5 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
 const fieldLabelClassName = 'text-sm font-medium text-foreground'
 
 const statusToneClassNames = {
@@ -31,6 +38,8 @@ function DailyLogPanel({
   updateEntryDraftField,
   saveEntry,
 }) {
+  const dateInputRef = useRef(null)
+
   const handleSubmit = (event) => {
     event.preventDefault()
     void saveEntry()
@@ -47,20 +56,36 @@ function DailyLogPanel({
     )
   }
 
+  const handleOpenDatePicker = () => {
+    const dateInput = dateInputRef.current
+
+    if (!dateInput) {
+      return
+    }
+
+    if (typeof dateInput.showPicker === 'function') {
+      dateInput.showPicker()
+      return
+    }
+
+    dateInput.focus()
+    dateInput.click()
+  }
+
   return (
     <form
       ref={panelRef}
       onSubmit={handleSubmit}
-      className="flex max-h-[85dvh] flex-col overflow-hidden rounded-[1.9rem] border border-border/80 bg-background/95 p-4 shadow-[0_-20px_70px_-34px_rgba(15,23,42,0.5)] backdrop-blur sm:max-h-[75dvh] sm:p-5"
+      className="flex max-h-[85dvh] flex-col overflow-hidden rounded-[1.9rem] border border-border/80 bg-background/95 p-3 shadow-[0_-20px_70px_-34px_rgba(15,23,42,0.5)] backdrop-blur sm:max-h-[75dvh] sm:p-5"
     >
-      <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border/80" />
+      <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-border/80 sm:mb-4" />
 
-      <div className="flex items-start justify-between gap-3 border-b border-border/80 pb-4">
+      <div className="flex items-start justify-between gap-3 border-b border-border/80 pb-3 sm:pb-4">
         <div className="min-w-0 flex-1">
           <p className="text-[0.65rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
             Daily log
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 sm:mt-2">
             <h2 className="text-xl font-medium tracking-[-0.04em] sm:text-2xl">{title}</h2>
             {statusLabel ? (
               <span
@@ -87,78 +112,87 @@ function DailyLogPanel({
         </div>
       </div>
 
-      <div className="scrollbar-hidden mt-4 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1">
-        <div className="space-y-4 pb-2">
+      <div className="scrollbar-hidden mt-3 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1 sm:mt-4">
+        <div className="space-y-3 pb-2 sm:space-y-4">
           <div>
             <div className="flex items-center justify-between gap-3">
               <label htmlFor="daily-log-date" className={fieldLabelClassName}>
                 Date
               </label>
-              <Button
-                type="button"
-                size="xs"
-                variant={selectedDate === todayDate() ? 'default' : 'outline'}
-                onClick={handleSetToday}
-              >
-                Today
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="outline"
+                  aria-label="Open date picker"
+                  onClick={handleOpenDatePicker}
+                >
+                  <CalendarDays className="size-3.5" />
+                  Pick
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant={selectedDate === todayDate() ? 'default' : 'outline'}
+                  onClick={handleSetToday}
+                >
+                  Today
+                </Button>
+              </div>
             </div>
             <input
+              ref={dateInputRef}
               id="daily-log-date"
               aria-label="Date"
               type="date"
-              className={`${inputClassName} appearance-none`}
+              className="mt-1 w-full rounded-[1rem] border border-border/80 bg-background/90 px-3.5 py-2 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5 sm:mt-1.5 sm:py-2.5"
               value={selectedDate}
               onChange={(event) => setSelectedDate(event.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Field label="Weight">
-              <input
-                type="number"
-                step="0.1"
-                inputMode="decimal"
-                className={inputClassName}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Weight" htmlFor="daily-log-weight">
+              <TouchNumberInput
+                id="daily-log-weight"
+                ariaLabel="Weight"
+                {...weightTouchInputConfig}
                 value={entryDraft.weight}
-                onChange={(event) => updateEntryDraftField('weight', event.target.value)}
+                onValueChange={(nextValue) => updateEntryDraftField('weight', nextValue)}
                 placeholder="72.4"
               />
             </Field>
 
-            <Field label="Calories">
-              <input
-                type="number"
-                inputMode="numeric"
-                className={inputClassName}
+            <Field label="Calories" htmlFor="daily-log-calories">
+              <TouchNumberInput
+                id="daily-log-calories"
+                ariaLabel="Calories"
+                {...calorieTouchInputConfig}
                 value={entryDraft.calories}
-                onChange={(event) => updateEntryDraftField('calories', event.target.value)}
+                onValueChange={(nextValue) => updateEntryDraftField('calories', nextValue)}
                 placeholder="1980"
               />
             </Field>
 
-            <Field label="Steps">
-              <input
-                type="number"
-                inputMode="numeric"
-                className={inputClassName}
+            <Field label="Steps" htmlFor="daily-log-steps">
+              <TouchNumberInput
+                id="daily-log-steps"
+                ariaLabel="Steps"
+                {...stepTouchInputConfig}
                 value={entryDraft.steps}
-                onChange={(event) => updateEntryDraftField('steps', event.target.value)}
+                onValueChange={(nextValue) => updateEntryDraftField('steps', nextValue)}
                 placeholder="8412"
               />
             </Field>
 
-            <Field label="Exercise Minutes">
-              <input
+            <Field label="Exercise Minutes" htmlFor="exercise-minutes">
+              <TouchNumberInput
                 id="exercise-minutes"
-                aria-label="Exercise Minutes"
-                type="number"
-                inputMode="numeric"
-                min="0"
-                className={inputClassName}
+                ariaLabel="Exercise Minutes"
+                {...exerciseMinuteTouchInputConfig}
                 value={entryDraft.exerciseMinutes}
-                onChange={(event) =>
-                  updateEntryDraftField('exerciseMinutes', event.target.value)
+                onValueChange={(nextValue) =>
+                  updateEntryDraftField('exerciseMinutes', nextValue)
                 }
                 placeholder="40"
               />
@@ -195,16 +229,32 @@ function DailyLogPanel({
         </div>
       </div>
 
-      <div className="mt-4 space-y-3 border-t border-border/70 pt-4 text-xs leading-5 text-muted-foreground">
+      <div className="mt-3 space-y-2.5 border-t border-border/70 bg-background/98 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] text-xs leading-5 text-muted-foreground backdrop-blur sm:mt-4 sm:space-y-3 sm:pt-4 sm:pb-0">
         {discardPrompt ? (
-          <div className="flex flex-col gap-3 rounded-[1.1rem] border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-amber-900 dark:text-amber-100 sm:flex-row sm:items-center sm:justify-between">
-            <p>{discardPrompt}</p>
-            <div className="flex items-center gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={onCancelDiscard}>
-                Keep editing
+          <div className="flex items-center justify-between gap-3 rounded-[1rem] border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-amber-900 dark:text-amber-100 sm:rounded-[1.1rem] sm:px-3.5 sm:py-3">
+            <p className="min-w-0 text-xs font-medium leading-5">{discardPrompt}</p>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8 rounded-full border-amber-500/30 bg-background/80 text-amber-900 hover:bg-background dark:text-amber-100"
+                aria-label="Keep editing"
+                title="Keep editing"
+                onClick={onCancelDiscard}
+              >
+                <X className="size-3.5" />
               </Button>
-              <Button type="button" variant="default" size="sm" onClick={onConfirmDiscard}>
-                Discard changes
+              <Button
+                type="button"
+                variant="default"
+                size="icon"
+                className="size-8 rounded-full"
+                aria-label="Discard changes"
+                title="Discard changes"
+                onClick={onConfirmDiscard}
+              >
+                <Check className="size-3.5" />
               </Button>
             </div>
           </div>

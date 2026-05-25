@@ -14,6 +14,7 @@ export function createSampleStoreActions() {
     saveSettings: vi.fn(),
     setSelectedDate: vi.fn(),
     updateEntryDraftField: vi.fn(),
+    replaceEntryDraft: vi.fn(),
     saveEntry: vi.fn(),
     deleteEntry: vi.fn(),
     importEntriesFromCsv: vi.fn(),

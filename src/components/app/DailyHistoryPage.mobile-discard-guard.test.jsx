@@ -94,11 +94,7 @@ describe('DailyHistoryPage mobile discard guard', () => {
     window.dispatchEvent(new Event('test-drawer-close'))
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(
-          /discard your unsaved changes before switching days or closing the drawer/i
-        )
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText(/discard unsaved changes/i)).not.toBeInTheDocument()
     })
 
     expect(screen.getByRole('dialog', { name: /daily log/i })).toBeInTheDocument()

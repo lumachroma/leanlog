@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -11,6 +13,45 @@ import {
 
 import { getNextAvailableDate } from './DailyHistoryPage.helpers'
 import { DailyHistoryPage } from './DailyHistoryPage'
+
+function DailyHistoryPageStateHarness({
+  entries = [createSampleEntry()],
+  initialSelectedDate = '2026-05-14',
+  initialEntryDraft = createSampleEntryDraft(),
+}) {
+  const [selectedDate, setSelectedDate] = useState(initialSelectedDate)
+  const [entryDraft, setEntryDraft] = useState(initialEntryDraft)
+
+  const handleSetSelectedDate = (date) => {
+    setSelectedDate(date)
+
+    const matchingEntry = entries.find((entry) => entry.date === date)
+
+    setEntryDraft(
+      matchingEntry
+        ? { ...matchingEntry }
+        : createBlankEntryDraft({ date, weight7dma: null })
+    )
+  }
+
+  return (
+    <DailyHistoryPage
+      entries={entries}
+      selectedDate={selectedDate}
+      entryDraft={entryDraft}
+      isSavingEntry={false}
+      setSelectedDate={handleSetSelectedDate}
+      updateEntryDraftField={(field, value) => {
+        setEntryDraft((currentDraft) => ({
+          ...currentDraft,
+          [field]: value,
+        }))
+      }}
+      saveEntry={vi.fn()}
+      deleteEntry={vi.fn()}
+    />
+  )
+}
 
 const stubMobileViewport = () => {
   const matchMedia = vi.fn().mockImplementation((query) => ({
@@ -164,7 +205,7 @@ describe('DailyHistoryPage', () => {
     expect(screen.getByText(/permanently delete this entry/i)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /confirm delete/i }))
 
-    expect(setSelectedDate).toHaveBeenCalledWith('2026-05-14')
+    expect(setSelectedDate).not.toHaveBeenCalled()
     expect(deleteEntry).toHaveBeenCalledWith('2026-05-14')
   })
 
@@ -298,13 +339,74 @@ describe('DailyHistoryPage', () => {
 
     await user.click(screen.getByRole('button', { name: /new entry/i }))
 
-    expect(
-      screen.getByText(/discard your unsaved changes before switching days or closing the drawer/i)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/discard unsaved changes/i)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /discard changes/i }))
 
     expect(setSelectedDate).toHaveBeenCalledWith(getNextAvailableDate(entries))
+  })
+
+  it('does not ask to discard when reopening the currently selected dirty day', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DailyHistoryPage
+        entries={[createSampleEntry()]}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft({ weight: '81.2' })}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /edit/i }))
+
+    expect(screen.getByRole('dialog', { name: /daily log/i })).toBeInTheDocument()
+    expect(screen.queryByText(/discard unsaved changes/i)).not.toBeInTheDocument()
+  })
+
+  it('restores persisted values when discarding changes in edit mode', async () => {
+    const user = userEvent.setup()
+
+    render(<DailyHistoryPageStateHarness />)
+
+    await user.click(screen.getByRole('button', { name: /edit/i }))
+
+    const weightInput = screen.getByRole('spinbutton', { name: /^weight$/i })
+
+    await user.clear(weightInput)
+    await user.type(weightInput, '81.2')
+    await user.click(screen.getByRole('button', { name: /close daily log/i }))
+    await user.click(screen.getByRole('button', { name: /discard changes/i }))
+    await user.click(screen.getByRole('button', { name: /edit/i }))
+
+    expect(screen.getByRole('spinbutton', { name: /^weight$/i })).toHaveValue(80)
+  })
+
+  it('empties the fields again when discarding changes in new mode', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DailyHistoryPageStateHarness
+        entries={[createSampleEntry()]}
+        initialSelectedDate="2026-05-15"
+        initialEntryDraft={createBlankEntryDraft({ date: '2026-05-15' })}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /new entry/i }))
+
+    const weightInput = screen.getByRole('spinbutton', { name: /^weight$/i })
+
+    await user.type(weightInput, '81.2')
+    await user.click(screen.getByRole('button', { name: /close daily log/i }))
+    await user.click(screen.getByRole('button', { name: /discard changes/i }))
+    await user.click(screen.getByRole('button', { name: /new entry/i }))
+
+    expect(screen.getByRole('spinbutton', { name: /^weight$/i })).toHaveValue(null)
   })
 
   it('shows the empty state when no history exists', () => {

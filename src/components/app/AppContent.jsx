@@ -58,6 +58,7 @@ function AppContent({
             isSavingEntry={historyView.isSavingEntry}
             setSelectedDate={historyView.setSelectedDate}
             updateEntryDraftField={historyView.updateEntryDraftField}
+            replaceEntryDraft={historyView.replaceEntryDraft}
             saveEntry={historyView.saveEntry}
             deleteEntry={historyView.deleteEntry}
           />

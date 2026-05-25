@@ -111,6 +111,17 @@ const HISTORY_METRICS = [
   },
 ]
 
+const isNoOpProtectedAction = ({ action, selectedDate, nextEntryDate }) => {
+  switch (action?.type) {
+    case 'create':
+      return selectedDate === nextEntryDate
+    case 'select-date':
+      return action.date === selectedDate
+    default:
+      return false
+  }
+}
+
 function DailyHistoryPage({
   entries,
   selectedDate,
@@ -118,6 +129,7 @@ function DailyHistoryPage({
   isSavingEntry,
   setSelectedDate,
   updateEntryDraftField,
+  replaceEntryDraft,
   saveEntry,
   deleteEntry,
 }) {
@@ -279,6 +291,12 @@ function DailyHistoryPage({
       return
     }
 
+    if (isNoOpProtectedAction({ action, selectedDate, nextEntryDate })) {
+      clearPendingAction()
+      setIsDrawerOpen(true)
+      return
+    }
+
     if (isDraftDirty) {
       setPendingAction(action)
       setIsDrawerOpen(true)
@@ -344,9 +362,25 @@ function DailyHistoryPage({
     await saveEntry()
   }
 
+  const resetDraftToBaseline = () => {
+    if (typeof replaceEntryDraft === 'function') {
+      replaceEntryDraft(selectedBaselineEntry)
+      return
+    }
+
+    EDITABLE_DRAFT_FIELDS.forEach((field) => {
+      const nextValue = normalizeDraftValue(selectedBaselineEntry[field])
+
+      if (normalizeDraftValue(entryDraft[field]) !== nextValue) {
+        updateEntryDraftField(field, nextValue)
+      }
+    })
+  }
+
   const handleConfirmDiscard = () => {
     const action = pendingAction
 
+    resetDraftToBaseline()
     clearPendingAction()
     performPendingAction(action)
   }
@@ -565,9 +599,7 @@ function DailyHistoryPage({
               statusLabel={drawerStatusLabel}
               statusTone={drawerStatusTone}
               discardPrompt={
-                pendingAction
-                  ? 'Discard your unsaved changes before switching days or closing the drawer?'
-                  : null
+                pendingAction ? 'Discard unsaved changes?' : null
               }
               onConfirmDiscard={handleConfirmDiscard}
               onCancelDiscard={clearPendingAction}

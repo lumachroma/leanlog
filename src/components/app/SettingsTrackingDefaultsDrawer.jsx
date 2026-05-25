@@ -4,9 +4,13 @@ import { Button } from '@/components/ui/button'
 
 import { Field } from './Field'
 import { SettingsDrawerFrame } from './SettingsDrawerFrame'
+import { TouchNumberInput } from './TouchNumberInput'
+import {
+  calorieTouchInputConfig,
+  stepTouchInputConfig,
+  weightTouchInputConfig,
+} from './touch-number-input-config'
 
-const inputClassName =
-  'mt-1.5 w-full rounded-[1.15rem] border border-border/80 bg-background/90 px-3.5 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5'
 const settingsGridLabelClassName = 'flex min-h-10 items-end sm:min-h-0'
 
 function SettingsTrackingDefaultsDrawer({
@@ -33,37 +37,44 @@ function SettingsTrackingDefaultsDrawer({
       onOpenChange={onOpenChange}
       as="form"
       onSubmit={handleSubmit}
+      compactMobile={true}
       closeLabel="Close tracking defaults"
       eyebrow="Settings"
       Icon={Settings2}
       title="Tracking Defaults"
       footer={
-        <Button type="submit" disabled={isSavingSettings}>
+        <Button type="submit" className="w-full sm:w-auto" disabled={isSavingSettings}>
           {isSavingSettings ? 'Saving...' : 'Save settings'}
         </Button>
       }
     >
       <div className="grid grid-cols-1 gap-3 pb-2 sm:grid-cols-2">
-        <Field label="Start weight (kg)" labelClassName={settingsGridLabelClassName}>
-          <input
-            type="number"
-            step="0.1"
-            inputMode="decimal"
-            className={inputClassName}
+        <Field
+          label="Start weight (kg)"
+          labelClassName={settingsGridLabelClassName}
+          htmlFor="settings-start-weight"
+        >
+          <TouchNumberInput
+            id="settings-start-weight"
+            ariaLabel="Start weight"
+            {...weightTouchInputConfig}
             value={settings.startWeight}
-            onChange={(event) => updateSettingsField('startWeight', event.target.value)}
+            onValueChange={(nextValue) => updateSettingsField('startWeight', nextValue)}
             placeholder="85.0"
           />
         </Field>
 
-        <Field label="Goal weight (kg)" labelClassName={settingsGridLabelClassName}>
-          <input
-            type="number"
-            step="0.1"
-            inputMode="decimal"
-            className={inputClassName}
+        <Field
+          label="Goal weight (kg)"
+          labelClassName={settingsGridLabelClassName}
+          htmlFor="settings-goal-weight"
+        >
+          <TouchNumberInput
+            id="settings-goal-weight"
+            ariaLabel="Goal weight"
+            {...weightTouchInputConfig}
             value={settings.goalWeight}
-            onChange={(event) => updateSettingsField('goalWeight', event.target.value)}
+            onValueChange={(nextValue) => updateSettingsField('goalWeight', nextValue)}
             placeholder="72.0"
           />
         </Field>
@@ -71,14 +82,15 @@ function SettingsTrackingDefaultsDrawer({
         <Field
           label="Daily calorie target (kcal)"
           labelClassName={settingsGridLabelClassName}
+          htmlFor="settings-daily-calorie-target"
         >
-          <input
-            type="number"
-            inputMode="numeric"
-            className={inputClassName}
+          <TouchNumberInput
+            id="settings-daily-calorie-target"
+            ariaLabel="Daily calorie target"
+            {...calorieTouchInputConfig}
             value={settings.dailyCalorieTarget}
-            onChange={(event) =>
-              updateSettingsField('dailyCalorieTarget', event.target.value)
+            onValueChange={(nextValue) =>
+              updateSettingsField('dailyCalorieTarget', nextValue)
             }
             placeholder="2000"
           />
@@ -87,13 +99,14 @@ function SettingsTrackingDefaultsDrawer({
         <Field
           label="Daily step target (steps)"
           labelClassName={settingsGridLabelClassName}
+          htmlFor="settings-daily-step-target"
         >
-          <input
-            type="number"
-            inputMode="numeric"
-            className={inputClassName}
+          <TouchNumberInput
+            id="settings-daily-step-target"
+            ariaLabel="Daily step target"
+            {...stepTouchInputConfig}
             value={settings.dailyStepTarget}
-            onChange={(event) => updateSettingsField('dailyStepTarget', event.target.value)}
+            onValueChange={(nextValue) => updateSettingsField('dailyStepTarget', nextValue)}
             placeholder="8000"
           />
         </Field>

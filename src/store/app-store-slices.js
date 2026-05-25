@@ -45,6 +45,12 @@ const createFieldUpdater = (key, set) => (field, value) => {
   }))
 }
 
+const createStateReplacer = (key, set) => (nextValue) => {
+  set({
+    [key]: { ...nextValue },
+  })
+}
+
 const runStoreAction = async ({ set, startState, task, onSuccess, onFailure }) => {
   set(startState)
 
@@ -103,6 +109,7 @@ export const createEntriesSlice = (set, get) => ({
   },
 
   updateEntryDraftField: createFieldUpdater('entryDraft', set),
+  replaceEntryDraft: createStateReplacer('entryDraft', set),
 
   saveEntry: async () => {
     const draft = {
@@ -209,6 +216,7 @@ export const selectEntriesState = (state) => ({
   isSavingEntry: state.isSavingEntry,
   setSelectedDate: state.setSelectedDate,
   updateEntryDraftField: state.updateEntryDraftField,
+  replaceEntryDraft: state.replaceEntryDraft,
   saveEntry: state.saveEntry,
   deleteEntry: state.deleteEntry,
   importEntriesFromCsv: state.importEntriesFromCsv,

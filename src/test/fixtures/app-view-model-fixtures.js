@@ -34,6 +34,7 @@ export function createSampleAppViewModel(overrides = {}) {
       isSavingEntry: false,
       setSelectedDate: vi.fn(),
       updateEntryDraftField: vi.fn(),
+      replaceEntryDraft: vi.fn(),
       saveEntry: vi.fn(),
       deleteEntry: vi.fn(),
       importEntriesFromCsv: vi.fn(),
