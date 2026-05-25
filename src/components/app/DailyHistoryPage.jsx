@@ -512,7 +512,7 @@ function DailyHistoryPage({
         {isDrawerOpen ? (
           <DrawerContent
             aria-describedby={undefined}
-            className="mx-auto h-[85dvh] w-full max-w-4xl border-0 bg-transparent p-0 shadow-none sm:h-auto sm:max-h-[85dvh]"
+            className="mx-auto max-h-[85dvh] w-full max-w-4xl border-0 bg-transparent p-0 shadow-none"
           >
             <div className="sr-only">
               <DrawerTitle>Daily log</DrawerTitle>

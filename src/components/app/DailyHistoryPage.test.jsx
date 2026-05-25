@@ -275,7 +275,7 @@ describe('DailyHistoryPage', () => {
     await user.click(screen.getByRole('button', { name: /new entry/i }))
 
     expect(setSelectedDate).toHaveBeenCalledWith(getNextAvailableDate(entries))
-    expect(screen.getByRole('dialog', { name: /daily log/i })).toHaveClass('h-[85dvh]')
+    expect(screen.getByRole('dialog', { name: /daily log/i })).toHaveClass('max-h-[85dvh]')
   })
 
   it('asks before discarding unsaved changes when switching days', async () => {

@@ -49,7 +49,7 @@ function DailyLogPanel({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-full flex-col overflow-hidden rounded-[1.9rem] border border-border/80 bg-background/95 p-4 shadow-[0_-20px_70px_-34px_rgba(15,23,42,0.5)] backdrop-blur sm:h-auto sm:max-h-[75dvh] sm:p-5"
+      className="flex max-h-[85dvh] flex-col overflow-hidden rounded-[1.9rem] border border-border/80 bg-background/95 p-4 shadow-[0_-20px_70px_-34px_rgba(15,23,42,0.5)] backdrop-blur sm:max-h-[75dvh] sm:p-5"
     >
       <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border/80" />
 
@@ -85,7 +85,7 @@ function DailyLogPanel({
         </div>
       </div>
 
-      <div className="scrollbar-hidden mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="scrollbar-hidden mt-4 min-h-0 flex-1 overflow-x-hidden overflow-y-auto pr-1">
         <div className="space-y-4 pb-2">
           <div>
             <div className="flex items-center justify-between gap-3">
