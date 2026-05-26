@@ -21,7 +21,8 @@ describe('SettingsPanel', () => {
     render(<SettingsPanel {...createProps()} />)
 
     expect(screen.getByText(/85 kg to 72 kg/i)).toBeInTheDocument()
-    expect(screen.getByText(/2000 kcal and 8000 steps/i)).toBeInTheDocument()
+    expect(screen.getByText(/2000 kcal ceiling and 8000 step baseline/i)).toBeInTheDocument()
+    expect(screen.getByText(/calories stay under a limit\. steps are treated as a meet-or-beat baseline/i)).toBeInTheDocument()
     expect(screen.getByText(/12 saved days ready for export or merge-by-date import/i)).toBeInTheDocument()
   })
 

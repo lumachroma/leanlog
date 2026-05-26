@@ -53,8 +53,16 @@ function ConsistencyMetric({
     dayWindow: CONSISTENCY_DAY_WINDOW,
     hasTarget,
     label,
+    prefersLower,
     summary,
   })
+  const targetRuleText = hasTarget
+    ? prefersLower
+      ? 'At or below target counts as on target.'
+      : 'At or above target counts as on target.'
+    : prefersLower
+      ? 'Add a calorie target to turn this into a stay-under check.'
+      : 'Add a step target to turn this into a movement-baseline check.'
 
   return (
     <article className="rounded-[1.75rem] border border-border/80 bg-background/80 p-4 shadow-sm sm:p-5">
@@ -68,6 +76,7 @@ function ConsistencyMetric({
               ? `${formatAverage(average, suffix)} average`
               : 'No logged average yet'}
           </p>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground/90">{targetRuleText}</p>
         </div>
         <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
           {hasTarget ? `Target ${formatAverage(target, suffix)}` : 'Target not set'}
@@ -121,7 +130,7 @@ function ConsistencyMetric({
         <p className="mt-2 text-sm text-muted-foreground/90">
           {prefersLower
             ? `${Math.abs(delta)} ${suffix} ${delta <= 0 ? 'under' : 'over'} target on average.`
-            : `${numberFormatter.format(Math.abs(delta))} ${suffix} ${delta >= 0 ? 'above' : 'below'} target on average.`}
+            : `${numberFormatter.format(Math.abs(delta))} ${suffix} ${delta >= 0 ? 'above' : 'below'} your baseline on average.`}
         </p>
       ) : null}
     </article>

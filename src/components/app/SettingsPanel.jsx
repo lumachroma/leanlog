@@ -32,7 +32,7 @@ function SettingsPanel({
                 Tracking Defaults
               </h3>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Review your starting weight, goal, calories, and steps without opening a form until you need to adjust them.
+                Review your starting weight, goal, calorie ceiling, and movement baseline without opening a form until you need to adjust them.
               </p>
             </div>
             <Settings2 className="mt-1 size-4 text-muted-foreground" />
@@ -50,18 +50,18 @@ function SettingsPanel({
             </div>
             <div className="rounded-2xl border border-border/70 bg-background/80 p-3">
               <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                Daily targets
+                Daily plan
               </p>
               <p className="mt-2 text-sm font-medium text-foreground">
-                {settings.dailyCalorieTarget || '--'} kcal and{' '}
-                {settings.dailyStepTarget || '--'} steps
+                {settings.dailyCalorieTarget || '--'} kcal ceiling and{' '}
+                {settings.dailyStepTarget || '--'} step baseline
               </p>
             </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/70 pt-4">
             <p className="text-sm text-muted-foreground">
-              Stored locally and used across the dashboard, history, and averages.
+              Stored locally and used across the dashboard, history, and averages. Calories stay under a limit. Steps are treated as a meet-or-beat baseline.
             </p>
             <Button type="button" size="sm" onClick={onOpenTrackingDefaults}>
               Edit defaults

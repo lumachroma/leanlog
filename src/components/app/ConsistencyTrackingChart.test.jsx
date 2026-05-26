@@ -40,7 +40,12 @@ describe('ConsistencyTrackingChart', () => {
     expect(stepsCard).not.toBeNull()
 
     expect(within(caloriesCard).getByText('100%')).toBeInTheDocument()
-    expect(within(caloriesCard).getByText('2 of 2 logged days hit target.')).toBeInTheDocument()
+    expect(
+      within(caloriesCard).getByText('2 of 2 logged days stayed at or below target.')
+    ).toBeInTheDocument()
+    expect(
+      within(caloriesCard).getByText('At or below target counts as on target.')
+    ).toBeInTheDocument()
     expect(within(stepsCard).getByText('50%')).toBeInTheDocument()
     const calorieCells = within(caloriesCard).getAllByLabelText(/calories on/i)
 
@@ -63,10 +68,16 @@ describe('ConsistencyTrackingChart', () => {
     )
 
     expect(
-      within(stepsCard).getByText('1 of 2 logged days hit target, with 1 day close.')
+      within(stepsCard).getByText('1 of 2 logged days met or exceeded target, with 1 day just below.')
     ).toBeInTheDocument()
-    expect(screen.getByText(/on target/i)).toBeInTheDocument()
-    expect(screen.getByText(/near target/i)).toBeInTheDocument()
-    expect(screen.getByText(/missing/i)).toBeInTheDocument()
+    expect(
+      within(stepsCard).getByText('At or above target counts as on target.')
+    ).toBeInTheDocument()
+    expect(
+      within(stepsCard).getByText('500 steps above your baseline on average.')
+    ).toBeInTheDocument()
+    expect(screen.getAllByText(/on target/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/^near target$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^missing$/i)).toBeInTheDocument()
   })
 })

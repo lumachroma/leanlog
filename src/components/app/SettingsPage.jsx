@@ -44,7 +44,7 @@ function SettingsPage({
               <SectionHeading
                 eyebrow="Settings"
                 title="Personal Targets"
-                description="Manage your weight, calorie, and step targets to keep your daily progress grounded and consistent."
+                description="Manage your weight baseline, calorie ceiling, and step baseline so the app reflects the plan you are trying to follow."
               />
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <Button
@@ -83,13 +83,13 @@ function SettingsPage({
                 </p>
               </article>
               <article className="rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
-                <p className="text-sm text-muted-foreground">Daily calorie targets</p>
+                <p className="text-sm text-muted-foreground">Daily calorie target</p>
                 <p className="mt-2 text-xl font-medium text-foreground">
                   {settings.dailyCalorieTarget || '--'} kcal
                 </p>
               </article>
               <article className="rounded-[1.5rem] border border-border/80 bg-muted/30 p-4">
-                <p className="text-sm text-muted-foreground">Daily step targets</p>
+                <p className="text-sm text-muted-foreground">Daily step baseline</p>
                 <p className="mt-2 text-xl font-medium text-foreground">
                   {settings.dailyStepTarget || '--'} steps
                 </p>

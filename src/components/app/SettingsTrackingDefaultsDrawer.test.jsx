@@ -47,6 +47,8 @@ describe('SettingsTrackingDefaultsDrawer', () => {
     )
 
     expect(screen.getByRole('button', { name: /saving/i })).toBeDisabled()
+    expect(screen.getByText(/set this below your maintenance calories/i)).toBeInTheDocument()
+    expect(screen.getByText(/set a strong daily movement baseline/i)).toBeInTheDocument()
   })
 
   it('supports touch-first quick adjustments for tracking defaults', async () => {
@@ -73,7 +75,7 @@ describe('SettingsTrackingDefaultsDrawer', () => {
     await user.click(screen.getByRole('button', { name: /^2200$/i }))
     await user.click(screen.getByRole('button', { name: /^10k$/i }))
 
-    expect(props.updateSettingsField).toHaveBeenCalledWith('startWeight', '40.0')
+    expect(props.updateSettingsField).toHaveBeenCalledWith('startWeight', '20.0')
     expect(props.updateSettingsField).toHaveBeenCalledWith('startWeight', '80.0')
     expect(props.updateSettingsField).toHaveBeenCalledWith('dailyCalorieTarget', '2200')
     expect(props.updateSettingsField).toHaveBeenCalledWith('dailyStepTarget', '10000')

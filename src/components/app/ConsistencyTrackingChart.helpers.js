@@ -40,6 +40,7 @@ export const getConsistencySummaryText = ({
   label,
   summary,
   hasTarget,
+  prefersLower,
   dayWindow = CONSISTENCY_DAY_WINDOW,
 }) => {
   if (!summary.loggedDays) {
@@ -50,5 +51,9 @@ export const getConsistencySummaryText = ({
     return `${summary.loggedDays} of the last ${dayWindow} days have logged ${label.toLowerCase()}. Add a target to unlock hit rates and streaks.`
   }
 
-  return `${summary.hitDays} of ${summary.loggedDays} logged days hit target${summary.closeDays ? `, with ${formatDayCount(summary.closeDays)} close.` : '.'}`
+  if (prefersLower) {
+    return `${summary.hitDays} of ${summary.loggedDays} logged days stayed at or below target${summary.closeDays ? `, with ${formatDayCount(summary.closeDays)} slightly over.` : '.'}`
+  }
+
+  return `${summary.hitDays} of ${summary.loggedDays} logged days met or exceeded target${summary.closeDays ? `, with ${formatDayCount(summary.closeDays)} just below.` : '.'}`
 }

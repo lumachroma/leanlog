@@ -11,7 +11,7 @@ export const DASHBOARD_SETUP_CALLOUT = {
   eyebrow: 'Setup',
   title: 'Add your targets to make the dashboard more useful.',
   description:
-    'Start weight, goal weight, calorie target, and step target help the summaries explain your daily trend instead of only showing raw numbers.',
+    'Start weight, goal weight, a daily calorie ceiling, and a daily step baseline help the summaries explain your daily trend instead of only showing raw numbers.',
   actionLabel: 'Open settings',
 }
 
@@ -48,18 +48,22 @@ export const getDashboardSnapshotCards = (snapshot) => [
     label: 'Avg Calories',
     value: formatAverage(snapshot.calorieAverage, 'kcal'),
     detail:
-      snapshot.calorieDelta === null
+      snapshot.calorieAverage === null
         ? 'Your average updates automatically from saved daily entries.'
-        : `${Math.abs(snapshot.calorieDelta)} kcal ${snapshot.calorieDelta <= 0 ? 'under' : 'over'} target`,
+        : snapshot.calorieDelta === null
+          ? 'Add a calorie target to treat calories like a daily ceiling, not a number to chase.'
+          : `${Math.abs(snapshot.calorieDelta)} kcal ${snapshot.calorieDelta <= 0 ? 'under' : 'over'} your calorie ceiling`,
   },
   {
     icon: Footprints,
     label: 'Avg Steps',
     value: formatAverage(snapshot.stepAverage, 'steps'),
     detail:
-      snapshot.stepDelta === null
+      snapshot.stepAverage === null
         ? 'Once you save steps, this card becomes your movement baseline.'
-        : `${numberFormatter.format(Math.abs(snapshot.stepDelta))} steps ${snapshot.stepDelta >= 0 ? 'above' : 'below'} target`,
+        : snapshot.stepDelta === null
+          ? 'Add a step target to turn steps into a daily movement baseline worth meeting or beating.'
+          : `${numberFormatter.format(Math.abs(snapshot.stepDelta))} steps ${snapshot.stepDelta >= 0 ? 'above' : 'below'} your movement baseline`,
   },
   {
     icon: Target,

@@ -83,6 +83,7 @@ function SettingsTrackingDefaultsDrawer({
           label="Daily calorie target (kcal)"
           labelClassName={settingsGridLabelClassName}
           htmlFor="settings-daily-calorie-target"
+          hint="Set this below your maintenance calories."
         >
           <TouchNumberInput
             id="settings-daily-calorie-target"
@@ -100,6 +101,7 @@ function SettingsTrackingDefaultsDrawer({
           label="Daily step target (steps)"
           labelClassName={settingsGridLabelClassName}
           htmlFor="settings-daily-step-target"
+          hint="Set a strong daily movement baseline."
         >
           <TouchNumberInput
             id="settings-daily-step-target"

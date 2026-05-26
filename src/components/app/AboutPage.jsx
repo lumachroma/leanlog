@@ -38,7 +38,7 @@ const ABOUT_DASHBOARD_GUIDES = [
     points: [
       'Weight Trend helps you see direction without overreacting to one random day.',
       '7-Day Moving Average smooths the noise so the real story is easier to trust.',
-      'Calories, Steps, and Goal Progress show whether the system is moving with you, not against you.',
+      'Calories are read against a stay-under daily ceiling, while steps are read against a reach-or-exceed movement baseline.',
     ],
     Icon: Gauge,
   },
@@ -58,9 +58,9 @@ const ABOUT_DASHBOARD_GUIDES = [
     eyebrow: 'Section 3',
     title: 'Daily Consistency shows how often you are actually hitting the plan.',
     description:
-      'Instead of boiling everything down to one average, LeanLog gives calories and steps a rolling 30-day adherence view. You can instantly see which days were on target, close, off, logged without a target, or missing entirely.',
+      'Instead of boiling everything down to one average, LeanLog gives calories and steps a rolling 30-day adherence view. For calories, on target means at or below your limit. For steps, on target means meeting or beating your movement baseline.',
     points: [
-      'Hit rate tells you how often the plan is working in real life.',
+      'Hit rate tells you how often your real intake stayed under plan and your daily movement stayed high enough to meet the mark.',
       'Current and best streaks make momentum visible without turning the app into a game.',
       'Missing days stay visible, but they do not break the experience or shame the user.',
     ],
