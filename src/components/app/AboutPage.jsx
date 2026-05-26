@@ -1,205 +1,329 @@
 import {
+  Activity,
   BarChart3,
+  Footprints,
   Gauge,
-  HeartPulse,
   Leaf,
   LineChart,
-  Smartphone,
+  ShieldCheck,
+  Sparkles,
+  Sunrise,
   Target,
+  TrendingUp,
 } from 'lucide-react'
 
 import { AppSurface } from '@/components/app/AppSurface'
 import { Button } from '@/components/ui/button'
 
-const ABOUT_PILLARS = [
+const ABOUT_HERO_PILLS = ['Local-first', 'Private', 'Lightweight']
+
+const ABOUT_PRINCIPLES = [
   {
-    title: 'Psychologically light',
-    description: 'Forgiving tracking that stays useful when real life gets messy.',
+    title: 'Trends matter more than single days',
+    description:
+      'Daily weight naturally moves up and down. LeanLog keeps real weigh-ins visible while smoothing the bigger direction using rolling averages.',
+    emphasis: 'The trend matters more than one random morning.',
+    Icon: TrendingUp,
+  },
+  {
+    title: 'Calories are ceilings, not perfection scores',
+    description:
+      'LeanLog treats calorie targets as a stay-under boundary rather than a punishment system.',
+    emphasis: 'A good plan does not require perfect eating every day. It requires enough reasonable days over time.',
+    Icon: Target,
+  },
+  {
+    title: 'Steps are movement baselines',
+    description:
+      'Movement is treated as a consistent baseline to meet or exceed, not an optimization contest.',
+    emphasis: 'Small sustainable movement compounds surprisingly well.',
+    Icon: Footprints,
+  },
+  {
+    title: 'Missing days should not destroy momentum',
+    description:
+      'Missing logs stay visible, but they do not break the experience or shame the user.',
+    emphasis: 'The app stays usable even when life becomes messy, because consistency matters more than uninterrupted streaks.',
     Icon: Leaf,
-  },
-  {
-    title: 'Local-first by default',
-    description: 'Fast, private logging with no account setup or cloud dependency.',
-    Icon: Smartphone,
-  },
-  {
-    title: 'Built for long-term trends',
-    description: 'Smoother trends and clearer signals built for sustainable progress.',
-    Icon: HeartPulse,
   },
 ]
 
-const ABOUT_DASHBOARD_GUIDES = [
+const ABOUT_READING_GUIDE = [
   {
-    eyebrow: 'KPI cards',
-    title: 'Your body, summarized like a clean operator dashboard.',
+    title: 'Snapshot',
     description:
-      'The top cards are built for the 10-second check-in. Instead of making you decode raw entries, LeanLog turns your latest weight trend, 7-day moving average, average calories, average steps, and goal progress into a quick plain-English snapshot.',
-    points: [
-      'Weight Trend helps you see direction without overreacting to one random day.',
-      '7-Day Moving Average smooths the noise so the real story is easier to trust.',
-      'Calories are read against a stay-under daily ceiling, while steps are read against a reach-or-exceed movement baseline.',
-    ],
+      'A quick operational overview of your current direction, consistency, and progress. Designed for the 10-second check-in.',
     Icon: Gauge,
   },
   {
-    eyebrow: 'Section 2',
-    title: 'Weight Trend turns noisy weigh-ins into a calmer signal.',
+    title: 'Weight Trend',
     description:
-      'Daily weight naturally jumps around. LeanLog keeps those real weigh-ins visible, then layers in a smoother 7-day line so you can spot the trend without letting short-term fluctuation hijack your mood.',
-    points: [
-      'The thin daily line shows what actually happened.',
-      'The stronger 7DMA line shows the direction that matters more over time.',
-      'Together, they make progress feel measurable without becoming obsessive.',
-    ],
+      'Daily fluctuations stay visible while the long-term trend becomes easier to trust through smoothing. The goal is clarity without obsession.',
     Icon: LineChart,
   },
   {
-    eyebrow: 'Section 3',
-    title: 'Daily Consistency shows how often you are actually hitting the plan.',
+    title: 'Daily Consistency',
     description:
-      'Instead of boiling everything down to one average, LeanLog gives calories and steps a rolling 30-day adherence view. For calories, on target means at or below your limit. For steps, on target means meeting or beating your movement baseline.',
-    points: [
-      'Hit rate tells you how often your real intake stayed under plan and your daily movement stayed high enough to meet the mark.',
-      'Current and best streaks make momentum visible without turning the app into a game.',
-      'Missing days stay visible, but they do not break the experience or shame the user.',
-    ],
+      'Calories and movement are evaluated over rolling periods instead of isolated days. Small repeated habits become a clearer long-term signal.',
     Icon: BarChart3,
   },
   {
-    eyebrow: 'Section 4',
-    title: 'Progress Toward Your Goal makes the destination feel concrete.',
+    title: 'Goal Progress',
     description:
-      'This chart takes your start weight, current weight, and goal weight and turns them into one simple progress view. It is the fastest way to answer the question every user cares about: am I actually getting closer?',
-    points: [
-      'Start weight gives the journey a real baseline.',
-      'Current weight acts like a live progress marker, not a motivational slogan.',
-      'Goal progress turns a long-term target into something visible and actionable.',
-    ],
+      'Your starting point, current trend, and goal weight shown together in one simple view. Direction is easier to understand than daily emotion.',
     Icon: Target,
   },
 ]
 
-function DashboardGuideCard({ eyebrow, title, description, points, Icon }) {
+const ABOUT_AUDIENCE = [
+  'want sustainable fat loss instead of crash dieting',
+  'prefer trends over daily emotional swings',
+  'want low-friction tracking',
+  'are tired of noisy fitness ecosystems',
+  'value clarity, simplicity, and consistency',
+]
+
+function PrincipleCard({ title, description, emphasis, Icon }) {
   return (
-    <AppSurface as="article" className="rounded-[1.75rem] bg-background/88 p-5 sm:p-6">
-      <div className="flex items-start justify-between gap-4">
+    <AppSurface
+      as="article"
+      className="rounded-[1.75rem] border-border/70 bg-background/88 p-5 shadow-sm shadow-black/5 sm:p-6"
+    >
+      <div className="flex items-start gap-3">
+        <div className="rounded-2xl border border-border/75 bg-muted/40 p-3 text-foreground">
+          <Icon className="size-5" />
+        </div>
         <div>
-          <p className="text-[0.68rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            {eyebrow}
-          </p>
-          <h2 className="mt-2 text-xl font-medium tracking-[-0.04em] text-foreground sm:text-2xl">
+          <h3 className="text-lg font-medium tracking-[-0.04em] text-foreground sm:text-xl">
             {title}
-          </h2>
-        </div>
-        <div className="rounded-full border border-border/80 bg-muted/35 p-2.5 text-muted-foreground">
-          <Icon className="size-4" />
+          </h3>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">{description}</p>
+          <p className="mt-4 text-sm leading-7 text-foreground/88 sm:text-base">{emphasis}</p>
         </div>
       </div>
+    </AppSurface>
+  )
+}
 
-      <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-        {description}
-      </p>
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {points.map((point) => (
-          <div
-            key={point}
-            className="rounded-[1.25rem] border border-border/70 bg-background/72 px-4 py-3 text-sm leading-6 text-muted-foreground"
-          >
-            {point}
-          </div>
-        ))}
+function ReadingGuideCard({ title, description, Icon }) {
+  return (
+    <AppSurface as="article" className="rounded-[1.6rem] bg-background/88 p-5 sm:p-6">
+      <div className="rounded-2xl border border-border/70 bg-muted/35 p-3 text-muted-foreground w-fit">
+        <Icon className="size-4" />
       </div>
+      <h3 className="mt-4 text-xl font-medium tracking-[-0.04em] text-foreground">{title}</h3>
+      <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">{description}</p>
     </AppSurface>
   )
 }
 
 function AboutPage({ onPageChange }) {
   return (
-    <main className="flex flex-1 pb-8 pt-4 sm:pt-6 xl:py-10">
-      <section className="w-full space-y-6">
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <AppSurface as="div" className="bg-background/92 p-6 sm:p-8">
-            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              About LeanLog
-            </p>
-            <h1 className="mt-3 text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance sm:text-5xl xl:max-w-3xl xl:text-6xl">
-              A personal weight-loss operating system built for real life.
-            </h1>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base xl:max-w-2xl">
-              LeanLog is a calm weight-loss tracker focused on consistency,
-              forgiving trends, and long-term progress without pressure or
-              accounting-software noise.
-            </p>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground/90 sm:text-base xl:max-w-2xl">
-              Think of it as a startup-style command center for personal fat
-              loss: fast to update, easy to read, and designed to turn messy
-              daily data into a cleaner signal you can actually use.
-            </p>
+    <main className="flex flex-1 pb-10 pt-4 sm:pt-6 xl:py-10">
+      <section className="w-full space-y-6 sm:space-y-7 xl:space-y-8">
+        <AppSurface
+          as="section"
+          className="overflow-hidden border-border/70 bg-linear-to-br from-background via-background to-muted/45 p-0"
+        >
+          <div className="grid gap-0 xl:grid-cols-[1.2fr_0.8fr]">
+            <div className="p-6 sm:p-8 xl:p-10">
+              <p className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-muted-foreground">
+                About LeanLog
+              </p>
+              <h1 className="mt-4 max-w-4xl text-4xl font-medium leading-[0.98] tracking-[-0.07em] text-balance sm:text-5xl xl:text-6xl">
+                Calm local-first weight-loss tracking.
+              </h1>
+              <p className="mt-4 text-lg leading-8 text-foreground/88 sm:max-w-2xl sm:text-xl">
+                Built for real life. Designed for long-term progress.
+              </p>
+              <p className="mt-6 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+                LeanLog is a personal weight-loss operating system focused on sustainable consistency instead of perfection.
+              </p>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+                It helps turn noisy daily data into a calmer signal you can actually trust: weight trends, calorie adherence, movement consistency, and long-term progress.
+              </p>
+              <p className="mt-5 text-sm leading-7 text-foreground/88 sm:text-base">
+                No guilt loops. No engagement tricks. No pressure to be perfect. Just clearer feedback from real-world habits.
+              </p>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="rounded-full bg-muted/45 px-3 py-1.5">Local-first</span>
-              <span className="rounded-full bg-muted/45 px-3 py-1.5">IndexedDB</span>
-              <span className="rounded-full bg-muted/45 px-3 py-1.5">Dashboard-led</span>
+              <div className="mt-7 flex flex-wrap items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                {ABOUT_HERO_PILLS.map((pill) => (
+                  <span key={pill} className="rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
+                    {pill}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button type="button" size="lg" className="rounded-full px-5" onClick={() => onPageChange('dashboard')}>
+                  Open dashboard
+                </Button>
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full px-5"
+                  onClick={() => onPageChange('settings')}
+                >
+                  Review targets
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button type="button" size="lg" className="rounded-full px-5" onClick={() => onPageChange('dashboard')}>
-                Open dashboard
-              </Button>
-              <Button
-                type="button"
-                size="lg"
-                variant="outline"
-                className="rounded-full px-5"
-                onClick={() => onPageChange('settings')}
-              >
-                Review targets
-              </Button>
+            <div className="border-t border-border/70 bg-muted/28 p-4 sm:p-5 xl:border-l xl:border-t-0 xl:p-6">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <AppSurface as="article" className="rounded-[1.6rem] border-border/70 bg-background/90 p-5">
+                  <div className="flex items-center gap-2 text-[0.68rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                    <Sparkles className="size-3.5" />
+                    Sustainable by design
+                  </div>
+                  <p className="mt-4 text-base leading-7 text-foreground">
+                    LeanLog is intentionally quieter than most fitness apps.
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    The product stays calm on purpose: less noise, less pressure, and more room for the slow work that actually changes the trend.
+                  </p>
+                </AppSurface>
+
+                <AppSurface as="article" className="rounded-[1.6rem] border-border/70 bg-background/82 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl border border-border/70 bg-muted/35 p-2.5 text-muted-foreground">
+                      <Sunrise className="size-4" />
+                    </div>
+                    <p className="text-sm font-medium tracking-[-0.02em] text-foreground">
+                      Built for enough reasonable days.
+                    </p>
+                  </div>
+                  <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                    The app assumes weekends go sideways, routines get interrupted, and people miss logs. It is designed to stay useful anyway.
+                  </p>
+                </AppSurface>
+              </div>
+            </div>
+          </div>
+        </AppSurface>
+
+        <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+          <AppSurface as="section" className="bg-background/92 p-6 sm:p-8">
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Why LeanLog exists
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+              Most weight-loss apps quietly assume perfect behavior.
+            </h2>
+            <div className="mt-6 space-y-3 text-sm leading-7 text-muted-foreground sm:text-base">
+              <p>Perfect logging. Perfect eating. Perfect motivation. Perfect consistency.</p>
+              <p>Real life does not work like that.</p>
+              <p>Weight fluctuates. Bad weekends happen. Motivation disappears. Stress affects routines. People miss days.</p>
+              <p>LeanLog was designed around that reality instead of pretending it does not exist.</p>
+              <p className="text-foreground/88">The goal is not perfection. The goal is staying consistent long enough for the trend to matter.</p>
             </div>
           </AppSurface>
 
-          <AppSurface as="article" className="rounded-[1.75rem] bg-background/88 p-4 sm:p-5">
-            <div className="grid gap-3 sm:gap-0 lg:h-full lg:grid-cols-1 xl:h-auto xl:grid-cols-1">
-              {ABOUT_PILLARS.map(({ title, description, Icon }, index) => (
-                <div
-                  key={title}
-                  className={`flex items-center gap-3 rounded-[1.15rem] px-3 py-3 sm:px-4 ${
-                    index > 0 ? 'border-t border-border/70 sm:border-t sm:border-border/70' : ''
-                  } xl:min-h-[72px]`}
-                >
-                  <div className="rounded-full border border-border/80 bg-muted/35 p-2 text-muted-foreground">
-                    <Icon className="size-4" />
-                  </div>
-                  <p className="min-w-0 text-sm leading-6 text-muted-foreground sm:text-[0.95rem]">
-                    <span className="font-medium text-foreground">{title}:</span>{' '}
-                    {description}
-                  </p>
+          <AppSurface as="section" className="bg-background/88 p-6 sm:p-8">
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Local-first by default
+            </p>
+            <h2 className="mt-3 text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+              Fast. Private. Frictionless.
+            </h2>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.35rem] border border-border/70 bg-background/72 p-4">
+                <div className="flex items-center gap-3 text-foreground">
+                  <ShieldCheck className="size-4" />
+                  <p className="text-sm font-medium">Your data stays on your device.</p>
                 </div>
-              ))}
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  No account setup. No forced cloud sync. No waiting for servers. No unnecessary complexity.
+                </p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border/70 bg-background/72 p-4">
+                <div className="flex items-center gap-3 text-foreground">
+                  <Activity className="size-4" />
+                  <p className="text-sm font-medium">Tracking starts immediately.</p>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  Just fast personal tracking that works the moment you open it.
+                </p>
+              </div>
             </div>
           </AppSurface>
         </div>
 
-        <AppSurface className="bg-background/92 p-6 sm:p-8">
+        <section className="space-y-4">
+          <div className="px-1">
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              The core philosophy
+            </p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+              Sustainable by design.
+            </h2>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {ABOUT_PRINCIPLES.map((principle) => (
+              <PrincipleCard key={principle.title} {...principle} />
+            ))}
+          </div>
+        </section>
+
+        <AppSurface as="section" className="bg-background/92 p-6 sm:p-8">
           <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            Why the dashboard works
+            A calmer view of progress
           </p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-medium leading-[1.05] tracking-[-0.05em] text-balance sm:text-4xl">
-            Clear signal, less guesswork, better daily decisions.
+          <h2 className="mt-3 max-w-3xl text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+            A calmer dashboard for long-term progress.
           </h2>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-            Every section is designed to answer a simple user question in plain
-            language. What is happening right now? Is the trend improving? Am I
-            staying consistent? Am I actually getting closer to the goal?
+            Each section is designed to answer a simple question without turning the app into a performance review.
           </p>
+          <div className="mt-6 grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+            {ABOUT_READING_GUIDE.map((guide) => (
+              <ReadingGuideCard key={guide.title} {...guide} />
+            ))}
+          </div>
         </AppSurface>
 
-        <div className="grid gap-4">
-          {ABOUT_DASHBOARD_GUIDES.map((guide) => (
-            <DashboardGuideCard key={guide.title} {...guide} />
-          ))}
+        <div className="grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
+          <AppSurface as="section" className="bg-background/88 p-6 sm:p-8">
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Who LeanLog is for
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+              Built for people who want a calmer approach.
+            </h2>
+            <div className="mt-6 grid gap-3">
+              {ABOUT_AUDIENCE.map((item) => (
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-[1.25rem] border border-border/70 bg-background/72 px-4 py-3 text-sm leading-7 text-muted-foreground"
+                >
+                  <div className="mt-2 size-2 rounded-full bg-foreground/70" />
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 text-sm leading-7 text-muted-foreground sm:text-base">
+              Especially adults trying to build healthier habits without turning their life into a fitness project.
+            </p>
+          </AppSurface>
+
+          <AppSurface as="section" className="bg-linear-to-br from-background via-background to-muted/38 p-6 sm:p-8">
+            <p className="text-[0.68rem] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Real progress usually looks boring
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-medium leading-[1.04] tracking-[-0.05em] text-balance sm:text-4xl">
+              Real progress usually looks boring.
+            </h2>
+            <div className="mt-6 space-y-4 text-sm leading-7 text-muted-foreground sm:text-base">
+              <p>And that is okay.</p>
+              <p>
+                Most sustainable weight loss comes from repeating enough reasonable days for the trend to slowly move in the right direction.
+              </p>
+              <p>
+                LeanLog was built to make that process feel calmer, clearer, and easier to sustain.
+              </p>
+            </div>
+          </AppSurface>
         </div>
       </section>
     </main>

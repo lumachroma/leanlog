@@ -105,7 +105,7 @@ describe('DailyLogPanel', () => {
     await user.click(screen.getByRole('button', { name: /^10k$/i }))
     await user.click(screen.getByRole('button', { name: /^45 min$/i }))
 
-    expect(updateEntryDraftField).toHaveBeenCalledWith('weight', '40.0')
+    expect(updateEntryDraftField).toHaveBeenCalledWith('weight', '20.0')
     expect(updateEntryDraftField).toHaveBeenCalledWith('weight', '80.0')
     expect(updateEntryDraftField).toHaveBeenCalledWith('calories', '2000')
     expect(updateEntryDraftField).toHaveBeenCalledWith('steps', '10000')

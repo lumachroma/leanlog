@@ -92,7 +92,7 @@ describe('AppContent', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /a personal weight-loss operating system built for real life/i,
+        name: /calm local-first weight-loss tracking/i,
       }, { timeout: LAZY_PAGE_TIMEOUT_MS })
     ).toBeInTheDocument()
   })

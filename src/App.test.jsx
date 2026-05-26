@@ -136,9 +136,7 @@ describe('App', () => {
     ).toBeInTheDocument()
     expect(screen.queryByText(/tracking defaults/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/one focused entry per day/i)).not.toBeInTheDocument()
-    expect(
-      screen.queryByText(/a personal weight-loss operating system built for real life/i)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /review targets/i })).not.toBeInTheDocument()
   })
 
   it('switches to the averages page from the header navigation', async () => {
@@ -211,7 +209,7 @@ describe('App', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /a personal weight-loss operating system built for real life/i,
+        name: /calm local-first weight-loss tracking/i,
       })
     ).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: /review targets/i })).toBeInTheDocument()
@@ -225,10 +223,10 @@ describe('App', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /a personal weight-loss operating system built for real life/i,
+        name: /calm local-first weight-loss tracking/i,
       })
     ).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: /^weight trend$/i })).not.toBeInTheDocument()
+    expect(screen.queryByText(/today's snapshot/i)).not.toBeInTheDocument()
   })
 
   it('shows a dashboard CTA when targets are missing and opens settings from it', async () => {
