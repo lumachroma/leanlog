@@ -117,7 +117,7 @@ export const createEntriesSlice = (set, get) => ({
       date: get().selectedDate,
     }
 
-    await runStoreAction({
+    return runStoreAction({
       set,
       startState: { isSavingEntry: true, errorMessage: null },
       task: () => upsertEntryRecord(draft),

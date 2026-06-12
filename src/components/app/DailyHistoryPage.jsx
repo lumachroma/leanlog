@@ -382,7 +382,11 @@ function DailyHistoryPage({
 
   const handleSaveEntry = async () => {
     clearPendingAction()
-    await saveEntry()
+    const savedEntries = await saveEntry()
+
+    if (savedEntries !== null) {
+      setIsDrawerOpen(false)
+    }
   }
 
   const resetDraftToBaseline = () => {

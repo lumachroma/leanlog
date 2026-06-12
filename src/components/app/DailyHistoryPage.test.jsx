@@ -426,6 +426,9 @@ describe('DailyHistoryPage', () => {
     await user.type(weightInput, '81.2')
     await user.click(screen.getByRole('button', { name: /close daily log/i }))
     await user.click(screen.getByRole('button', { name: /discard changes/i }))
+
+    expect(screen.queryByRole('dialog', { name: /daily log/i })).not.toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: /edit/i }))
 
     expect(screen.getByRole('spinbutton', { name: /^weight$/i })).toHaveValue(80)
@@ -449,9 +452,66 @@ describe('DailyHistoryPage', () => {
     await user.type(weightInput, '81.2')
     await user.click(screen.getByRole('button', { name: /close daily log/i }))
     await user.click(screen.getByRole('button', { name: /discard changes/i }))
+
+    expect(screen.queryByRole('dialog', { name: /daily log/i })).not.toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: /new entry/i }))
 
     expect(screen.getByRole('spinbutton', { name: /^weight$/i })).toHaveValue(null)
+  })
+
+  it('closes the drawer after a successful save', async () => {
+    const user = userEvent.setup()
+    const saveEntry = vi.fn().mockResolvedValue([createSampleEntry()])
+
+    render(
+      <DailyHistoryPage
+        entries={[createSampleEntry()]}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft()}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={saveEntry}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /edit/i }))
+    await user.click(screen.getByRole('button', { name: /save day/i }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /daily log/i })).not.toBeInTheDocument()
+    })
+
+    expect(saveEntry).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the drawer open when saving fails', async () => {
+    const user = userEvent.setup()
+    const saveEntry = vi.fn().mockResolvedValue(null)
+
+    render(
+      <DailyHistoryPage
+        entries={[createSampleEntry()]}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft()}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={saveEntry}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /edit/i }))
+    await user.click(screen.getByRole('button', { name: /save day/i }))
+
+    await waitFor(() => {
+      expect(saveEntry).toHaveBeenCalledTimes(1)
+    })
+
+    expect(screen.getByRole('dialog', { name: /daily log/i })).toBeInTheDocument()
   })
 
   it('shows the empty state when no history exists', () => {

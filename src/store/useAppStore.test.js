@@ -112,6 +112,34 @@ describe('useAppStore', () => {
     expect(useAppStore.getState().errorMessage).toBe('Unable to save your settings.')
   })
 
+  it('returns saved entries on successful daily-log saves', async () => {
+    const savedEntries = createSampleEntries()
+
+    useAppStore.setState((state) => ({
+      ...state,
+      entries: [createSampleEntry()],
+      selectedDate: '2026-05-14',
+      entryDraft: createSampleEntryDraft(),
+    }))
+
+    mockUpsertEntryRecord.mockResolvedValue(savedEntries)
+
+    const result = await useAppStore.getState().saveEntry()
+
+    expect(result).toEqual(savedEntries)
+    expect(useAppStore.getState().entries).toEqual(savedEntries)
+    expect(useAppStore.getState().errorMessage).toBeNull()
+  })
+
+  it('returns null when daily-log saves fail', async () => {
+    mockUpsertEntryRecord.mockRejectedValue(new Error('save failed'))
+
+    const result = await useAppStore.getState().saveEntry()
+
+    expect(result).toBeNull()
+    expect(useAppStore.getState().errorMessage).toBe('Unable to save this daily entry.')
+  })
+
   it('imports csv daily logs and refreshes the selected draft from imported entries', async () => {
     useAppStore.setState((state) => ({
       ...state,
