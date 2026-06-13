@@ -1,4 +1,4 @@
-import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { act, render, screen, waitForElementToBeRemoved, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -94,6 +94,8 @@ describe('App', () => {
   })
 
   it('renders the header, error state, and primary panels when hydrated', async () => {
+    const currentYear = new Date().getFullYear()
+
     mockUseAppViewModel.mockReturnValue({
       ...baseViewModel,
       lifecycle: {
@@ -121,8 +123,23 @@ describe('App', () => {
       'aria-pressed',
       'true'
     )
-    expect(screen.getByText(/^LeanLog$/)).toBeInTheDocument()
-    expect(screen.getByText(/calm local-first weight-loss tracking/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /leanlog repository/i })).toHaveAttribute(
+      'href',
+      'https://github.com/lumachroma/leanlog/'
+    )
+    expect(screen.getByRole('link', { name: /^linkedin$/i })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/nazrul-hisham/'
+    )
+    expect(screen.getByRole('link', { name: /^github$/i })).toHaveAttribute(
+      'href',
+      'https://github.com/lumachroma/'
+    )
+    expect(within(screen.getByRole('banner')).getByText(/^LeanLog$/)).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('banner')).getByText(/calm local-first weight-loss tracking/i)
+    ).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`© ${currentYear} Lumachroma Ent\\.`))).toBeInTheDocument()
     expect(screen.getByText(/unable to load your local data/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg calories/i)).toBeInTheDocument()
     expect(await screen.findByText(/avg steps/i)).toBeInTheDocument()
