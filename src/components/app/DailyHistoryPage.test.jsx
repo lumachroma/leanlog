@@ -173,6 +173,74 @@ describe('DailyHistoryPage', () => {
     expect(screen.getByRole('dialog', { name: /daily log/i })).toBeInTheDocument()
   })
 
+  it('offsets the sticky quick add card upward when the shared footer is visible', async () => {
+    const intersectionObserver = stubIntersectionObserver()
+
+    stubImmediateAnimationFrame()
+
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 700,
+    })
+
+    Object.defineProperty(document.documentElement, 'scrollHeight', {
+      writable: true,
+      configurable: true,
+      value: 1400,
+    })
+
+    const footerElement = document.createElement('footer')
+    footerElement.setAttribute('aria-label', 'Footer')
+    Object.defineProperty(footerElement, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({
+        top: 660,
+        bottom: 740,
+        height: 80,
+        left: 0,
+        right: 0,
+        width: 0,
+        x: 0,
+        y: 660,
+        toJSON: () => ({}),
+      }),
+    })
+    document.body.append(footerElement)
+
+    render(
+      <DailyHistoryPage
+        entries={[
+          createSampleEntry(),
+          createSecondarySampleEntry(),
+          createSecondarySampleEntry({ date: '2026-05-12' }),
+          createSecondarySampleEntry({ date: '2026-05-11' }),
+          createSecondarySampleEntry({ date: '2026-05-10' }),
+        ]}
+        selectedDate="2026-05-14"
+        entryDraft={createSampleEntryDraft()}
+        isSavingEntry={false}
+        setSelectedDate={vi.fn()}
+        updateEntryDraftField={vi.fn()}
+        saveEntry={vi.fn()}
+        deleteEntry={vi.fn()}
+      />
+    )
+
+    intersectionObserver.trigger(false)
+    window.dispatchEvent(new Event('scroll'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/quick add/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/quick add/i).closest('div.pointer-events-none')).toHaveStyle({
+      bottom: '40px',
+    })
+
+    footerElement.remove()
+  })
+
   it('renders saved entries and routes edit/delete actions', async () => {
     const user = userEvent.setup()
     const setSelectedDate = vi.fn()

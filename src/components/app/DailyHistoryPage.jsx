@@ -51,6 +51,7 @@ const createPendingAction = (type, payload = {}) => ({ type, ...payload })
 const STICKY_DRAWER_HISTORY_OVERFLOW = 160
 const FIELD_SELECTOR = 'input, textarea, select, [contenteditable="true"]'
 const COLLAPSED_MONTH_FILTER_COUNT = 2
+const FOOTER_SELECTOR = 'footer[aria-label="Footer"]'
 
 const isFieldFocusedWithinElement = (element) => {
   if (!element || typeof document === 'undefined') {
@@ -91,6 +92,24 @@ const hasOverflowingHistory = () => {
   const documentHeight = document.documentElement?.scrollHeight || 0
 
   return documentHeight > viewportHeight + STICKY_DRAWER_HISTORY_OVERFLOW
+}
+
+const getFooterOverlapOffset = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return 0
+  }
+
+  const footerElement = document.querySelector(FOOTER_SELECTOR)
+
+  if (!(footerElement instanceof HTMLElement)) {
+    return 0
+  }
+
+  const footerRect = footerElement.getBoundingClientRect()
+  const viewportHeight = window.innerHeight || 0
+  const footerOverlap = Math.max(0, viewportHeight - footerRect.top)
+
+  return Math.round(Math.min(footerRect.height, footerOverlap))
 }
 
 const HISTORY_METRICS = [
@@ -142,6 +161,7 @@ function DailyHistoryPage({
   const [pendingAction, setPendingAction] = useState(null)
   const [hasLongHistory, setHasLongHistory] = useState(false)
   const [isLauncherVisible, setIsLauncherVisible] = useState(true)
+  const [stickyLauncherFooterOffset, setStickyLauncherFooterOffset] = useState(0)
   const [areMonthFiltersExpanded, setAreMonthFiltersExpanded] = useState(false)
   const launcherSectionRef = useRef(null)
   const dailyLogPanelRef = useRef(null)
@@ -257,6 +277,51 @@ function DailyHistoryPage({
       window.clearTimeout(timeoutId)
     }
   }, [entries, visibleMonthKey, pendingDeleteDate])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    let frameId = null
+
+    const syncStickyLauncherOffset = () => {
+      frameId = null
+      const nextOffset = getFooterOverlapOffset()
+
+      setStickyLauncherFooterOffset((currentOffset) =>
+        currentOffset === nextOffset ? currentOffset : nextOffset
+      )
+    }
+
+    const scheduleSync = () => {
+      if (typeof window.requestAnimationFrame !== 'function') {
+        syncStickyLauncherOffset()
+        return
+      }
+
+      if (frameId !== null) {
+        return
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        syncStickyLauncherOffset()
+      })
+    }
+
+    scheduleSync()
+    window.addEventListener('scroll', scheduleSync, { passive: true })
+    window.addEventListener('resize', scheduleSync)
+
+    return () => {
+      if (frameId !== null && typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(frameId)
+      }
+
+      window.removeEventListener('scroll', scheduleSync)
+      window.removeEventListener('resize', scheduleSync)
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.IntersectionObserver !== 'function') {
@@ -663,7 +728,10 @@ function DailyHistoryPage({
         ) : null}
 
         {hasLongHistory && !isLauncherVisible && !isDrawerOpen ? (
-          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-3 sm:px-4 sm:pb-4">
+          <div
+            className="pointer-events-none fixed inset-x-0 z-40 flex justify-center px-3 pb-3 sm:px-4 sm:pb-4"
+            style={{ bottom: `${stickyLauncherFooterOffset}px` }}
+          >
             <div className="pointer-events-auto w-full max-w-4xl rounded-[1.5rem] border border-border/80 bg-background/95 p-3 shadow-lg backdrop-blur">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
