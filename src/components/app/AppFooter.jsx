@@ -3,7 +3,7 @@ const GITHUB_PROFILE_URL = 'https://github.com/lumachroma/'
 const LINKEDIN_PROFILE_URL = 'https://www.linkedin.com/in/nazrul-hisham/'
 
 const socialLinkClassName =
-  'inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+  'inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:h-8 sm:w-8'
 
 function LinkedInIcon() {
   return (
@@ -37,25 +37,25 @@ function AppFooter() {
 
   return (
     <footer className="mt-auto border-t border-border/80 pt-4 sm:pt-5" aria-label="Footer">
-      <div className="flex items-center justify-center gap-3 px-1 text-center text-sm text-muted-foreground sm:gap-4">
+      <div className="flex items-center justify-center gap-1.5 px-1 text-center text-sm text-muted-foreground sm:gap-4">
         <a
           href={APP_REPOSITORY_URL}
           target="_blank"
           rel="noreferrer"
           aria-label="LeanLog repository"
-          className="group inline-flex items-center gap-2 rounded-[1.2rem] px-1.5 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="group inline-flex items-center gap-1.5 rounded-[1.2rem] px-1 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:gap-2 sm:px-1.5"
         >
           <img
             src={logoSrc}
             alt="LeanLog footer logo"
             className="h-5 w-5 grayscale opacity-80 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
           />
-          <p className="text-base font-medium tracking-[-0.04em] text-foreground sm:text-lg">
+          <p className="text-sm font-medium tracking-[-0.04em] text-foreground sm:text-lg">
             LeanLog
           </p>
         </a>
 
-        <p className="leading-6">
+        <p className="shrink-0 whitespace-nowrap text-[0.78rem] leading-6 sm:text-sm">
           &copy; {currentYear} Lumachroma Ent.
         </p>
 
